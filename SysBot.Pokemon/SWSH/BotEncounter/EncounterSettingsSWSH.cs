@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace SysBot.Pokemon
 {
-    public class EncounterSettings : IBotStateSettings, ICountSettings
+    public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     {
         private const string Counts = nameof(Counts);
         private const string Encounter = nameof(Encounter);
@@ -18,6 +18,10 @@ namespace SysBot.Pokemon
         [Category(Settings)]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public FossilSettings Fossil { get; set; } = new();
+
+        [Category(Settings)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public MaxLairSettings MaxLair { get; set; } = new();
 
         [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
         public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
@@ -50,7 +54,6 @@ namespace SysBot.Pokemon
             get => _completedEggs;
             set => _completedEggs = value;
         }
-
 
         [Category(Counts), Description("Fossil Pokémon Revived")]
         public int CompletedFossils

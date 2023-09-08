@@ -16,6 +16,7 @@ namespace SysBot.Pokemon
                 => new PokeTradeBotSWSH(Hub, cfg),
 
             PokeRoutineType.RaidBot => new RaidBotSWSH(cfg, Hub),
+            PokeRoutineType.MaxLair => new EncounterBotMaxLairSWSH(cfg, Hub),
             PokeRoutineType.EncounterLine => new EncounterBotLineSWSH(cfg, Hub),
             PokeRoutineType.EggFetch => new EncounterBotEggSWSH(cfg, Hub),
             PokeRoutineType.FossilBot => new EncounterBotFossilSWSH(cfg, Hub),
@@ -37,6 +38,7 @@ namespace SysBot.Pokemon
                 => true,
 
             PokeRoutineType.RaidBot => true,
+            PokeRoutineType.MaxLair => true,
             PokeRoutineType.EncounterLine => true,
             PokeRoutineType.EggFetch => true,
             PokeRoutineType.FossilBot => true,

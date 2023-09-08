@@ -70,6 +70,35 @@ namespace SysBot.Pokemon
         public const int BoxFormatSlotSize = 0x158;
         public const int TrainerDataLength = 0x110;
 
+        // Lair offsets
+        public static IReadOnlyList<long> MaxLairPokemonRNGPointer { get; } = new long[] { 0x28F4060, 0x238, 0x2AB8 };
+        public const uint MaxLairPenaltyWarnOffset = 0x50B06FC0;
+        public const uint MaxLairPenaltyCountOffset = 0x50B12710;
+
+        public const uint CurrentScreenLairOffset = 0x16E498;
+        public const uint LairMiscScreenOffset = 0x2955BA0;
+
+        public const uint AdventureSeedOffset = 0x4514A4B0;
+        public const uint ResetLegendFlagOffset = 0x50AD76B8;
+        public const uint LairMove1Offset = 0x840A5B10;
+
+        public const uint LairPartyP1Offset = 0x886B67C8;
+        public const uint LairPartyP2Offset = 0x886BC348;
+        public const uint LairPartyP3Offset = 0x886B9588;
+        public const uint LairPartyP4Offset = 0x886BF108;
+
+        public const uint RentalMon1 = 0x83E93070;
+        public const uint RentalMon2 = 0x83E93300;
+        public const uint RentalMon3 = 0x83E93590;
+
+        public const uint DamageOutputOffset = 0x007E37F0;
+        public const uint OtherItemAddress = 0x45067D90;
+
+        public const uint LairSpeciesNote1 = 0x50B12278;
+        public const uint LairSpeciesNote2 = 0x50B122B0;
+        public const uint LairSpeciesNote3 = 0x50B122E8;
+        public const uint LairSpeciesNote4 = 0x50B12320;
+
         #region ScreenDetection
         // Stable overworld detection. Value is 1 on overworld and 0 otherwise.
         public IReadOnlyList<long> OverworldPointer { get; } = new long[] { 0x2636678, 0xC0, 0x80 };
