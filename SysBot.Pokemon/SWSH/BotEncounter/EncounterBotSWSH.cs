@@ -1,4 +1,5 @@
-﻿using PKHeX.Core;
+﻿using NLog.Filters;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,7 @@ namespace SysBot.Pokemon
     {
         protected readonly PokeTradeHub<PK8> Hub;
         private readonly IDumper DumpSetting;
-        private readonly EncounterSettings Settings;
-        private readonly int[] DesiredMinIVs;
-        private readonly int[] DesiredMaxIVs;
+        protected readonly EncounterSettingsSWSH Settings;
         protected readonly byte[] BattleMenuReady = { 0, 0, 0, 255 };
         public ICountSettings Counts => Settings;
         public readonly IReadOnlyList<string> UnwantedMarks;
@@ -25,7 +24,6 @@ namespace SysBot.Pokemon
             Hub = hub;
             Settings = Hub.Config.EncounterSWSH;
             DumpSetting = Hub.Config.Folder;
-            StopConditionSettings.InitializeTargetIVs(Hub.Config, out DesiredMinIVs, out DesiredMaxIVs);
             StopConditionSettings.ReadUnwantedMarks(Hub.Config.StopConditions, out UnwantedMarks);
         }
 
@@ -70,18 +68,46 @@ namespace SysBot.Pokemon
         protected abstract Task EncounterLoop(SAV8SWSH sav, CancellationToken token);
 
         // return true if breaking loop
-        protected async Task<bool> HandleEncounter(PK8 pk, CancellationToken token)
+        protected async Task<bool> HandleEncounter(PK8 pk, CancellationToken token, byte[]? raw = null, bool minimize = false)
         {
             encounterCount++;
             var print = Hub.Config.StopConditions.GetPrintName(pk);
-            Log($"Encounter: {encounterCount}{Environment.NewLine}{print}{Environment.NewLine}");
+            Log($"Encounter: {encounterCount}");
+
+            if(!string.IsNullOrWhiteSpace(print))
+                Log($"{print}{Environment.NewLine}", !minimize);
 
             var folder = IncrementAndGetDumpFolder(pk);
-            if (DumpSetting.Dump && !string.IsNullOrEmpty(DumpSetting.DumpFolder))
-                DumpPokemon(DumpSetting.DumpFolder, folder, pk);
 
-            if (!StopConditionSettings.EncounterFound(pk, DesiredMinIVs, DesiredMaxIVs, Hub.Config.StopConditions, UnwantedMarks))
+            if (pk.Valid)
+            {
+                switch (DumpSetting)
+                {
+                    case { Dump: true, DumpShinyOnly: true } when pk.IsShiny:
+                    case { Dump: true, DumpShinyOnly: false }:
+                        DumpPokemon(DumpSetting.DumpFolder, folder, pk);
+                        break;
+                }
+
+                if (raw != null)
+                {
+                    switch (DumpSetting)
+                    {
+                        case { DumpRaw: true, DumpShinyOnly: true } when pk.IsShiny:
+                        case { DumpRaw: true, DumpShinyOnly: false }:
+                            DumpPokemon(DumpSetting.DumpFolder, folder, pk, raw);
+                            break;
+                    }
+                }
+            }
+
+            if (!StopConditionSettings.EncounterFound(pk, Hub.Config.StopConditions, UnwantedMarks))
+            {
+                if (folder.Equals("egg") && Hub.Config.StopConditions.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly && pk.IsShiny)
+                    Hub.LogEmbed(pk, false);
+
                 return false;
+            }
 
             if (Hub.Config.StopConditions.CaptureVideoClip)
             {
@@ -96,12 +122,12 @@ namespace SysBot.Pokemon
                 ContinueAfterMatch.PauseWaitAcknowledge => "Waiting for instructions to continue.",
                 ContinueAfterMatch.StopExit             => "Stopping routine execution; restart the bot to search again.",
                 _ => throw new ArgumentOutOfRangeException("Match result type was invalid.", nameof(ContinueAfterMatch)),
-
             };
 
             if (!string.IsNullOrWhiteSpace(Hub.Config.StopConditions.MatchFoundEchoMention))
                 msg = $"{Hub.Config.StopConditions.MatchFoundEchoMention} {msg}";
             EchoUtil.Echo(msg);
+            Hub.LogEmbed(pk, true);
 
             if (mode == ContinueAfterMatch.StopExit)
                 return true;
@@ -114,27 +140,39 @@ namespace SysBot.Pokemon
             return false;
         }
 
-        private string IncrementAndGetDumpFolder(PK8 pk)
+        private string IncrementAndGetDumpFolder(PKM pk)
         {
-            var legendary = SpeciesCategory.IsLegendary(pk.Species) || SpeciesCategory.IsMythical(pk.Species) || SpeciesCategory.IsSubLegendary(pk.Species);
-            if (legendary)
+            try
             {
-                Settings.AddCompletedLegends();
-                return "legends";
-            }
-            else if (pk.IsEgg)
-            {
-                Settings.AddCompletedEggs();
-                return "egg";
-            }
-            else if (pk.Species >= (int)Species.Dracozolt && pk.Species <= (int)Species.Arctovish)
-            {
-                Settings.AddCompletedFossils();
-                return "fossil";
-            }
+                var legendary = SpeciesCategory.IsLegendary(pk.Species) || SpeciesCategory.IsMythical(pk.Species) || SpeciesCategory.IsSubLegendary(pk.Species);
+                if (legendary)
+                {
+                    Settings.AddCompletedLegends();
+                    OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_LegendSWSH.txt");
+                    return "legends";
+                }
+                else if (pk.IsEgg)
+                {
+                    Settings.AddCompletedEggs();
+                    OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_EggSWSH.txt");
+                    return "egg";
+                }
+                else if (pk.Species >= (int)Species.Dracozolt && pk.Species <= (int)Species.Arctovish)
+                {
+                    Settings.AddCompletedFossils();
+                    OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_FosilSWSH.txt");
+                    return "fossil";
+                }
 
-            Settings.AddCompletedEncounters();
-            return "encounters";
+                Settings.AddCompletedEncounters();
+                OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_EncounterSWSH.txt");
+                return "encounters";
+            }
+            catch (Exception e)
+            {
+                Log($"Couldn't update encounters:\n{e.Message}\n{e.StackTrace}");
+                return "random";
+            }
         }
 
         private bool IsWaiting;

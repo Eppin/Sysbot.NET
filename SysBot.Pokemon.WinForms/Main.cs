@@ -99,7 +99,7 @@ namespace SysBot.Pokemon.WinForms
             CB_Protocol.DataSource = listP;
             CB_Protocol.SelectedIndex = (int)SwitchProtocol.WiFi; // default option
 
-            LogUtil.Forwarders.Add(AppendLog);
+            LogUtil.Forwarders.Add((AppendLog, nameof(Main)));
         }
 
         private void AppendLog(string message, string identity)

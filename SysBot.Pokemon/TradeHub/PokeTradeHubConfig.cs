@@ -43,7 +43,11 @@ namespace SysBot.Pokemon
 
         [Category(BotEncounter)]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public EncounterSettings EncounterSWSH { get; set; } = new();
+        public EncounterSettingsSV EncounterSV { get; set; } = new();
+
+        [Category(BotEncounter)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public EncounterSettingsSWSH EncounterSWSH { get; set; } = new();
 
         [Category(BotEncounter)]
         [TypeConverter(typeof(ExpandableObjectConverter))]

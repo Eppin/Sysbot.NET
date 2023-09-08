@@ -67,7 +67,7 @@ namespace SysBot.Pokemon.ConsoleApp
                     Console.WriteLine($"Failed to add bot: {bot}");
             }
 
-            LogUtil.Forwarders.Add((msg, ident) => Console.WriteLine($"{ident}: {msg}"));
+            LogUtil.Forwarders.Add(((msg, ident) => Console.WriteLine($"{ident}: {msg}"), nameof(Program)));
             env.StartAll();
             Console.WriteLine($"Started all bots (Count: {prog.Bots.Length}.");
             Console.WriteLine("Press any key to stop execution and quit. Feel free to minimize this window!");

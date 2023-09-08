@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -55,15 +56,87 @@ namespace SysBot.Pokemon
             return (solved != 0, solved);
         }
 
-        public static void DumpPokemon(string folder, string subfolder, T pk)
+        public static void DumpPokemon(string folder, string subfolder, PKM pk, bool boxData = false)
         {
-            if (!Directory.Exists(folder))
+            var fn = DumpPokemonPath(folder, subfolder, pk);
+
+            if (string.IsNullOrWhiteSpace(fn))
                 return;
+
+            var data = boxData
+                ? pk.DecryptedBoxData
+                : pk.DecryptedPartyData;
+
+            File.WriteAllBytes(fn, data);
+
+            LogUtil.LogInfo($"Saved file: {fn}", "Dump");
+        }
+
+        public static void DumpPokemon(string folder, string subfolder, PKM pk, byte[] bytes)
+        {
+            var fn = DumpPokemonPath(folder, subfolder, pk, true);
+
+            if (string.IsNullOrWhiteSpace(fn))
+                return;
+
+            File.WriteAllBytes(fn, bytes);
+            LogUtil.LogInfo($"Saved raw file: {fn}", "Dump");
+        }
+
+        private static string? DumpPokemonPath(string folder, string subfolder, PKM pk, bool isEncrypted = false)
+        {
+            var form = pk.Form > 0 ? $"-{pk.Form:00}" : string.Empty;
+            var ballFormatted = string.Empty;
+            var shinyType = string.Empty;
+            var markType = string.Empty;
+
+            if (pk.IsShiny)
+            {
+                if (pk.Format >= 8 && (pk.ShinyXor == 0 || pk.FatefulEncounter || pk.Version == (int)GameVersion.GO))
+                    shinyType = " ■";
+                else
+                    shinyType = " ★";
+            }
+
+            var IVList = pk.IV_HP + "." + pk.IV_ATK + "." + pk.IV_DEF + "." + pk.IV_SPA + "." + pk.IV_SPD + "." + pk.IV_SPE;
+            var nature = $" - {(Nature)pk.Nature}";
+
+            var TIDFormatted = pk.Generation >= 7 ? $"{pk.TrainerTID7:000000}" : $"{pk.TID16:00000}";
+
+            if (pk.Ball != (int)Ball.None)
+                ballFormatted = " - " + GameInfo.Strings.balllist[pk.Ball].Split(' ')[0];
+
+            var speciesName = SpeciesName.GetSpeciesNameGeneration(pk.Species, (int)LanguageID.English, pk.Format);
+            if (pk is IGigantamax gmax && gmax.CanGigantamax)
+                speciesName += "-Gmax";
+
+            var OTInfo = string.IsNullOrEmpty(pk.OT_Name) ? "" : $" - {pk.OT_Name} - {TIDFormatted}{ballFormatted}";
+
+            markType = pk switch
+            {
+                PK8 pk8 => StopConditionSettings.HasMark(pk8, out var mark) ? $"{mark.ToString().Replace("Mark", "")}Mark - " : "",
+                PK9 pk9 => StopConditionSettings.HasMark(pk9, out var mark) ? $"{mark.ToString().Replace("Mark", "")}Mark - " : "",
+                _ => markType
+            };
+
+            var filename = $"{pk.Species:000}{form}{shinyType} - {speciesName} - {markType}{IVList}{nature}{OTInfo} - {pk.EncryptionConstant:X8}";
+            var filetype = $".{(isEncrypted ? "e" : "")}";
+            if (pk is PK8)
+                filetype += "pk8";
+            if (pk is PB8)
+                filetype += "pb8";
+            if (pk is PA8)
+                filetype += "pa8";
+            if (pk is PK9)
+                filetype += "pk9";
+
+            if (!Directory.Exists(folder))
+                return null;
+
             var dir = Path.Combine(folder, subfolder);
             Directory.CreateDirectory(dir);
-            var fn = Path.Combine(dir, Util.CleanFileName(pk.FileName));
-            File.WriteAllBytes(fn, pk.DecryptedPartyData);
-            LogUtil.LogInfo($"Saved file: {fn}", "Dump");
+
+            return Path.Combine(dir, filename + filetype);
         }
 
         public async Task<bool> TryReconnect(int attempts, int extraDelay, SwitchProtocol protocol, CancellationToken token)
