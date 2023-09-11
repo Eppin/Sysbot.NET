@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
+using static SysBot.Base.SwitchStick;
 using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon
@@ -34,6 +35,14 @@ namespace SysBot.Pokemon
                 while (!token.IsCancellationRequested && !await IsEggReady(token) && sw.Elapsed.TotalSeconds < 10)
                 {
                     await Task.Delay(50, token).ConfigureAwait(false);
+
+                    // Walk diagonally left.
+                    await SetStick(LEFT, -19000, 19000, 0_250, token).ConfigureAwait(false);
+                    await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
+
+                    // Walk diagonally right, slightly longer to ensure we stay at the Daycare lady.
+                    await SetStick(LEFT, 19000, 19000, 0_300, token).ConfigureAwait(false);
+                    await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
                 }
                 sw.Stop();
 
