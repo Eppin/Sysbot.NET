@@ -68,7 +68,7 @@ namespace SysBot.Pokemon
         protected abstract Task EncounterLoop(SAV8SWSH sav, CancellationToken token);
 
         // return true if breaking loop
-        protected async Task<bool> HandleEncounter(PK8 pk, CancellationToken token, byte[]? raw = null, bool minimize = false)
+        protected async Task<(bool Stop, bool Success)> HandleEncounter(PK8 pk, CancellationToken token, byte[]? raw = null, bool minimize = false)
         {
             encounterCount++;
             var print = Hub.Config.StopConditions.GetPrintName(pk);
@@ -106,7 +106,7 @@ namespace SysBot.Pokemon
                 if (folder.Equals("egg") && Hub.Config.StopConditions.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly && pk.IsShiny)
                     Hub.LogEmbed(pk, false);
 
-                return false;
+                return (false, false);
             }
 
             if (Hub.Config.StopConditions.CaptureVideoClip)
@@ -130,14 +130,14 @@ namespace SysBot.Pokemon
             Hub.LogEmbed(pk, true);
 
             if (mode == ContinueAfterMatch.StopExit)
-                return true;
+                return (true, true);
             if (mode == ContinueAfterMatch.Continue)
-                return false;
+                return (false, true);
 
             IsWaiting = true;
             while (IsWaiting)
                 await Task.Delay(1_000, token).ConfigureAwait(false);
-            return false;
+            return (false, true);
         }
 
         private string IncrementAndGetDumpFolder(PKM pk)

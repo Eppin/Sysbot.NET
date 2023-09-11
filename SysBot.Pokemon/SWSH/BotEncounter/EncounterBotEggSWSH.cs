@@ -1,15 +1,20 @@
 ﻿using PKHeX.Core;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
-using static SysBot.Base.SwitchStick;
 using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon
 {
+    using System.Diagnostics;
+
     public class EncounterBotEggSWSH : EncounterBotSWSH
     {
         private readonly IDumper DumpSetting;
+
+        private const int Box = 0;
+        private int Slot;
 
         public EncounterBotEggSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)
         {
@@ -21,17 +26,26 @@ namespace SysBot.Pokemon
         protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
         {
             await SetupBoxState(DumpSetting, token).ConfigureAwait(false);
+            await EnableAlwaysEgg((GameVersion)sav.Game, token).ConfigureAwait(false);
 
             while (!token.IsCancellationRequested)
             {
-                // Walk a step left, then right => check if egg was generated on this attempt.
-                // Repeat until an egg is generated.
-                var attempts = await StepUntilEgg(token).ConfigureAwait(false);
-                if (attempts < 0) // aborted
-                    return;
+                var sw = Stopwatch.StartNew();
+                while (!token.IsCancellationRequested && !await IsEggReady(token) && sw.Elapsed.TotalSeconds < 10)
+                {
+                    await Task.Delay(50, token).ConfigureAwait(false);
+                }
+                sw.Stop();
 
-                Log($"Egg available after {attempts} attempts! Clearing destination slot.");
-                await SetBoxPokemon(Blank, 0, 0, token).ConfigureAwait(false);
+                if (sw.Elapsed.TotalSeconds >= 10)
+                {
+                    Log($"Tried {sw.Elapsed}, still no egg.");
+                    await Click(B, 500, token).ConfigureAwait(false);
+                    continue;
+                }
+
+                Log($"Egg available after {sw.Elapsed}! Clearing destination slot.");
+                await SetBoxPokemon(Blank, Box, Slot, token).ConfigureAwait(false);
 
                 for (int i = 0; i < 10; i++)
                     await Click(A, 0_200, token).ConfigureAwait(false);
@@ -40,48 +54,25 @@ namespace SysBot.Pokemon
                 while (!await IsOnOverworld(OverworldOffset, token).ConfigureAwait(false))
                     await Click(B, 0_200, token).ConfigureAwait(false);
 
-                Log("Egg received. Checking details.");
-                var pk = await ReadBoxPokemon(0, 0, token).ConfigureAwait(false);
+                Log($"Egg received in B{Box + 1}S{Slot + 1}. Checking details.");
+                var pk = await ReadBoxPokemon(Box, Slot, token).ConfigureAwait(false);
                 if (pk.Species == 0)
                 {
-                    Log("No egg found in Box 1, slot 1. Ensure that the party is full. Restarting loop.");
+                    Log($"No egg found in B{Box + 1}S{Slot + 1}. Ensure that the party is full. Restarting loop.");
                     continue;
                 }
 
-                if (await HandleEncounter(pk, token).ConfigureAwait(false))
+                var (stop, success) = await HandleEncounter(pk, token).ConfigureAwait(false);
+
+                if (success)
+                {
+                    Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
+                    Slot += 1;
+                }
+
+                if (stop)
                     return;
             }
-        }
-
-        private async Task<int> StepUntilEgg(CancellationToken token)
-        {
-            Log("Walking around until an egg is ready...");
-            int attempts = 0;
-            while (!token.IsCancellationRequested && Config.NextRoutineType == PokeRoutineType.EggFetch)
-            {
-                await SetEggStepCounter(token).ConfigureAwait(false);
-
-                // Walk diagonally left.
-                await SetStick(LEFT, -19000, 19000, 0_500, token).ConfigureAwait(false);
-                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
-
-                // Walk diagonally right, slightly longer to ensure we stay at the Daycare lady.
-                await SetStick(LEFT, 19000, 19000, 0_550, token).ConfigureAwait(false);
-                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
-
-                bool eggReady = await IsEggReady(token).ConfigureAwait(false);
-                if (eggReady)
-                    return attempts;
-
-                attempts++;
-                if (attempts % 10 == 0)
-                    Log($"Tried {attempts} times, still no egg.");
-
-                if (attempts > 10)
-                    await Click(B, 500, token).ConfigureAwait(false);
-            }
-
-            return -1; // aborted
         }
 
         public async Task<bool> IsEggReady(CancellationToken token)
@@ -91,13 +82,38 @@ namespace SysBot.Pokemon
             return data[0] == 1;
         }
 
-        public async Task SetEggStepCounter(CancellationToken token)
+        private async Task EnableAlwaysEgg(GameVersion game, CancellationToken token)
         {
-            // Set the step counter in the Daycare metadata to 180. This is the threshold that triggers the "Should I create a new egg" subroutine.
-            // When the game executes the subroutine, it will generate a new seed and set the IsEggReady flag.
-            // Just setting the IsEggReady flag won't refresh the seed; we want a different egg every time.
-            var data = new byte[] { 0xB4, 0, 0, 0 }; // 180
-            await Connection.WriteBytesAsync(data, DayCare_Route5_Step_Counter, token).ConfigureAwait(false);
+            Log("Enable 'nurse always have an egg' cheat", false);
+            // Source: https://gbatemp.net/threads/pokemon-sword-and-shield-cheats-hacks-pkhex.551986/post-9845202
+
+            // Original cheat:
+            /*
+             * [(v1.3.2) Nursery Staff Always Have an Egg (on)] - Sword
+             * 04000000 01401594 D503201F
+             * 04000000 014016E4 D503201F
+             *
+             * [(v1.3.2) Nursery Staff Always Have an Egg (on)] - Shield
+             * 04000000 014015C4 D503201F
+             * 04000000 01401714 D503201F
+             */
+
+            switch (game)
+            {
+                case GameVersion.SW:
+                    await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0xD503201F), 0x01401594, token);
+                    await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0xD503201F), 0x014016E4, token);
+                    break;
+
+                case GameVersion.SH:
+                    await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0xD503201F), 0x014015C4, token);
+                    await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0xD503201F), 0x01401714, token);
+                    break;
+
+                default:
+                    Log($"Unsupported game {game} detected");
+                    break;
+            }
         }
     }
 }
