@@ -31,6 +31,10 @@ namespace SysBot.Pokemon
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public FolderSettings Folder { get; set; } = new();
 
+        [Category(Operation)]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public PointerSettings Pointer { get; set; } = new();
+
         public abstract bool Shuffled { get; }
     }
 }

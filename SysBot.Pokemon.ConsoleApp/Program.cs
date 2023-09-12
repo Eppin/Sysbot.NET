@@ -14,6 +14,14 @@ namespace SysBot.Pokemon.ConsoleApp
 
         private static void Main(string[] args)
         {
+            string build = string.Empty;
+#if DEBUG
+            var date = File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly()!.Location);
+            build = $" (dev-{date:yyyyMMdd})";
+#endif
+            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
+
+            Console.WriteLine($"SysBot v{v}{build}");
             Console.WriteLine("Starting up...");
             if (args.Length > 1)
                 Console.WriteLine("This program does not support command line arguments.");

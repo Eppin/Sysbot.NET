@@ -42,11 +42,19 @@ namespace SysBot.Pokemon.WinForms
                 Config = new ProgramConfig();
                 RunningEnvironment = GetRunner(Config);
                 Config.Hub.Folder.CreateDefaults(Program.WorkingDirectory);
+                Config.Hub.Pointer.CreateDefaults(Program.WorkingDirectory);
             }
+
+            string build = string.Empty;
+#if DEBUG
+            var date = File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly()!.Location);
+            build = $" (dev-{date:yyyyMMdd})";
+#endif
+            var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
 
             RTB_Logs.MaxLength = 32_767; // character length
             LoadControls();
-            Text = $"{Text} ({Config.Mode})";
+            Text = $"{Text} v{v}{build} ({Config.Mode})";
             Task.Run(BotMonitor);
 
             InitUtil.InitializeStubs(Config.Mode);

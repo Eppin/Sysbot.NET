@@ -50,6 +50,9 @@
 
         /// <summary> Catches Gimmighoul until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
         EncounterGimmighoul = 7_001,
+
+        /// <summary> Enables testing pointers from a text file.  </summary>
+        Pointer = 7_002
     }
 
     public static class PokeRoutineTypeExtensions

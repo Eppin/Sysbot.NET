@@ -17,6 +17,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterRuinous => new EncounterBotRuinousSV(cfg, Hub),
             PokeRoutineType.EncounterGimmighoul => new EncounterBotGimmighoulSV(cfg, Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
+            PokeRoutineType.Pointer => new PointerBotSV(cfg, Hub),
 
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
@@ -33,6 +34,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterRuinous => true,
             PokeRoutineType.EncounterGimmighoul => true,
             PokeRoutineType.RemoteControl => true,
+            PokeRoutineType.Pointer => true,
 
             _ => false,
         };

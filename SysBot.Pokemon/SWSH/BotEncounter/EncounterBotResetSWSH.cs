@@ -30,7 +30,7 @@ namespace SysBot.Pokemon
                     pknew = await ReadUntilPresent(monoffset, 0_050, 0_050, BoxFormatSlotSize, token).ConfigureAwait(false);
                 } while (pknew is null || SearchUtil.HashByDetails(pkoriginal) == SearchUtil.HashByDetails(pknew));
 
-                var (stop, _) = await HandleEncounter(pknew, token).ConfigureAwait(false)
+                var (stop, _) = await HandleEncounter(pknew, token).ConfigureAwait(false);
                 if (stop)
                     return;
 
