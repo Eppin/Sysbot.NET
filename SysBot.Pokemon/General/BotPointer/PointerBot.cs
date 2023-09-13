@@ -68,18 +68,31 @@ public class PointerBot<TPKM> where TPKM : PKM, new()
 
             pointerDict = workingDict;
 
-            Executor.Log("Restarting game...");
-
-            switch (Executor)
+            if (pointerDict.Count == 0)
             {
-                case PokeRoutineExecutor8SWSH swsh8:
-                    await swsh8.ReOpenGame(Hub.Config, token).ConfigureAwait(false);
-                    break;
-
-                case PokeRoutineExecutor9SV sv9:
-                    await sv9.ReOpenGame(Hub.Config, token).ConfigureAwait(false);
-                    break;
+                Executor.Log("No valid pointers left...");
+                return;
             }
+
+            // Results
+            await File.WriteAllLinesAsync(Settings.MyStatusPointerFile + "r", pointerDict[PointerTestType.MyStatus], token);
+            await File.WriteAllLinesAsync(Settings.PartyPointerFile + "r", pointerDict[PointerTestType.Party], token);
+            await File.WriteAllLinesAsync(Settings.BoxPointerFile + "r", pointerDict[PointerTestType.Box], token);
+
+            //Executor.Log("Restarting game...");
+
+            //switch (Executor)
+            //{
+            //    case PokeRoutineExecutor8SWSH swsh8:
+            //        await swsh8.ReOpenGame(Hub.Config, token).ConfigureAwait(false);
+            //        break;
+
+            //    case PokeRoutineExecutor9SV sv9:
+            //        await sv9.ReOpenGame(Hub.Config, token).ConfigureAwait(false);
+            //        break;
+            //}
+
+            return;
         }
     }
 
@@ -93,8 +106,7 @@ public class PointerBot<TPKM> where TPKM : PKM, new()
     {
         SaveFile? sav = Executor switch
         {
-            PokeRoutineExecutor8SWSH swsh8 => await swsh8.GetFakeTrainerSAV(token).ConfigureAwait(false),
-            PokeRoutineExecutor9SV sv9 => await sv9.GetFakeTrainerSAV(token).ConfigureAwait(false),
+            PokeRoutineExecutor9SV sv9 => await sv9.GetFakeTrainerSAV(pointer, token).ConfigureAwait(false),
             _ => null
         };
 

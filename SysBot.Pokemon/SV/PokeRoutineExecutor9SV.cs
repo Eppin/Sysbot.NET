@@ -140,17 +140,23 @@ namespace SysBot.Pokemon
                 throw new Exception("Refer to the SysBot.NET wiki (https://github.com/kwsch/SysBot.NET/wiki/Troubleshooting) for more information.");
             }
 
-            if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
-                throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
+            // TODO temporary disabled..
+            //if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
+            //    throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
 
             return sav;
         }
 
-        public async Task<SAV9SV> GetFakeTrainerSAV(CancellationToken token)
+        public Task<SAV9SV> GetFakeTrainerSAV(CancellationToken token)
+        {
+            return GetFakeTrainerSAV(Offsets.MyStatusPointer, token);
+        }
+
+        public async Task<SAV9SV> GetFakeTrainerSAV(IEnumerable<long> jumps, CancellationToken token)
         {
             var sav = new SAV9SV();
             var info = sav.MyStatus;
-            var read = await SwitchConnection.PointerPeek(info.Data.Length, Offsets.MyStatusPointer, token).ConfigureAwait(false);
+            var read = await SwitchConnection.PointerPeek(info.Data.Length, jumps, token).ConfigureAwait(false);
             read.CopyTo(info.Data, 0);
             return sav;
         }
