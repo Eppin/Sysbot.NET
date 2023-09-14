@@ -13,16 +13,16 @@ using static SysBot.Base.SwitchStick;
 public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 {
     protected readonly PokeTradeHub<PK9> Hub;
-    private readonly IDumper _dumpSetting;
-    private readonly EncounterSettingsSV _settings;
-    public ICountSettings Counts => _settings;
+    protected readonly EncounterSettingsSV Settings;
+    protected readonly IDumper DumpSetting;
+    public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
     protected EncounterBotSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg)
     {
         Hub = hub;
-        _settings = Hub.Config.EncounterSV;
-        _dumpSetting = Hub.Config.Folder;
+        Settings = Hub.Config.EncounterSV;
+        DumpSetting = Hub.Config.Folder;
         StopConditionSettings.ReadUnwantedMarks(Hub.Config.StopConditions, out UnwantedMarks);
     }
 
@@ -75,21 +75,21 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 
         if (pk.Valid)
         {
-            switch (_dumpSetting)
+            switch (DumpSetting)
             {
                 case { Dump: true, DumpShinyOnly: true } when pk.IsShiny:
                 case { Dump: true, DumpShinyOnly: false }:
-                    DumpPokemon(_dumpSetting.DumpFolder, folder, pk);
+                    DumpPokemon(DumpSetting.DumpFolder, folder, pk);
                     break;
             }
 
             if (raw != null)
             {
-                switch (_dumpSetting)
+                switch (DumpSetting)
                 {
                     case { DumpRaw: true, DumpShinyOnly: true } when pk.IsShiny:
                     case { DumpRaw: true, DumpShinyOnly: false }:
-                        DumpPokemon(_dumpSetting.DumpFolder, folder, pk, raw);
+                        DumpPokemon(DumpSetting.DumpFolder, folder, pk, raw);
                         break;
                 }
             }
@@ -103,13 +103,13 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
             return (false, false);
         }
 
-        if (_settings.MinMaxScaleOnly && pk.Scale is > 0 and < 255)
+        if (Settings.MinMaxScaleOnly && pk.Scale is > 0 and < 255)
         {
             Hub.LogEmbed(pk, false);
             return (false, false);
         }
 
-        if (_settings.OneInOneHundredOnly)
+        if (Settings.OneInOneHundredOnly)
         {
             if ((Species)pk.Species is Species.Dunsparce or Species.Tandemaus && pk.EncryptionConstant % 100 != 0)
             {
@@ -124,7 +124,7 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
             await PressAndHold(CAPTURE, 2_000, 0, token).ConfigureAwait(false);
         }
 
-        var mode = _settings.ContinueAfterMatch;
+        var mode = Settings.ContinueAfterMatch;
         var msg = $"Result found!\n{print}\n" + mode switch
         {
             ContinueAfterMatch.Continue => "Continuing...",
@@ -157,14 +157,14 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
             var legendary = SpeciesCategory.IsLegendary(pk.Species) || SpeciesCategory.IsMythical(pk.Species) || SpeciesCategory.IsSubLegendary(pk.Species);
             if (legendary)
             {
-                _settings.AddCompletedLegends();
+                Settings.AddCompletedLegends();
                 OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_LegendSV.txt");
                 OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_LegendSV.txt");
                 return "legends";
             }
             else if (pk.IsEgg)
             {
-                _settings.AddCompletedEggs();
+                Settings.AddCompletedEggs();
                 OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_EggSV.txt");
                 OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_EggSV.txt");
                 return "egg";

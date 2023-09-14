@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 using SysBot.Base;
 
@@ -26,6 +27,12 @@ namespace SysBot.Pokemon
 
         [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
         public bool ScreenOff { get; set; }
+
+        [Category(Encounter), Description("Set mode to unlimited")]
+        public bool UnlimitedMode { get; set; }
+
+        [Category(Encounter), Description("When mode is unlimited, this folder will be used for parents.")]
+        public string UnlimitedParentsFolder { get; set; } = string.Empty;
 
         private int _completedWild;
         private int _completedLegend;
@@ -68,6 +75,13 @@ namespace SysBot.Pokemon
                 yield return $"Legendary Encounters: {CompletedLegends}";
             if (CompletedEggs != 0)
                 yield return $"Eggs Received: {CompletedEggs}";
+        }
+
+        public void CreateDefaults(string path)
+        {
+            var unlimited = Path.Combine(path, "unlimited");
+            Directory.CreateDirectory(unlimited);
+            UnlimitedParentsFolder = unlimited;
         }
     }
 }

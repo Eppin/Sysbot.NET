@@ -1,6 +1,9 @@
 ﻿namespace SysBot.Pokemon;
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PKHeX.Core;
@@ -63,6 +66,24 @@ public class EncounterBotEggSV : EncounterBotSV
                 {
                     Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
                     Slot += 1;
+
+                    if (Settings.UnlimitedMode)
+                    {
+                        if (!Directory.Exists(Settings.UnlimitedParentsFolder))
+                        {
+                            Log($"Directory for unlimited doesn't exist: [{Settings.UnlimitedParentsFolder}]");
+                            return;
+                        }
+
+                        var parents = Directory.GetFiles(Settings.UnlimitedParentsFolder, "*.pk9");
+                        if (parents.Length == 0)
+                        {
+                            Log($"No valid parents found in [{Settings.UnlimitedParentsFolder}]");
+                            return;
+                        }
+
+                        await SetNextParent(parents, token);
+                    }
                 }
 
                 if (stop)
@@ -75,5 +96,21 @@ public class EncounterBotEggSV : EncounterBotSV
                 eggsPerBatch++;
             }
         }
+    }
+
+    private async Task SetNextParent(IEnumerable<string> parents, CancellationToken token)
+    {
+        var parent = parents.FirstOrDefault();
+        if (parent == null)
+            return;
+
+        var bytes = File.ReadAllBytes(parent);
+        var pk9 = new PK9(bytes);
+
+        Log($"Set next parent: {pk9.FileName}");
+        await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
+
+        var info = new FileInfo(parent);
+        File.Move(parent, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
     }
 }

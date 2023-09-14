@@ -43,6 +43,7 @@ namespace SysBot.Pokemon.WinForms
                 RunningEnvironment = GetRunner(Config);
                 Config.Hub.Folder.CreateDefaults(Program.WorkingDirectory);
                 Config.Hub.Pointer.CreateDefaults(Program.WorkingDirectory);
+                Config.Hub.EncounterSV.CreateDefaults(Program.WorkingDirectory);
             }
 
             string build = string.Empty;

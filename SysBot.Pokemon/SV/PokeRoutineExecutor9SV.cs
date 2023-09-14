@@ -92,6 +92,44 @@ namespace SysBot.Pokemon
             return pk9;
         }
 
+        public async Task<(PK9, byte[]?)> ReadRawPartyPokemon(int slot, CancellationToken token)
+        {
+            var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return (new PK9(), null);
+
+            var copiedData = new byte[BoxFormatSlotSize];
+            var data = await SwitchConnection.ReadBytesAbsoluteAsync(party, BoxFormatSlotSize, token).ConfigureAwait(false);
+
+            data.CopyTo(copiedData, 0);
+
+            if (!data.SequenceEqual(copiedData))
+                throw new InvalidOperationException("Raw data is not copied correctly");
+
+            return (new PK9(data), copiedData);
+        }
+
+        public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)
+        {
+            if (sav != null)
+            {
+                // Update PKM to the current save's handler data
+                var date = DateTime.Now;
+                pkm.Trade(sav, date.Day, date.Month, date.Year);
+                pkm.RefreshChecksum();
+            }
+
+            pkm.ResetPartyStats();
+
+            var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return;
+
+            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, party, token).ConfigureAwait(false);
+        }
+
         public async Task SetBoxPokemonAbsolute(ulong offset, PK9 pkm, CancellationToken token, ITrainerInfo? sav = null)
         {
             if (sav != null)
