@@ -56,10 +56,24 @@ namespace SysBot.Pokemon
             await Connection.WriteBytesAsync(pkm.EncryptedPartyData, ofs, token).ConfigureAwait(false);
         }
 
+        public async Task<(PK8, byte[]?)> ReadRawBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            var offset = GetBoxSlotOffset(box, slot);
+            var copiedData = new byte[BoxFormatSlotSize];
+            var data = await Connection.ReadBytesAsync(offset, BoxFormatSlotSize, token).ConfigureAwait(false);
+
+            data.CopyTo(copiedData, 0);
+
+            if (!data.SequenceEqual(copiedData))
+                throw new InvalidOperationException("Raw data is not copied correctly");
+
+            return (new PK8(data), copiedData);
+        }
+
         public override async Task<PK8> ReadBoxPokemon(int box, int slot, CancellationToken token)
         {
-            var ofs = GetBoxSlotOffset(box, slot);
-            return await ReadPokemon(ofs, BoxFormatSlotSize, token).ConfigureAwait(false);
+            var (pkm, _) = await ReadRawBoxPokemon(box, slot, token).ConfigureAwait(false);
+            return pkm;
         }
 
         public async Task SetCurrentBox(byte box, CancellationToken token)
@@ -226,6 +240,7 @@ namespace SysBot.Pokemon
         {
             var timing = config.Timings;
             // Close out of the game
+            await Click(B, 0_500, token).ConfigureAwait(false);
             await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
             await Click(X, 1_000, token).ConfigureAwait(false);
             await Click(A, 5_000 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
@@ -337,11 +352,11 @@ namespace SysBot.Pokemon
         {
             await SetCurrentBox(0, token).ConfigureAwait(false);
 
-            var existing = await ReadBoxPokemon(0, 0, token).ConfigureAwait(false);
+            var (existing, bytes) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
             if (existing.Species != 0 && existing.ChecksumValid)
             {
                 Log("Destination slot is occupied! Dumping the Pokémon found there...");
-                DumpPokemon(DumpSetting.DumpFolder, "saved", existing);
+                DumpPokemon(DumpSetting.DumpFolder, "saved", existing, bytes);
             }
 
             Log("Clearing destination slot to start the bot.");

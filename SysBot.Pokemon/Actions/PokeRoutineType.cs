@@ -44,6 +44,15 @@
         RemoteControl = 6_000,
 
         // Add your own custom bots here so they don't clash for future main-branch bot releases.
+
+        /// <summary> Catches Ruinous until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
+        EncounterRuinous = 7_000,
+
+        /// <summary> Catches Gimmighoul until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
+        EncounterGimmighoul = 7_001,
+
+        /// <summary> Enables testing pointers from a text file.  </summary>
+        Pointer = 7_002
     }
 
     public static class PokeRoutineTypeExtensions

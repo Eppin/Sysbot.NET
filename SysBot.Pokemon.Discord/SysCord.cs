@@ -293,6 +293,9 @@ namespace SysBot.Pokemon.Discord
             // Restore Echoes
             EchoModule.RestoreChannels(_client, Hub.Config.Discord);
 
+            // Restore Embedding
+            EmbedModule<T>.RestoreEmbeds(_client, Hub.Config.Discord);
+
             // Restore Logging
             LogModule.RestoreLogging(_client, Hub.Config.Discord);
             TradeStartModule<T>.RestoreTradeStarting(_client);

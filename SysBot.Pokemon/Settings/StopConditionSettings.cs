@@ -17,14 +17,8 @@ namespace SysBot.Pokemon
         [Category(StopConditions), Description("Stops only on Pokémon with this FormID. No restrictions if left blank.")]
         public int? StopOnForm { get; set; }
 
-        [Category(StopConditions), Description("Stop only on Pokémon of the specified nature.")]
-        public Nature TargetNature { get; set; } = Nature.Random;
-
-        [Category(StopConditions), Description("Minimum accepted IVs in the format HP/Atk/Def/SpA/SpD/Spe. Use \"x\" for unchecked IVs and \"/\" as a separator.")]
-        public string TargetMinIVs { get; set; } = "";
-
-        [Category(StopConditions), Description("Maximum accepted IVs in the format HP/Atk/Def/SpA/SpD/Spe. Use \"x\" for unchecked IVs and \"/\" as a separator.")]
-        public string TargetMaxIVs { get; set; } = "";
+        [Category(StopConditions), Description("Desired spreads, search for nature and IVs. In the format HP/Atk/Def/SpA/SpD/Spe. Use \"x\" for unchecked IVs and \"/\" as a separator.")]
+        public List<SearchCondition> SearchConditions { get; set; } = new();
 
         [Category(StopConditions), Description("Selects the shiny type to stop on.")]
         public TargetShinyType ShinyTarget { get; set; } = TargetShinyType.DisableOption;
@@ -47,7 +41,25 @@ namespace SysBot.Pokemon
         [Category(StopConditions), Description("If not empty, the provided string will be prepended to the result found log message to Echo alerts for whomever you specify. For Discord, use <@userIDnumber> to mention.")]
         public string MatchFoundEchoMention { get; set; } = string.Empty;
 
-        public static bool EncounterFound<T>(T pk, int[] targetminIVs, int[] targetmaxIVs, StopConditionSettings settings, IReadOnlyList<string>? marklist) where T : PKM
+        [Category(StopConditions)]
+        public class SearchCondition
+        {
+            public override string ToString() => $"{(!IsEnabled ? $"{Nature}, condition is disabled" : $"{Nature}, {TargetMinIVs} - {TargetMaxIVs}")}";
+
+            [Category(StopConditions), DisplayName("1. Enabled")]
+            public bool IsEnabled { get; set; } = true;
+
+            [Category(StopConditions), DisplayName("2. Nature")]
+            public Nature Nature { get; set; }
+
+            [Category(StopConditions), DisplayName("3. Minimum accepted IVs")]
+            public string TargetMinIVs { get; set; } = "";
+
+            [Category(StopConditions), DisplayName("4. Maximum accepted IVs")]
+            public string TargetMaxIVs { get; set; } = "";
+        }
+
+        public static bool EncounterFound<T>(T pk, StopConditionSettings settings, IReadOnlyList<string>? markList) where T : PKM
         {
             // Match Nature and Species if they were specified.
             if (settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
@@ -56,18 +68,15 @@ namespace SysBot.Pokemon
             if (settings.StopOnForm.HasValue && settings.StopOnForm != pk.Form)
                 return false;
 
-            if (settings.TargetNature != Nature.Random && settings.TargetNature != (Nature)pk.Nature)
-                return false;
-
             // Return if it doesn't have a mark or it has an unwanted mark.
             var unmarked = pk is IRibbonIndex m && !HasMark(m);
-            var unwanted = marklist is not null && pk is IRibbonIndex m2 && settings.IsUnwantedMark(GetMarkName(m2), marklist);
+            var unwanted = markList is not null && pk is IRibbonIndex m2 && settings.IsUnwantedMark(GetMarkName(m2), markList);
             if (settings.MarkOnly && (unmarked || unwanted))
                 return false;
 
             if (settings.ShinyTarget != TargetShinyType.DisableOption)
             {
-                bool shinymatch = settings.ShinyTarget switch
+                bool shinyMatch = settings.ShinyTarget switch
                 {
                     TargetShinyType.AnyShiny => pk.IsShiny,
                     TargetShinyType.NonShiny => !pk.IsShiny,
@@ -79,9 +88,9 @@ namespace SysBot.Pokemon
 
                 // If we only needed to match one of the criteria and it shinymatch'd, return true.
                 // If we needed to match both criteria and it didn't shinymatch, return false.
-                if (!settings.MatchShinyAndIV && shinymatch)
+                if (!settings.MatchShinyAndIV && shinyMatch)
                     return true;
-                if (settings.MatchShinyAndIV && !shinymatch)
+                if (settings.MatchShinyAndIV && !shinyMatch)
                     return false;
             }
 
@@ -89,33 +98,42 @@ namespace SysBot.Pokemon
             Span<int> pkIVList = stackalloc int[6];
             pk.GetIVs(pkIVList);
             (pkIVList[5], pkIVList[3], pkIVList[4]) = (pkIVList[3], pkIVList[4], pkIVList[5]);
+            var pkIVsArr = pkIVList.ToArray();
 
-            for (int i = 0; i < 6; i++)
+            // No search conditions to match
+            if (!settings.SearchConditions.Any(s => s.IsEnabled))
+                return true;
+
+            return settings.SearchConditions.Any(s =>
+                MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
+                (s.Nature == (Nature)pk.Nature || s.Nature == Nature.Random) &&
+                s.IsEnabled);
+        }
+
+        private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr)
+        {
+            var targetMinIVs = ReadTargetIVs(targetMinIVsStr, true);
+            var targetMaxIVs = ReadTargetIVs(targetMaxIVsStr, false);
+
+            for (var i = 0; i < 6; i++)
             {
-                if (targetminIVs[i] > pkIVList[i] || targetmaxIVs[i] < pkIVList[i])
+                if (targetMinIVs[i] > pkIVs[i] || targetMaxIVs[i] < pkIVs[i])
                     return false;
             }
+
             return true;
         }
 
-        public static void InitializeTargetIVs(PokeTradeHubConfig config, out int[] min, out int[] max)
+        private static int[] ReadTargetIVs(string splitIVsStr, bool min)
         {
-            min = ReadTargetIVs(config.StopConditions, true);
-            max = ReadTargetIVs(config.StopConditions, false);
-        }
-
-        private static int[] ReadTargetIVs(StopConditionSettings settings, bool min)
-        {
-            int[] targetIVs = new int[6];
+            var targetIVs = new int[6];
             char[] split = { '/' };
 
-            string[] splitIVs = min
-                ? settings.TargetMinIVs.Split(split, StringSplitOptions.RemoveEmptyEntries)
-                : settings.TargetMaxIVs.Split(split, StringSplitOptions.RemoveEmptyEntries);
+            var splitIVs = splitIVsStr.Split(split, StringSplitOptions.RemoveEmptyEntries);
 
-            // Only accept up to 6 values.  Fill it in with default values if they don't provide 6.
+            // Only accept up to 6 values. Fill it in with default values if they don't provide 6.
             // Anything that isn't an integer will be a wild card.
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 if (i < splitIVs.Length)
                 {
@@ -131,12 +149,21 @@ namespace SysBot.Pokemon
             return targetIVs;
         }
 
-        private static bool HasMark(IRibbonIndex pk)
+        public static bool HasMark(IRibbonIndex pk)
         {
+            return HasMark(pk, out _);
+        }
+
+        public static bool HasMark(IRibbonIndex pk, out RibbonIndex result)
+        {
+            result = default;
             for (var mark = RibbonIndex.MarkLunchtime; mark <= RibbonIndex.MarkSlump; mark++)
             {
                 if (pk.GetRibbon((int)mark))
+                {
+                    result = mark;
                     return true;
+                }
             }
             return false;
         }

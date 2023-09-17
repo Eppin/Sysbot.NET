@@ -39,7 +39,8 @@ namespace SysBot.Pokemon
                 for (int i = 0; i < 3; i++)
                     await ReadUntilChanged(BattleMenuOffset, BattleMenuReady, 5_000, 0_100, true, token).ConfigureAwait(false);
 
-                if (await HandleEncounter(pk, token).ConfigureAwait(false))
+                var (stop, _) = await HandleEncounter(pk, token).ConfigureAwait(false);
+                if (stop)
                     return;
 
                 Log("Running away...");

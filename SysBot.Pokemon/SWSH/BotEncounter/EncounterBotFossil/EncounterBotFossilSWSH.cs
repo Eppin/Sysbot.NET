@@ -64,7 +64,8 @@ namespace SysBot.Pokemon
                     continue;
                 }
 
-                if (await HandleEncounter(pk, token).ConfigureAwait(false))
+                var (stop, _) = await HandleEncounter(pk, token).ConfigureAwait(false);
+                if (stop)
                     return;
 
                 Log("Clearing destination slot.");

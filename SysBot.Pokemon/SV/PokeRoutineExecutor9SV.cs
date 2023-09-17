@@ -3,6 +3,7 @@ using SysBot.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -39,11 +40,94 @@ namespace SysBot.Pokemon
             return !result.SequenceEqual(original);
         }
 
+        public async Task SetBoxPokemon(PK9 pkm, int box, int slot, CancellationToken token, ITrainerInfo? sav = null)
+        {
+            if (sav != null)
+            {
+                // Update PKM to the current save's handler data
+                var date = DateTime.Now;
+                pkm.Trade(sav, date.Day, date.Month, date.Year);
+                pkm.RefreshChecksum();
+            }
+
+            pkm.ResetPartyStats();
+
+            var jumps = Offsets.BoxStartPokemonPointer.ToArray();
+            var (valid, b1s1) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return;
+
+            const int boxSize = 30 * BoxFormatSlotSize;
+            var boxStart = b1s1 + (ulong)(box * boxSize);
+            var slotStart = boxStart + (ulong)(slot * BoxFormatSlotSize);
+
+            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, slotStart, token).ConfigureAwait(false);
+        }
+
+        public async Task<(PK9, byte[]?)> ReadRawBoxPokemon(int box, int slot, CancellationToken token)
+        {
+            var jumps = Offsets.BoxStartPokemonPointer.ToArray();
+            var (valid, b1s1) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return (new PK9(), null);
+
+            const int boxSize = 30 * BoxFormatSlotSize;
+            var boxStart = b1s1 + (ulong)(box * boxSize);
+            var slotStart = boxStart + (ulong)(slot * BoxFormatSlotSize);
+
+            var copiedData = new byte[BoxFormatSlotSize];
+            var data = await SwitchConnection.ReadBytesAbsoluteAsync(slotStart, BoxFormatSlotSize, token).ConfigureAwait(false);
+
+            data.CopyTo(copiedData, 0);
+
+            if (!data.SequenceEqual(copiedData))
+                throw new InvalidOperationException("Raw data is not copied correctly");
+
+            return (new PK9(data), copiedData);
+        }
+
         public override async Task<PK9> ReadBoxPokemon(int box, int slot, CancellationToken token)
         {
-            // Shouldn't be reading anything but box1slot1 here. Slots are not consecutive.
-            var jumps = Offsets.BoxStartPokemonPointer.ToArray();
-            return await ReadPokemonPointer(jumps, BoxFormatSlotSize, token).ConfigureAwait(false);
+            var (pk9, _) = await ReadRawBoxPokemon(box, slot, token).ConfigureAwait(false);
+            return pk9;
+        }
+
+        public async Task<(PK9, byte[]?)> ReadRawPartyPokemon(int slot, CancellationToken token)
+        {
+            var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return (new PK9(), null);
+
+            var copiedData = new byte[BoxFormatSlotSize];
+            var data = await SwitchConnection.ReadBytesAbsoluteAsync(party, BoxFormatSlotSize, token).ConfigureAwait(false);
+
+            data.CopyTo(copiedData, 0);
+
+            if (!data.SequenceEqual(copiedData))
+                throw new InvalidOperationException("Raw data is not copied correctly");
+
+            return (new PK9(data), copiedData);
+        }
+
+        public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)
+        {
+            if (sav != null)
+            {
+                // Update PKM to the current save's handler data
+                var date = DateTime.Now;
+                pkm.Trade(sav, date.Day, date.Month, date.Year);
+                pkm.RefreshChecksum();
+            }
+
+            pkm.ResetPartyStats();
+
+            var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return;
+
+            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, party, token).ConfigureAwait(false);
         }
 
         public async Task SetBoxPokemonAbsolute(ulong offset, PK9 pkm, CancellationToken token, ITrainerInfo? sav = null)
@@ -94,17 +178,23 @@ namespace SysBot.Pokemon
                 throw new Exception("Refer to the SysBot.NET wiki (https://github.com/kwsch/SysBot.NET/wiki/Troubleshooting) for more information.");
             }
 
-            if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
-                throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
+            // TODO temporary disabled..
+            //if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
+            //    throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
 
             return sav;
         }
 
-        public async Task<SAV9SV> GetFakeTrainerSAV(CancellationToken token)
+        public Task<SAV9SV> GetFakeTrainerSAV(CancellationToken token)
+        {
+            return GetFakeTrainerSAV(Offsets.MyStatusPointer, token);
+        }
+
+        public async Task<SAV9SV> GetFakeTrainerSAV(IEnumerable<long> jumps, CancellationToken token)
         {
             var sav = new SAV9SV();
             var info = sav.MyStatus;
-            var read = await SwitchConnection.PointerPeek(info.Data.Length, Offsets.MyStatusPointer, token).ConfigureAwait(false);
+            var read = await SwitchConnection.PointerPeek(info.Data.Length, jumps, token).ConfigureAwait(false);
             read.CopyTo(info.Data, 0);
             return sav;
         }
@@ -264,6 +354,23 @@ namespace SysBot.Pokemon
         {
             var data = await SwitchConnection.PointerPeek(1, Offsets.ConfigPointer, token).ConfigureAwait(false);
             return (TextSpeedOption)(data[0] & 3);
+        }
+
+        // Switches to box 1, then clears slot1 to prep fossil and egg bots.
+        public async Task SetupBoxState(IDumper dumpSetting, CancellationToken token)
+        {
+            await SetCurrentBox(0, token).ConfigureAwait(false);
+
+            var (existing, bytes) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
+            if (existing.Species != 0 && existing.ChecksumValid)
+            {
+                Log("Destination slot is occupied! Dumping the Pokémon found there...");
+                DumpPokemon(dumpSetting.DumpFolder, "saved", existing, bytes);
+            }
+
+            Log("Clearing destination slot to start the bot.");
+            PK9 blank = new();
+            await SetBoxPokemon(blank, 0, 0, token).ConfigureAwait(false);
         }
     }
 }
