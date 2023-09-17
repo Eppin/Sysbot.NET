@@ -200,16 +200,16 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 
         // Original cheat:
         /*
-         * [100% Fast capture on(v1.3.2)]
-         * 04000000 01857FE8 52800028
-         * 04000000 01857FF4 14000020
-         * 04000000 0185804C 52800028
-         * 04000000 01858084 52800028
+         * [100% Fast capture on(v2.0.1)]
+         * 04000000 018E9028 52800028
+         * 04000000 018E9034 14000020
+         * 04000000 018E908C 52800028
+         * 04000000 018E90C4 52800028
          */
 
-        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x01857FE8, token);
-        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x14000020), 0x01857FF4, token);
-        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x0185804C, token);
-        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x01858084, token);
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x018E9028, token);
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x14000020), 0x018E9034, token);
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x018E908C, token);
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x018E90C4, token);
     }
 }
