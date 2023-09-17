@@ -28,6 +28,9 @@ public class EncounterBotEggSV : EncounterBotSV
     {
         await SetupBoxState(_dumpSetting, token).ConfigureAwait(false);
 
+        if (!await IsUnlimited(token).ConfigureAwait(false))
+            return;
+
         // Start with initial presses
         await Click(A, 250, token).ConfigureAwait(false);
         await Click(A, 250, token).ConfigureAwait(false);
@@ -67,23 +70,8 @@ public class EncounterBotEggSV : EncounterBotSV
                     Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
                     Slot += 1;
 
-                    if (Settings.UnlimitedMode)
-                    {
-                        if (!Directory.Exists(Settings.UnlimitedParentsFolder))
-                        {
-                            Log($"Directory for unlimited doesn't exist: [{Settings.UnlimitedParentsFolder}]");
-                            return;
-                        }
-
-                        var parents = Directory.GetFiles(Settings.UnlimitedParentsFolder, "*.pk9");
-                        if (parents.Length == 0)
-                        {
-                            Log($"No valid parents found in [{Settings.UnlimitedParentsFolder}]");
-                            return;
-                        }
-
-                        await SetNextParent(parents, token);
-                    }
+                    if (!await IsUnlimited(token).ConfigureAwait(false))
+                        return;
                 }
 
                 if (stop)
@@ -96,6 +84,29 @@ public class EncounterBotEggSV : EncounterBotSV
                 eggsPerBatch++;
             }
         }
+    }
+
+    private async Task<bool> IsUnlimited(CancellationToken token)
+    {
+        if (Settings.UnlimitedMode)
+        {
+            if (!Directory.Exists(Settings.UnlimitedParentsFolder))
+            {
+                Log($"Directory for unlimited doesn't exist: [{Settings.UnlimitedParentsFolder}]");
+                return false;
+            }
+
+            var parents = Directory.GetFiles(Settings.UnlimitedParentsFolder, "*.pk9");
+            if (parents.Length == 0)
+            {
+                Log($"No valid parents found in [{Settings.UnlimitedParentsFolder}]");
+                return false;
+            }
+
+            await SetNextParent(parents, token);
+        }
+
+        return true;
     }
 
     private async Task SetNextParent(IEnumerable<string> parents, CancellationToken token)
@@ -111,6 +122,6 @@ public class EncounterBotEggSV : EncounterBotSV
         await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
 
         var info = new FileInfo(parent);
-        File.Move(parent, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
+        File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
     }
 }
