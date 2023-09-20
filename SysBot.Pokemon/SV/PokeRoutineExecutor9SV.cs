@@ -100,7 +100,13 @@ namespace SysBot.Pokemon
                 return (new PK9(), null);
 
             var copiedData = new byte[BoxFormatSlotSize];
-            var data = await SwitchConnection.ReadBytesAbsoluteAsync(party, BoxFormatSlotSize, token).ConfigureAwait(false);
+            var data = new byte[BoxFormatSlotSize];
+
+            var partyData = await SwitchConnection.ReadBytesAbsoluteAsync(party, PartyFormatSlotSize, token).ConfigureAwait(false);
+            partyData.CopyTo(data, 0);
+
+            var stats = await ReadRawPartyStats(slot, token).ConfigureAwait(false);
+            stats.CopyTo(data, PartyFormatSlotSize);
 
             data.CopyTo(copiedData, 0);
 
@@ -108,6 +114,26 @@ namespace SysBot.Pokemon
                 throw new InvalidOperationException("Raw data is not copied correctly");
 
             return (new PK9(data), copiedData);
+        }
+
+        private async Task<byte[]> ReadRawPartyStats(int slot, CancellationToken token)
+        {
+            var jumps = Offsets.PartyStats.ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return Array.Empty<byte>();
+
+            return await SwitchConnection.ReadBytesAbsoluteAsync(party + (uint)(slot * PartyStatsSize), PartyStatsSize, token).ConfigureAwait(false);
+        }
+
+        private async Task WritePartyStats(byte[] bytes, int slot, CancellationToken token)
+        {
+            var jumps = Offsets.PartyStats.ToArray();
+            var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+            if (!valid)
+                return;
+
+            await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party + (uint)(slot * PartyStatsSize), token).ConfigureAwait(false);
         }
 
         public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)
@@ -127,7 +153,8 @@ namespace SysBot.Pokemon
             if (!valid)
                 return;
 
-            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, party, token).ConfigureAwait(false);
+            await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedBoxData, party, token).ConfigureAwait(false);
+            await WritePartyStats(pkm.EncryptedPartyData[^PartyStatsSize..], slot, token).ConfigureAwait(false);
         }
 
         public async Task SetBoxPokemonAbsolute(ulong offset, PK9 pkm, CancellationToken token, ITrainerInfo? sav = null)
