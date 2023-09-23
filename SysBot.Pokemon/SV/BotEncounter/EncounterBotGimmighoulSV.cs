@@ -62,7 +62,6 @@ public class EncounterBotGimmighoulSV : EncounterBotSV
                 await Click(B, 200, token).ConfigureAwait(false);
             }
 
-            Log($"Resetting game for a new {Species.Gimmighoul}");
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             Log($"Single encounter duration: [{sw.Elapsed}]", false);
         }

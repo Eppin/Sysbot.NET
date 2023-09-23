@@ -205,9 +205,8 @@ namespace SysBot.Pokemon
                 throw new Exception("Refer to the SysBot.NET wiki (https://github.com/kwsch/SysBot.NET/wiki/Troubleshooting) for more information.");
             }
 
-            // TODO temporary disabled..
-            //if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
-            //    throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
+            if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
+                throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
 
             return sav;
         }
@@ -224,14 +223,6 @@ namespace SysBot.Pokemon
             var read = await SwitchConnection.PointerPeek(info.Data.Length, jumps, token).ConfigureAwait(false);
             read.CopyTo(info.Data, 0);
             return sav;
-        }
-
-        public async Task<TradeMyStatus> GetTradePartnerMyStatus(IReadOnlyList<long> pointer, CancellationToken token)
-        {
-            var info = new TradeMyStatus();
-            var read = await SwitchConnection.PointerPeek(info.Data.Length, pointer, token).ConfigureAwait(false);
-            read.CopyTo(info.Data, 0);
-            return info;
         }
 
         public async Task InitializeHardware(IBotStateSettings settings, CancellationToken token)
@@ -266,7 +257,7 @@ namespace SysBot.Pokemon
 
         public async Task ReOpenGame(PokeTradeHubConfig config, CancellationToken token)
         {
-            Log("Error detected, restarting the game!!");
+            Log("Restarting the game!!");
             await CloseGame(config, token).ConfigureAwait(false);
             await StartGame(config, token).ConfigureAwait(false);
         }

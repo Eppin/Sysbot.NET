@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using PKHeX.Core;
 using static Base.SwitchButton;
 
-public class EncounterBotRuinousSV : EncounterBotSV
+public class EncounterBotLoyalSV : EncounterBotSV
 {
     private readonly IDumper _dumpSetting;
 
-    public EncounterBotRuinousSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg, hub)
+    public EncounterBotLoyalSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg, hub)
     {
         _dumpSetting = Hub.Config.Folder;
     }
@@ -25,13 +25,13 @@ public class EncounterBotRuinousSV : EncounterBotSV
             await SetupBoxState(_dumpSetting, token);
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
-            Log("Start battle with Ruinous'");
-            var later = DateTime.Now.AddSeconds(18);
+            Log("Start battle with 'Royal'");
+            var later = DateTime.Now.AddSeconds(8);
             Log($"Press A till [{later}]", false);
             while (DateTime.Now <= later)
                 await Click(A, 200, token);
 
-            later = DateTime.Now.AddSeconds(18);
+            later = DateTime.Now.AddSeconds(12);
             Log($"Press B till [{later}]", false);
             while (DateTime.Now <= later)
                 await Click(B, 200, token);
@@ -51,7 +51,7 @@ public class EncounterBotRuinousSV : EncounterBotSV
                 {
                     var (stop, success) = await HandleEncounter(b1s1, token, bytes, true).ConfigureAwait(false);
 
-                    if(success)
+                    if (success)
                         Log("You're Pokémon has been catched and placed in B1S1. Be sure to save your game!");
 
                     if (stop)
