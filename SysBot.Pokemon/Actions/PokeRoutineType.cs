@@ -51,8 +51,11 @@
         /// <summary> Catches Gimmighoul until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
         EncounterGimmighoul = 7_001,
 
+        /// <summary> Catches Royal three until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
+        EncounterLoyal = 7_002,
+
         /// <summary> Enables testing pointers from a text file.  </summary>
-        Pointer = 7_002
+        Pointer = 7_101
     }
 
     public static class PokeRoutineTypeExtensions

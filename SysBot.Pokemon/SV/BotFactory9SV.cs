@@ -7,15 +7,10 @@ namespace SysBot.Pokemon
     {
         public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PK9> Hub, PokeBotState cfg) => cfg.NextRoutineType switch
         {
-            PokeRoutineType.FlexTrade or PokeRoutineType.Idle
-                or PokeRoutineType.LinkTrade
-                or PokeRoutineType.Clone
-                or PokeRoutineType.Dump
-                => new PokeTradeBotSV(Hub, cfg),
-
             PokeRoutineType.EggFetch => new EncounterBotEggSV(cfg, Hub),
             PokeRoutineType.EncounterRuinous => new EncounterBotRuinousSV(cfg, Hub),
             PokeRoutineType.EncounterGimmighoul => new EncounterBotGimmighoulSV(cfg, Hub),
+            PokeRoutineType.EncounterLoyal => new EncounterBotLoyalSV(cfg, Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
             PokeRoutineType.Pointer => new PointerBotSV(cfg, Hub),
 
@@ -24,15 +19,10 @@ namespace SysBot.Pokemon
 
         public override bool SupportsRoutine(PokeRoutineType type) => type switch
         {
-            PokeRoutineType.FlexTrade or PokeRoutineType.Idle
-                or PokeRoutineType.LinkTrade
-                or PokeRoutineType.Clone
-                or PokeRoutineType.Dump
-                => true,
-
             PokeRoutineType.EggFetch => true,
             PokeRoutineType.EncounterRuinous => true,
             PokeRoutineType.EncounterGimmighoul => true,
+            PokeRoutineType.EncounterLoyal => true,
             PokeRoutineType.RemoteControl => true,
             PokeRoutineType.Pointer => true,
 
