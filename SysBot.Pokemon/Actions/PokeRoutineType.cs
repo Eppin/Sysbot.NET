@@ -54,6 +54,9 @@
         /// <summary> Catches Royal three until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
         EncounterLoyal = 7_002,
 
+        /// <summary> Keeps running circles until all party members have the Partner mark.  </summary>
+        PartnerMark = 7_003,
+
         /// <summary> Enables testing pointers from a text file.  </summary>
         Pointer = 7_101
     }

@@ -13,6 +13,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterLoyal => new EncounterBotLoyalSV(cfg, Hub),
             PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
             PokeRoutineType.Pointer => new PointerBotSV(cfg, Hub),
+            PokeRoutineType.PartnerMark => new PartnerMarkBot(cfg, Hub),
 
             _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
         };
@@ -25,6 +26,7 @@ namespace SysBot.Pokemon
             PokeRoutineType.EncounterLoyal => true,
             PokeRoutineType.RemoteControl => true,
             PokeRoutineType.Pointer => true,
+            PokeRoutineType.PartnerMark => true,
 
             _ => false,
         };
