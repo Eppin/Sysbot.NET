@@ -47,7 +47,7 @@ public class EncounterBotRuinousSV : EncounterBotSV
             {
                 (b1s1, var bytes) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
 
-                if (b1s1 != null && b1s1.EncryptionConstant != null && (Species)b1s1.Species != Species.None)
+                if (b1s1 is { Valid: true, EncryptionConstant: > 0 } && (Species)b1s1.Species != Species.None)
                 {
                     var (stop, success) = await HandleEncounter(b1s1, token, bytes, true).ConfigureAwait(false);
 
