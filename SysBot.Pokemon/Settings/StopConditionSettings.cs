@@ -50,12 +50,15 @@ namespace SysBot.Pokemon
             public bool IsEnabled { get; set; } = true;
 
             [Category(StopConditions), DisplayName("2. Nature")]
-            public Nature Nature { get; set; }
+            public Nature Nature { get; set; } = Nature.Random;
 
-            [Category(StopConditions), DisplayName("3. Minimum accepted IVs")]
+            [Category(StopConditions), DisplayName("3. Gender")]
+            public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
+
+            [Category(StopConditions), DisplayName("4. Minimum accepted IVs")]
             public string TargetMinIVs { get; set; } = "";
 
-            [Category(StopConditions), DisplayName("4. Maximum accepted IVs")]
+            [Category(StopConditions), DisplayName("5. Maximum accepted IVs")]
             public string TargetMaxIVs { get; set; } = "";
         }
 
@@ -107,7 +110,20 @@ namespace SysBot.Pokemon
             return settings.SearchConditions.Any(s =>
                 MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
                 (s.Nature == (Nature)pk.Nature || s.Nature == Nature.Random) &&
+                MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
                 s.IsEnabled);
+        }
+
+        private static bool MatchGender(TargetGenderType target, Gender result)
+        {
+            return target switch
+            {
+                TargetGenderType.Any => true,
+                TargetGenderType.Male => Gender.Male == result,
+                TargetGenderType.Female => Gender.Female == result,
+                TargetGenderType.Genderless => Gender.Genderless == result,
+                _ => throw new ArgumentOutOfRangeException(nameof(target), $"{nameof(TargetGenderType)} value {target} is not valid"),
+            };
         }
 
         private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr)
@@ -203,5 +219,13 @@ namespace SysBot.Pokemon
         AnyShiny,       // Match any shiny regardless of type
         StarOnly,       // Match star shiny only
         SquareOnly,     // Match square shiny only
+    }
+
+    public enum TargetGenderType
+    {
+        Any,            // Doesn't care
+        Male,           // Match male only
+        Female,         // Match female only
+        Genderless,     // Match genderless only
     }
 }
