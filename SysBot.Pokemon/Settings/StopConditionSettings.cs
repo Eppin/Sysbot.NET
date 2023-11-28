@@ -111,6 +111,7 @@ public class StopConditionSettings
         return settings.SearchConditions.Any(s =>
             MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
             (s.Nature == (Nature)pk.Nature || s.Nature == Nature.Random) &&
+            MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             s.IsEnabled);
     }
   
