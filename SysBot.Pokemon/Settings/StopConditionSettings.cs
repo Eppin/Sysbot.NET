@@ -220,6 +220,7 @@ public enum TargetShinyType
     AnyShiny,       // Match any shiny regardless of type
     StarOnly,       // Match star shiny only
     SquareOnly,     // Match square shiny only
+}
 
 public enum TargetGenderType
 {
