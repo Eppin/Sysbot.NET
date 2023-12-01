@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using PKHeX.Core.AutoMod;
 using System;
 using System.IO;
@@ -28,7 +28,7 @@ public static class AutoLegalityWrapper
     }
 
     // The list of encounter types in the priority we prefer if no order is specified.
-    private static readonly EncounterTypeGroup[] EncounterPriority = { EncounterTypeGroup.Egg, EncounterTypeGroup.Slot, EncounterTypeGroup.Static, EncounterTypeGroup.Mystery, EncounterTypeGroup.Trade };
+    private static readonly EncounterTypeGroup[] EncounterPriority = [EncounterTypeGroup.Egg, EncounterTypeGroup.Slot, EncounterTypeGroup.Static, EncounterTypeGroup.Mystery, EncounterTypeGroup.Trade];
 
     private static void InitializeSettings(LegalitySettings cfg)
     {
@@ -43,6 +43,9 @@ public static class AutoLegalityWrapper
         APILegality.PrioritizeGameVersion = cfg.PrioritizeGameVersion;
         APILegality.SetBattleVersion = cfg.SetBattleVersion;
         APILegality.Timeout = cfg.Timeout;
+
+        if (!(APILegality.AllowHOMETransferGeneration = !cfg.EnableHOMETrackerCheck))
+            typeof(ParseSettings).GetProperty(nameof(ParseSettings.Gen8TransferTrackerNotPresent))!.SetValue(null, Severity.Invalid);
 
         // We need all the encounter types present, so add the missing ones at the end.
         var missing = EncounterPriority.Except(cfg.PrioritizeEncounters);
@@ -105,7 +108,7 @@ public static class AutoLegalityWrapper
 
     public static bool IsFixedOT(IEncounterTemplate t, PKM pkm) => t switch
     {
-        IFixedTrainer { IsFixedTrainer: true } tr => true,
+        IFixedTrainer { IsFixedTrainer: true } => true,
         MysteryGift g => !g.EggEncounter && g switch
         {
             WC9 wc9 => wc9.GetHasOT(pkm.Language),
@@ -137,9 +140,16 @@ public static class AutoLegalityWrapper
 
     public static PKM GetLegal(this ITrainerInfo sav, IBattleTemplate set, out string res)
     {
-        var result = sav.GetLegalFromSet(set, out var type);
-        res = type.ToString();
-        return result;
+        var result = sav.GetLegalFromSet(set);
+        res = result.Status switch
+        {
+            LegalizationResult.Regenerated     => "Regenerated",
+            LegalizationResult.Failed          => "Failed",
+            LegalizationResult.Timeout         => "Timeout",
+            LegalizationResult.VersionMismatch => "VersionMismatch",
+            _ => "",
+        };
+        return result.Created;
     }
 
     public static string GetLegalizationHint(IBattleTemplate set, ITrainerInfo sav, PKM pk) => set.SetAnalysis(sav, pk);
