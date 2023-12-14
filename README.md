@@ -17,6 +17,15 @@ These routines are new in comparison to the original SysBot.Net
 #### Sword/Shield
 - _Max Lair (resets for IVs/Nature, currently working on it)_
 
+## Version compatibility
+
+### Scarlet/Violet
+
+| Version |                               SysBot Release                                |                                       Egg-mod Release                                       |
+| :-----: | :-------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+|  3.0.0  |                               _Working on it_                               |                                       _Working on it_                                       |
+|  2.0.1  | [23.11.20.22](https://github.com/Eppin/Sysbot.NET/releases/tag/23.11.20.22) | [2.0.1](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/2.0.1.zip) |
+
 ## Support Discord:
 
 For support on setting up your own instance of SysBot.NET, feel free to check the wiki (which is under construction)
