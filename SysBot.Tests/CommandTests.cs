@@ -29,8 +29,8 @@ public class DecodeTests
     [Fact]
     public void DecodeTest()
     {
-        byte[] raw = { 0x30, 0x31, 0x30, 0x32, 0x30, 0x33, 0x30, 0x34, 0x30, 0x41, 0x30, 0x46 };
-        byte[] expect = { 1, 2, 3, 4, 10, 15 };
+        byte[] raw = [0x30, 0x31, 0x30, 0x32, 0x30, 0x33, 0x30, 0x34, 0x30, 0x41, 0x30, 0x46];
+        byte[] expect = [1, 2, 3, 4, 10, 15];
 
         var convert = Decoder.ConvertHexByteStringToBytes(raw);
         convert.SequenceEqual(expect).Should().BeTrue();

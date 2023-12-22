@@ -1,20 +1,25 @@
 # SysBot.NET
+
 ![License](https://img.shields.io/badge/License-AGPLv3-blue.svg)
 
 ## Disclaimer
+
 This is a fork with some new routines that I started working on since Scarlet/Violet (that's also my main focus). I'm working on this project for personal purposes, because I like to develop in my freetime (as a fulltime fullstack .NET developer). While my goal is to develop a working SysBot.NET for everyone, some routines may only work for me. If you run into any issues, just let me know and I'll try to help.
 
 If you don't like my work, that's fine, just don't use it, I guess... ;)
 
 ## New routines
+
 These routines are new in comparison to the original SysBot.Net
 
 #### Scarlet/Violet
+
 - Encounters (Ruinous, Loyal Three and Gimmighoul)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
 
 #### Sword/Shield
+
 - _Max Lair (resets for IVs/Nature, currently working on it)_
 
 ## Version compatibility
@@ -23,7 +28,7 @@ These routines are new in comparison to the original SysBot.Net
 
 | Version |                               SysBot Release                                |                                       Egg-mod Release                                       |
 | :-----: | :-------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
-|  3.0.0  |                               _Working on it_                               |                                       _Working on it_                                       |
+|  3.0.0  |                               _Working on it_                               | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  2.0.1  | [23.11.20.22](https://github.com/Eppin/Sysbot.NET/releases/tag/23.11.20.22) | [2.0.1](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/2.0.1.zip) |
 
 ## Support Discord:
@@ -37,6 +42,7 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 - [USB-Botbase](https://github.com/Koi-3088/USB-Botbase) client for remote USB control.
 
 #Dependencies
+
 - [PKHeX](https://github.com/kwsch/PKHeX/)
 - [AutoMod](https://github.com/architdate/PKHeX-Plugins/)
 - [Discord.Net](https://github.com/discord-net/Discord.Net)
@@ -44,10 +50,13 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 - [StreamingClientLibary](https://github.com/SaviorXTanren/StreamingClientLibrary)
 
 # License
+
 Refer to the `License.md` for details regarding licensing.
 
 # Credits
+
 Thanks for all the open source projects. Credits are in no particular order:
+
 - [@LegoFigure11](https://www.github.com/LegoFigure11) for [RaidCrawler](https://github.com/LegoFigure11/RaidCrawler)
 - [@kwsch](https://www.github.com/kwsch) for the base of this bot and [PKHeX](https://github.com/kwsch/PKHeX/)
 - [@Lusamine](https://github.com/Lusamine) for [moarencounterbots](https://github.com/Lusamine/SysBot.NET) fork

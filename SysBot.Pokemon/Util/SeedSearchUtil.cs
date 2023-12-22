@@ -72,7 +72,7 @@ public static class SeedSearchUtil
         for (int ivcount = 0; ivcount < 5; ivcount++)
         {
             int i = 0;
-            int[] ivs = { -1, -1, -1, -1, -1, -1 };
+            int[] ivs = [-1, -1, -1, -1, -1, -1];
 
             while (i < ivcount + 1)
             {

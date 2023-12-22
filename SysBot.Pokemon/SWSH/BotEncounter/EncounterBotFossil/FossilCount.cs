@@ -29,12 +29,12 @@ public class FossilCount
     }
 
     private static readonly ushort[] Pouch_Treasure_SWSH =
-    {
+    [
         086, 087, 088, 089, 090, 091, 092, 094, 106,
         571, 580, 581, 582, 583,
         795, 796,
         1105, 1106, 1107, 1108,
-    };
+    ];
 
     public static FossilCount GetFossilCounts(byte[] itemsBlock)
     {

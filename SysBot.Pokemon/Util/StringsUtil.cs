@@ -21,9 +21,9 @@ public static class StringsUtil
         return string.Concat(sanitized.Select(char.ToLower));
     }
 
-    private static readonly char[] Blacklist = { '.', '\\', '/', ',', '*', ';', '．', '・', '。' };
-    private static readonly string[] TLD = { "tv", "gg", "yt" };
-    private static readonly string[] TLD2 = { "com", "org", "net" };
+    private static readonly char[] Blacklist = ['.', '\\', '/', ',', '*', ';', '．', '・', '。'];
+    private static readonly string[] TLD = ["tv", "gg", "yt"];
+    private static readonly string[] TLD2 = ["com", "org", "net"];
 
     /// <summary>
     /// Checks the input <see cref="text"/> to see if it is selfish spam.

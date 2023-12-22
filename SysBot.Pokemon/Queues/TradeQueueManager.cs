@@ -19,7 +19,7 @@ public class TradeQueueManager<T> where T : PKM, new()
     {
         Hub = hub;
         Info = new TradeQueueInfo<T>(hub);
-        AllQueues = new[] { Seed, Dump, Clone, Trade };
+        AllQueues = [Seed, Dump, Clone, Trade];
 
         foreach (var q in AllQueues)
             q.Queue.Settings = hub.Config.Favoritism;

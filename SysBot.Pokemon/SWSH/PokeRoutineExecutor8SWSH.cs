@@ -78,7 +78,7 @@ public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
 
     public async Task SetCurrentBox(byte box, CancellationToken token)
     {
-        await Connection.WriteBytesAsync(new[] { box }, CurrentBoxOffset, token).ConfigureAwait(false);
+        await Connection.WriteBytesAsync([box], CurrentBoxOffset, token).ConfigureAwait(false);
     }
 
     public async Task<byte> GetCurrentBox(CancellationToken token)

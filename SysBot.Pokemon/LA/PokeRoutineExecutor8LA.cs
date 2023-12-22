@@ -61,7 +61,7 @@ public abstract class PokeRoutineExecutor8LA : PokeRoutineExecutor<PA8>
 
     public async Task SetCurrentBox(byte box, CancellationToken token)
     {
-        await SwitchConnection.PointerPoke(new[] { box }, Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
+        await SwitchConnection.PointerPoke([box], Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
     }
 
     public async Task<byte> GetCurrentBox(CancellationToken token)
