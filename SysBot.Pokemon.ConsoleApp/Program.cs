@@ -49,7 +49,7 @@ public static class Program
     private static void ExitNoConfig()
     {
         var bot = new PokeBotState { Connection = new SwitchConnectionConfig { IP = "192.168.0.1", Port = 6000 }, InitialRoutine = PokeRoutineType.FlexTrade };
-        var cfg = new ProgramConfig { Bots = new[] { bot } };
+        var cfg = new ProgramConfig { Bots = [bot] };
         var created = JsonSerializer.Serialize(cfg, ProgramConfigContext.Default.ProgramConfig);
         File.WriteAllText(ConfigPath, created);
         Console.WriteLine("Created new config file since none was found in the program's path. Please configure it and restart the program.");

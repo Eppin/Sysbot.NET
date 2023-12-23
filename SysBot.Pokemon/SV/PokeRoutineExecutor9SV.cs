@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -30,6 +30,7 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
         var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return new PK9();
+
         return await ReadPokemon(offset, token).ConfigureAwait(false);
     }
 
@@ -93,7 +94,7 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     public async Task<(PK9, byte[]?)> ReadRawPartyPokemon(int slot, CancellationToken token)
     {
-        var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+        var jumps = PartyStartPokemonPointer(slot).ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return (new PK9(), null);
@@ -117,22 +118,22 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     private async Task<byte[]> ReadRawPartyStats(int slot, CancellationToken token)
     {
-        var jumps = Offsets.PartyStats.ToArray();
+        var jumps = PartyStats(slot).ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return Array.Empty<byte>();
 
-        return await SwitchConnection.ReadBytesAbsoluteAsync(party + (uint)(slot * PartyStatsSize), PartyStatsSize, token).ConfigureAwait(false);
+        return await SwitchConnection.ReadBytesAbsoluteAsync(party, PartyStatsSize, token).ConfigureAwait(false);
     }
 
     private async Task WritePartyStats(byte[] bytes, int slot, CancellationToken token)
     {
-        var jumps = Offsets.PartyStats.ToArray();
+        var jumps = PartyStats(slot).ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return;
 
-        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party + (uint)(slot * PartyStatsSize), token).ConfigureAwait(false);
+        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party, token).ConfigureAwait(false);
     }
 
     public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)
@@ -147,7 +148,7 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
         pkm.ResetPartyStats();
 
-        var jumps = Offsets.PartyStartPokemonPointer(slot).ToArray();
+        var jumps = PartyStartPokemonPointer(slot).ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return;
@@ -171,7 +172,7 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     public async Task SetCurrentBox(byte box, CancellationToken token)
     {
-        await SwitchConnection.PointerPoke(new[] { box }, Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
+        await SwitchConnection.PointerPoke([box], Offsets.CurrentBoxPointer, token).ConfigureAwait(false);
     }
 
     public async Task<byte> GetCurrentBox(CancellationToken token)

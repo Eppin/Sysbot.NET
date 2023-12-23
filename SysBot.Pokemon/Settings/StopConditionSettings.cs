@@ -144,7 +144,7 @@ public class StopConditionSettings
     private static int[] ReadTargetIVs(string splitIVsStr, bool min)
     {
         var targetIVs = new int[6];
-        char[] split = { '/' };
+        char[] split = ['/'];
 
         var splitIVs = splitIVsStr.Split(split, StringSplitOptions.RemoveEmptyEntries);
 

@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using PKHeX.Core;
 using System.Collections.Generic;
