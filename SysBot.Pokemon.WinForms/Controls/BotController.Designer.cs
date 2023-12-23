@@ -98,3 +98,4 @@
         private System.Windows.Forms.ContextMenuStrip RCMenu;
     }
 }
+

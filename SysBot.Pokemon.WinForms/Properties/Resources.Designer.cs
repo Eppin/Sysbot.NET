@@ -71,3 +71,4 @@ namespace SysBot.Pokemon.WinForms.Properties {
         }
     }
 }
+
