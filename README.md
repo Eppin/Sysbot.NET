@@ -14,9 +14,10 @@ These routines are new in comparison to the original SysBot.Net
 
 #### Scarlet/Violet
 
-- Encounters (Ruinous, Loyal Three and Gimmighoul)
+- Encounters (Ruinous, Loyal Three, Gimmighoul _and new Paradox'_)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
+- _Bloodmoon Ursaluna (TBA)_
 
 #### Sword/Shield
 
