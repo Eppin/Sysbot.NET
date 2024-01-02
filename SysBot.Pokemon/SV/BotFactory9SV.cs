@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 
 namespace SysBot.Pokemon;
@@ -10,6 +10,7 @@ public sealed class BotFactory9SV : BotFactory<PK9>
         PokeRoutineType.EggFetch => new EncounterBotEggSV(cfg, Hub),
         PokeRoutineType.EncounterRuinous => new EncounterBotRuinousSV(cfg, Hub),
         PokeRoutineType.EncounterGimmighoul => new EncounterBotGimmighoulSV(cfg, Hub),
+        PokeRoutineType.EncounterUrsaluna => new EncounterBotUrsalunaSV(cfg, Hub),
         PokeRoutineType.EncounterLoyal => new EncounterBotLoyalSV(cfg, Hub),
         PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
         PokeRoutineType.Pointer => new PointerBotSV(cfg, Hub),
@@ -23,6 +24,7 @@ public sealed class BotFactory9SV : BotFactory<PK9>
         PokeRoutineType.EggFetch => true,
         PokeRoutineType.EncounterRuinous => true,
         PokeRoutineType.EncounterGimmighoul => true,
+        PokeRoutineType.EncounterUrsaluna => true,
         PokeRoutineType.EncounterLoyal => true,
         PokeRoutineType.RemoteControl => true,
         PokeRoutineType.Pointer => true,
