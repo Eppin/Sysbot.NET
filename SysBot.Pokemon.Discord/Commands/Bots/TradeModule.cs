@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using PKHeX.Core;
@@ -119,7 +119,7 @@ public class TradeModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
     {
         ID = id,
         Name = id.ToString(),
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss} ({comment})",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss} ({comment})",
     };
 
     [Command("tradeUser")]

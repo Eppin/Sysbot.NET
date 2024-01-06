@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using System.Diagnostics;
 using System;
@@ -40,10 +40,11 @@ public class EncounterBotLoyalSV : EncounterBotSV
             await Click(X, 750, token);
             await Click(A, 7_500, token);
 
-            Log("Exit battle", false);
+            later = DateTime.Now.AddMinutes(1);
+            Log($"Exit battle, wait till [{later}] before we force a game restart", false);
             PK9? b1s1 = null;
 
-            while (b1s1 == null || (Species)b1s1.Species == Species.None)
+            while ((b1s1 == null || (Species)b1s1.Species == Species.None) && DateTime.Now <= later)
             {
                 (b1s1, var bytes) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
 
@@ -60,6 +61,9 @@ public class EncounterBotLoyalSV : EncounterBotSV
 
                 await Click(B, 200, token).ConfigureAwait(false);
             }
+
+            if (DateTime.Now >= later)
+                Log("Force restart of the game..");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             Log($"Single encounter duration: [{sw.Elapsed}]", false);

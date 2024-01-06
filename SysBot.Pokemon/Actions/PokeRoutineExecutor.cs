@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -328,7 +328,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
     {
         ID = id,
         Name = name,
-        Comment = $"Added automatically on {DateTime.Now:yyyy.MM.dd-hh:mm:ss} ({comment})",
+        Comment = $"Added automatically on {DateTime.Now:yyyy.MM.dd-HH:mm:ss} ({comment})",
     };
 
     // Blocks a user from the box during in-game trades (SWSH).
