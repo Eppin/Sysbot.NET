@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using SysBot.Base;
@@ -67,7 +67,7 @@ public class LogModule : ModuleBase<SocketCommandContext>
 
         Action<string, string> l = Logger;
         LogUtil.Forwarders.Add((l, nameof(LogModule)));
-        static string GetMessage(string msg, string identity) => $"> [{DateTime.Now:hh:mm:ss}] - {identity}: {msg}";
+        static string GetMessage(string msg, string identity) => $"> [{DateTime.Now:HH:mm:ss}] - {identity}: {msg}";
 
         var entry = new LogAction(cid, l, c.Name);
         Channels.Add(cid, entry);
@@ -121,6 +121,6 @@ public class LogModule : ModuleBase<SocketCommandContext>
     {
         ID = channel.Id,
         Name = channel.Name,
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 }

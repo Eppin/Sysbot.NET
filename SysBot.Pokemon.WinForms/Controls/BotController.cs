@@ -1,4 +1,4 @@
-﻿using SysBot.Base;
+using SysBot.Base;
 using System;
 using System.ComponentModel;
 using System.Drawing;
@@ -79,7 +79,7 @@ public partial class BotController : UserControl
     {
         ReloadStatus();
         var bot = b.Bot;
-        L_Description.Text = $"[{bot.LastTime:hh:mm:ss}] {bot.Connection.Label}: {bot.LastLogged}";
+        L_Description.Text = $"[{bot.LastTime:HH:mm:ss}] {bot.Connection.Label}: {bot.LastLogged}";
         L_Left.Text = $"{bot.Connection.Name}{Environment.NewLine}{State.InitialRoutine}";
 
         var lastTime = bot.LastTime;

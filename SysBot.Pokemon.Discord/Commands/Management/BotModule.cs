@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using PKHeX.Core;
 using System;
@@ -29,7 +29,7 @@ public class BotModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new(
 
     private static string GetDetailedSummary(PokeRoutineExecutorBase z)
     {
-        return $"- {z.Connection.Name} | {z.Connection.Label} - {z.Config.CurrentRoutineType} ~ {z.LastTime:hh:mm:ss} | {z.LastLogged}";
+        return $"- {z.Connection.Name} | {z.Connection.Label} - {z.Config.CurrentRoutineType} ~ {z.LastTime:HH:mm:ss} | {z.LastLogged}";
     }
 
     [Command("botStart")]

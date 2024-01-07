@@ -1,19 +1,20 @@
 namespace SysBot.Pokemon;
 
+using Base;
+using PKHeX.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using PKHeX.Core;
-using SysBot.Base;
-using static SysBot.Base.SwitchButton;
-using static SysBot.Base.SwitchStick;
+using static Base.SwitchButton;
+using static Base.SwitchStick;
 
 public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 {
     protected readonly PokeTradeHub<PK9> Hub;
     protected readonly EncounterSettingsSV Settings;
     protected readonly IDumper DumpSetting;
+
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
@@ -161,7 +162,8 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
                 OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_LegendSV.txt");
                 return "legends";
             }
-            else if (pk.IsEgg)
+
+            if (pk.IsEgg)
             {
                 Settings.AddCompletedEggs();
                 OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_EggSV.txt");
@@ -169,6 +171,7 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
                 return "egg";
             }
 
+            Settings.AddCompletedEncounters();
             OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_EncounterSV.txt");
             OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_EncounterSV.txt");
             return "encounters";
