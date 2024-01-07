@@ -32,7 +32,7 @@ public class EncounterBotUrsalunaSV : EncounterBotSV
 
             PK9? b1s1 = null;
 
-            later = DateTime.Now.AddMinutes(1);
+            later = DateTime.Now.AddMinutes(2);
             Log($"Wait till [{later}] before we force a game restart", false);
 
             while ((b1s1 == null || (Species)b1s1.Species == Species.None) && DateTime.Now <= later)
