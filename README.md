@@ -17,6 +17,7 @@ These routines are new in comparison to the original SysBot.Net
 - Encounters (Ruinous, Loyal Three and Gimmighoul)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
+- Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
 
 #### Sword/Shield
 
