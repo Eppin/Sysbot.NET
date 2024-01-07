@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using PKHeX.Core;
@@ -76,7 +76,7 @@ public class TradeStartModule<T> : ModuleBase<SocketCommandContext> where T : PK
 
         Action<PokeRoutineExecutorBase, PokeTradeDetail<T>> l = Logger;
         SysCord<T>.Runner.Hub.Queues.Forwarders.Add(l);
-        static string GetMessage(PokeRoutineExecutorBase bot, PokeTradeDetail<T> detail) => $"> [{DateTime.Now:hh:mm:ss}] - {bot.Connection.Label} is now trading (ID {detail.ID}) {detail.Trainer.TrainerName}";
+        static string GetMessage(PokeRoutineExecutorBase bot, PokeTradeDetail<T> detail) => $"> [{DateTime.Now:HH:mm:ss}] - {bot.Connection.Label} is now trading (ID {detail.ID}) {detail.Trainer.TrainerName}";
 
         var entry = new TradeStartAction(cid, l, c.Name);
         Channels.Add(cid, entry);
@@ -123,6 +123,6 @@ public class TradeStartModule<T> : ModuleBase<SocketCommandContext> where T : PK
     {
         ID = channel.Id,
         Name = channel.Name,
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 }

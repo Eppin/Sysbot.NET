@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using PKHeX.Core;
 using System;
@@ -118,13 +118,13 @@ public class OwnerModule<T> : SudoModule<T> where T : PKM, new()
     {
         ID = channel.Id,
         Name = channel.Username,
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 
     private RemoteControlAccess GetReference(IChannel channel) => new()
     {
         ID = channel.Id,
         Name = channel.Name,
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 }

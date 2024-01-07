@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using PKHeX.Core.Searching;
 using SysBot.Base;
 using System;
@@ -410,7 +410,7 @@ public class PokeTradeBotSWSH : PokeRoutineExecutor8SWSH, ICountBot
     {
         ID = id,
         Name = name,
-        Comment = $"Added automatically on {DateTime.Now:yyyy.MM.dd-hh:mm:ss} ({comment})",
+        Comment = $"Added automatically on {DateTime.Now:yyyy.MM.dd-HH:mm:ss} ({comment})",
     };
 
     protected virtual async Task<bool> WaitForTradePartnerOffer(CancellationToken token)

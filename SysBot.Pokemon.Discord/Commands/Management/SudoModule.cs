@@ -1,4 +1,4 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using PKHeX.Core;
 using System;
@@ -191,14 +191,14 @@ public class SudoModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new
     {
         ID = channel.Id,
         Name = channel.Username,
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 
     private RemoteControlAccess GetReference(ulong id) => new()
     {
         ID = id,
         Name = "Manual",
-        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-hh:mm:ss}",
+        Comment = $"Added by {Context.User.Username} on {DateTime.Now:yyyy.MM.dd-HH:mm:ss}",
     };
 
     protected static IEnumerable<ulong> GetIDs(string content)

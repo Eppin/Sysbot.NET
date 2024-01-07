@@ -32,7 +32,10 @@ public class EncounterBotUrsalunaSV : EncounterBotSV
 
             PK9? b1s1 = null;
 
-            while (b1s1 == null || (Species)b1s1.Species == Species.None)
+            later = DateTime.Now.AddMinutes(2);
+            Log($"Wait till [{later}] before we force a game restart", false);
+
+            while ((b1s1 == null || (Species)b1s1.Species == Species.None) && DateTime.Now <= later)
             {
                 (b1s1, var bytes) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
 
@@ -49,6 +52,9 @@ public class EncounterBotUrsalunaSV : EncounterBotSV
 
                 await Click(A, 200, token).ConfigureAwait(false);
             }
+
+            if (DateTime.Now >= later)
+                Log("Force restart of the game..");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             Log($"Single encounter duration: [{sw.Elapsed}]", false);
