@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ public class EncounterBotEggSV : EncounterBotSV
     private const int WaitBetweenCollecting = 1; // Seconds
     private static readonly PK9 Blank = new();
 
-    private const int Box = 0;
-    private int Slot;
+    private byte Box;
+    private byte Slot;
 
     public EncounterBotEggSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg, hub)
     {
@@ -70,6 +70,15 @@ public class EncounterBotEggSV : EncounterBotSV
                     Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
                     Slot += 1;
 
+                    if (Slot == 30)
+                    {
+                        Box++;
+                        Slot = 0;
+
+                        await SetCurrentBox(Box, token);
+                        Log($"Change current position to B{Box + 1}S{Slot + 1}!");
+                    }
+
                     if (!await IsUnlimited(token).ConfigureAwait(false))
                         return;
                 }
@@ -115,7 +124,7 @@ public class EncounterBotEggSV : EncounterBotSV
         if (parent == null)
             return;
 
-        var bytes = File.ReadAllBytes(parent);
+        var bytes = await File.ReadAllBytesAsync(parent, token);
         var pk9 = new PK9(bytes);
 
         Log($"Set next parent: {pk9.FileName}");
