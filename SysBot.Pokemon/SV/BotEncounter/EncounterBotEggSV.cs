@@ -127,8 +127,21 @@ public class EncounterBotEggSV : EncounterBotSV
         var bytes = await File.ReadAllBytesAsync(parent, token);
         var pk9 = new PK9(bytes);
 
-        Log($"Set next parent: {pk9.FileName}");
-        await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
+        var retryCount = 0;
+        PK9? party1;
+
+        do
+        {
+            Log($"{(retryCount == 0 ? "Set" : "Retry")} next parent: {pk9.FileName}");
+            await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
+
+            await Task.Delay(0_100, token).ConfigureAwait(false);
+
+            (party1, _) = await ReadRawPartyPokemon(1, token).ConfigureAwait(false);
+            Log($"Verify parent: {pk9.FileName}, species: {(Species)party1.Species}");
+
+            retryCount++;
+        } while (!party1.Valid || (Species)party1.Species == Species.None);
 
         var info = new FileInfo(parent);
         File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
