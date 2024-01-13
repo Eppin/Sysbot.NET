@@ -118,22 +118,22 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     private async Task<byte[]> ReadRawPartyStats(int slot, CancellationToken token)
     {
-        var jumps = PartyStats(slot).ToArray();
+        var jumps = Offsets.PartyStats.ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return Array.Empty<byte>();
 
-        return await SwitchConnection.ReadBytesAbsoluteAsync(party, PartyStatsSize, token).ConfigureAwait(false);
+        return await SwitchConnection.ReadBytesAbsoluteAsync(party + (uint)(slot * PartyStatsSize), PartyStatsSize, token).ConfigureAwait(false);
     }
 
     private async Task WritePartyStats(byte[] bytes, int slot, CancellationToken token)
     {
-        var jumps = PartyStats(slot).ToArray();
+        var jumps = Offsets.PartyStats.ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return;
 
-        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party, token).ConfigureAwait(false);
+        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party + (uint)(slot * PartyStatsSize), token).ConfigureAwait(false);
     }
 
     public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)

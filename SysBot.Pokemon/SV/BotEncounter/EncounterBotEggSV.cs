@@ -138,10 +138,10 @@ public class EncounterBotEggSV : EncounterBotSV
             await Task.Delay(0_100, token).ConfigureAwait(false);
 
             (party1, _) = await ReadRawPartyPokemon(1, token).ConfigureAwait(false);
-            Log($"Verify parent: {pk9.FileName}, species: {(Species)party1.Species}");
+            Log($"Verify ({retryCount + 1}) parent: {pk9.FileName}, species: {(Species)party1.Species}, valid: {party1.Valid}, EC: {party1.EncryptionConstant:X8}");
 
             retryCount++;
-        } while (!party1.Valid || (Species)party1.Species == Species.None);
+        } while (retryCount < 10 && (!party1.Valid || party1.EncryptionConstant == 0 || (Species)party1.Species == Species.None || (Species)party1.Species >= Species.MAX_COUNT));
 
         var info = new FileInfo(parent);
         File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
