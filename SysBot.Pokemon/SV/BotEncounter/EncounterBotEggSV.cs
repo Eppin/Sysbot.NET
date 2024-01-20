@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ public class EncounterBotEggSV : EncounterBotSV
     private const int WaitBetweenCollecting = 1; // Seconds
     private static readonly PK9 Blank = new();
 
-    private const int Box = 0;
-    private int Slot;
+    private byte Box;
+    private byte Slot;
 
     public EncounterBotEggSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg, hub)
     {
@@ -70,6 +70,15 @@ public class EncounterBotEggSV : EncounterBotSV
                     Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
                     Slot += 1;
 
+                    if (Slot == 30)
+                    {
+                        Box++;
+                        Slot = 0;
+
+                        await SetCurrentBox(Box, token);
+                        Log($"Change current position to B{Box + 1}S{Slot + 1}!");
+                    }
+
                     if (!await IsUnlimited(token).ConfigureAwait(false))
                         return;
                 }
@@ -115,11 +124,24 @@ public class EncounterBotEggSV : EncounterBotSV
         if (parent == null)
             return;
 
-        var bytes = File.ReadAllBytes(parent);
+        var bytes = await File.ReadAllBytesAsync(parent, token);
         var pk9 = new PK9(bytes);
 
-        Log($"Set next parent: {pk9.FileName}");
-        await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
+        var retryCount = 0;
+        PK9? party1;
+
+        do
+        {
+            Log($"{(retryCount == 0 ? "Set" : "Retry")} next parent: {pk9.FileName}");
+            await SetPartyPokemon(pk9, 1, token).ConfigureAwait(false);
+
+            await Task.Delay(0_100, token).ConfigureAwait(false);
+
+            (party1, _) = await ReadRawPartyPokemon(1, token).ConfigureAwait(false);
+            Log($"Verify ({retryCount + 1}) parent: {pk9.FileName}, species: {(Species)party1.Species}, valid: {party1.Valid}, EC: {party1.EncryptionConstant:X8}");
+
+            retryCount++;
+        } while (retryCount < 10 && (!party1.Valid || party1.EncryptionConstant == 0 || (Species)party1.Species == Species.None || (Species)party1.Species >= Species.MAX_COUNT));
 
         var info = new FileInfo(parent);
         File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
