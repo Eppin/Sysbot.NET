@@ -54,8 +54,8 @@ public enum PokeRoutineType
     /// <summary> Catches Royal three until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
     EncounterLoyal = 7_002,
 
-    /// <summary> Catches Bloodmoon Ursaluna until the criteria is satisfied.  </summary>
-    EncounterUrsaluna = 7_003,
+    /// <summary> Searches the overworld until the criteria is satisfied.  </summary>
+    EncounterOverworld = 7_003,
 
     /// <summary> Keeps running circles until all party members have the Partner mark.  </summary>
     PartnerMark = 7_050,

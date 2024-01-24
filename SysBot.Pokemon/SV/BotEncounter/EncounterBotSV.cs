@@ -62,7 +62,7 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
     protected abstract Task EncounterLoop(SAV9SV sav, CancellationToken token);
 
     // Return true if breaking loop
-    protected async Task<(bool Stop, bool Success)> HandleEncounter(PK9 pk, CancellationToken token, byte[]? raw = null, bool minimize = false)
+    protected async Task<(bool Stop, bool Success)> HandleEncounter(PK9 pk, CancellationToken token, byte[]? raw = null, bool minimize = false, bool skipDump = false)
     {
         EncounterCount++;
         var print = Hub.Config.StopConditions.GetPrintName(pk);
@@ -73,7 +73,7 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 
         var folder = IncrementAndGetDumpFolder(pk);
 
-        if (pk.Valid)
+        if (!skipDump && pk.Valid)
         {
             switch (DumpSetting)
             {
