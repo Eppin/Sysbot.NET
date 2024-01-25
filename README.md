@@ -18,12 +18,12 @@ These routines are new in comparison to the original SysBot.Net
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
 - Reset
--- Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
--- Static Paradox
--- _Probably all other Raid-a-like statics_
+  - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+  - Static Paradox
+  - _Probably all other Raid-a-like statics_
 - Overworld
--- Scanner, just walk and save
--- Research Station
+  - Scanner, just walk and save
+  - Research Station
 
 #### Sword/Shield
 
