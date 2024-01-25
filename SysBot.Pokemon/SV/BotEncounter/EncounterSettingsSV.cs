@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -28,11 +28,14 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
 
-    [Category(Encounter), Description("Set mode to unlimited")]
+    [Category(Encounter), Description("Set egg mode to unlimited")]
     public bool UnlimitedMode { get; set; }
 
     [Category(Encounter), Description("When mode is unlimited, this folder will be used for parents.")]
     public string UnlimitedParentsFolder { get; set; } = string.Empty;
+
+    [Category(Encounter), Description("When mode is Scanner, keep saving the game to let the bot scan the overworld.")]
+    public OverworldMode Overworld { get; set; }
 
     private int _completedWild;
     private int _completedLegend;
@@ -82,5 +85,11 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
         var unlimited = Path.Combine(path, "unlimited");
         Directory.CreateDirectory(unlimited);
         UnlimitedParentsFolder = unlimited;
+    }
+
+    public enum OverworldMode
+    {
+        Scanner,
+        ResearchStation
     }
 }

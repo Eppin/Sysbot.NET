@@ -1,4 +1,4 @@
-﻿using SysBot.Base;
+using SysBot.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
@@ -19,16 +19,28 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public FossilSettings Fossil { get; set; } = new();
 
+    [Category(Settings)]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public MaxLairSettings MaxLair { get; set; } = new();
+
     [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
     public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
 
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
 
+    private int _completedAdventure;
     private int _completedWild;
     private int _completedLegend;
     private int _completedEggs;
     private int _completedFossils;
+
+    [Category(Counts), Description("Max Lair Adventures")]
+    public int CompletedAdventures
+    {
+        get => _completedAdventure;
+        set => _completedAdventure = value;
+    }
 
     [Category(Counts), Description("Encountered Wild Pokémon")]
     public int CompletedEncounters
@@ -61,6 +73,7 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
     public bool EmitCountsOnStatusCheck { get; set; }
 
+    public int AddCompletedAdventures() => Interlocked.Increment(ref _completedAdventure);
     public int AddCompletedEncounters() => Interlocked.Increment(ref _completedWild);
     public int AddCompletedLegends() => Interlocked.Increment(ref _completedLegend);
     public int AddCompletedEggs() => Interlocked.Increment(ref _completedEggs);
@@ -70,6 +83,8 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     {
         if (!EmitCountsOnStatusCheck)
             yield break;
+        if (CompletedAdventures != 0)
+            yield return $"Max Lair Adventures: {CompletedAdventures}";
         if (CompletedEncounters != 0)
             yield return $"Wild Encounters: {CompletedEncounters}";
         if (CompletedLegends != 0)

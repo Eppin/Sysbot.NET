@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -34,6 +34,23 @@ public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
         if (!valid)
             return new PK8();
         return await ReadPokemon(offset, token).ConfigureAwait(false);
+    }
+
+    public async Task<(PK8, byte[]?)> ReadRawPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
+    {
+        var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+        if (!valid)
+            return (new PK8(), null);
+
+        var copiedData = new byte[size];
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, size, token).ConfigureAwait(false);
+
+        data.CopyTo(copiedData, 0);
+
+        if (!data.SequenceEqual(copiedData))
+            throw new InvalidOperationException("Raw data is not copied correctly");
+
+        return (new PK8(data), copiedData);
     }
 
     public async Task<PK8> ReadSurpriseTradePokemon(CancellationToken token)

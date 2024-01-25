@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using PKHeX.Core;
 using SysBot.Pokemon;
 using Xunit;
@@ -23,7 +23,7 @@ public class GenerateTests
     }
 
     [Theory]
-    [InlineData(InavlidSpec)]
+    [InlineData(InvalidSpec)]
     public void ShouldNotGenerate(string set)
     {
         _ = AutoLegalityWrapper.GetTrainerInfo<PK8>();

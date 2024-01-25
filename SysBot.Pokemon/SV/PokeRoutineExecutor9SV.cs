@@ -7,15 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
 using static SysBot.Pokemon.PokeDataOffsetsSV;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace SysBot.Pokemon;
 
-public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
+public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExecutor<PK9>(cfg)
 {
     protected PokeDataOffsetsSV Offsets { get; } = new();
-    protected PokeRoutineExecutor9SV(PokeBotState cfg) : base(cfg)
-    {
-    }
 
     public override async Task<PK9> ReadPokemon(ulong offset, CancellationToken token) => await ReadPokemon(offset, BoxFormatSlotSize, token).ConfigureAwait(false);
 
@@ -118,22 +116,22 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
 
     private async Task<byte[]> ReadRawPartyStats(int slot, CancellationToken token)
     {
-        var jumps = PartyStats(slot).ToArray();
+        var jumps = Offsets.PartyStats.ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return Array.Empty<byte>();
 
-        return await SwitchConnection.ReadBytesAbsoluteAsync(party, PartyStatsSize, token).ConfigureAwait(false);
+        return await SwitchConnection.ReadBytesAbsoluteAsync(party + (uint)(slot * PartyStatsSize), PartyStatsSize, token).ConfigureAwait(false);
     }
 
     private async Task WritePartyStats(byte[] bytes, int slot, CancellationToken token)
     {
-        var jumps = PartyStats(slot).ToArray();
+        var jumps = Offsets.PartyStats.ToArray();
         var (valid, party) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
         if (!valid)
             return;
 
-        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party, token).ConfigureAwait(false);
+        await SwitchConnection.WriteBytesAbsoluteAsync(bytes, party + (uint)(slot * PartyStatsSize), token).ConfigureAwait(false);
     }
 
     public async Task SetPartyPokemon(PK9 pkm, int slot, CancellationToken token, ITrainerInfo? sav = null)
@@ -321,6 +319,17 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
         Log("Back in the overworld!");
     }
 
+    public async Task SaveGame(CancellationToken token)
+    {
+        Log("Saving the game");
+        await Click(X, 2_500, token).ConfigureAwait(false);
+        await Click(R, 2_300, token).ConfigureAwait(false);
+        await Click(A, 7_000, token).ConfigureAwait(false);
+
+        for (var i = 0; i < 4; i++)
+            await Click(B, 0_400, token).ConfigureAwait(false);
+    }
+
     public async Task<bool> IsConnectedOnline(ulong offset, CancellationToken token)
     {
         var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, 1, token).ConfigureAwait(false);
@@ -389,5 +398,59 @@ public abstract class PokeRoutineExecutor9SV : PokeRoutineExecutor<PK9>
         Log("Clearing destination slot to start the bot.");
         PK9 blank = new();
         await SetBoxPokemon(blank, 0, 0, token).ConfigureAwait(false);
+    }
+
+    private ulong _saveKeyAddress;
+
+    public async Task<byte[]> ReadEncryptedBlock(ulong baseBlock, uint blockKey, bool init, CancellationToken token)
+    {
+        if (init)
+        {
+            var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
+            address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
+            _saveKeyAddress = address;
+            Log($"Initial address found at {_saveKeyAddress:X8}");
+        }
+
+        var header = await SwitchConnection.ReadBytesAbsoluteAsync(_saveKeyAddress, 5, token).ConfigureAwait(false);
+        header = DecryptBlock(blockKey, header);
+
+        var size = ReadUInt32LittleEndian(header.AsSpan()[1..]);
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(_saveKeyAddress, 5 + (int)size, token).ConfigureAwait(false);
+        var res = DecryptBlock(blockKey, data)[5..];
+
+        return res;
+    }
+
+    public async Task<ulong> SearchSaveKey(ulong baseBlock, uint key, CancellationToken token)
+    {
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(baseBlock + 8, 16, token).ConfigureAwait(false);
+        var start = BitConverter.ToUInt64(data.AsSpan()[..8]);
+        var end = BitConverter.ToUInt64(data.AsSpan()[8..]);
+
+        while (start < end)
+        {
+            var block_ct = (end - start) / 48;
+            var mid = start + (block_ct >> 1) * 48;
+
+            data = await SwitchConnection.ReadBytesAbsoluteAsync(mid, 4, token).ConfigureAwait(false);
+            var found = BitConverter.ToUInt32(data);
+            if (found == key)
+                return mid;
+
+            if (found >= key)
+                end = mid;
+            else start = mid + 48;
+        }
+        return start;
+    }
+
+    private static byte[] DecryptBlock(uint key, byte[] block)
+    {
+        var rng = new SCXorShift32(key);
+        for (var i = 0; i < block.Length; i++)
+            block[i] = (byte)(block[i] ^ rng.Next());
+
+        return block;
     }
 }

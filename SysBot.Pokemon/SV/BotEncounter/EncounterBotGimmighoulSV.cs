@@ -7,22 +7,15 @@ using System.Threading.Tasks;
 using PKHeX.Core;
 using static Base.SwitchButton;
 
-public class EncounterBotGimmighoulSV : EncounterBotSV
+public class EncounterBotGimmighoulSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
 {
-    private readonly IDumper _dumpSetting;
-
-    public EncounterBotGimmighoulSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : base(cfg, hub)
-    {
-        _dumpSetting = Hub.Config.Folder;
-    }
-
     protected override async Task EncounterLoop(SAV9SV sav, CancellationToken token)
     {
         while (!token.IsCancellationRequested)
         {
             var sw = Stopwatch.StartNew();
 
-            await SetupBoxState(_dumpSetting, token);
+            await SetupBoxState(DumpSetting, token);
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
             Log("Start battle with Gimmighoul");
@@ -53,7 +46,7 @@ public class EncounterBotGimmighoulSV : EncounterBotSV
                     var (stop, success) = await HandleEncounter(b1s1, token, bytes, true).ConfigureAwait(false);
 
                     if (success)
-                        Log("You're Pokémon has been catched and placed in B1S1. Be sure to save your game!");
+                        Log("Your Pokémon has been catched and placed in B1S1. Be sure to save your game!");
 
                     if (stop)
                         return;
