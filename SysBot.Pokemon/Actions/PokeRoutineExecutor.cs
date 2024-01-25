@@ -55,7 +55,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         return (solved != 0, solved);
     }
 
-    public static void DumpPokemon(string folder, string subfolder, PKM pk, bool boxData = false)
+    public void DumpPokemon(string folder, string subfolder, PKM pk, bool boxData = false)
     {
         var fn = DumpPokemonPath(folder, subfolder, pk);
 
@@ -71,7 +71,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         LogUtil.LogInfo($"Saved file: {fn}", "Dump");
     }
 
-    public static void DumpPokemon(string folder, string subfolder, PKM pk, byte[] bytes)
+    public void DumpPokemon(string folder, string subfolder, PKM pk, byte[] bytes)
     {
         var fn = DumpPokemonPath(folder, subfolder, pk, true);
 
@@ -82,7 +82,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         LogUtil.LogInfo($"Saved raw file: {fn}", "Dump");
     }
 
-    private static string? DumpPokemonPath(string folder, string subfolder, PKM pk, bool isEncrypted = false)
+    private string? DumpPokemonPath(string folder, string subfolder, PKM pk, bool isEncrypted = false)
     {
         var form = pk.Form > 0 ? $"-{pk.Form:00}" : string.Empty;
         var ballFormatted = string.Empty;
@@ -130,7 +130,10 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
             filetype += "pk9";
 
         if (!Directory.Exists(folder))
+        {
+            Log($"Dump folder {folder} doesn't exist");
             return null;
+        }
 
         var dir = Path.Combine(folder, subfolder);
         Directory.CreateDirectory(dir);

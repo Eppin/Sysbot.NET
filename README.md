@@ -17,11 +17,17 @@ These routines are new in comparison to the original SysBot.Net
 - Encounters (Ruinous, Loyal Three and Gimmighoul)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
-- Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+- Reset
+-- Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+-- Static Paradox
+-- _Probably all other Raid-a-like statics_
+- Overworld
+-- Scanner, just walk and save
+-- Research Station
 
 #### Sword/Shield
 
-- _Max Lair (resets for IVs/Nature, currently working on it)_
+- Max Lair (resets for IVs/Nature)
 
 ## Version compatibility
 
@@ -64,4 +70,5 @@ Thanks for all the open source projects. Credits are in no particular order:
 - [@olliz0r](https://www.github.com/olliz0r) for [sys-botbase](https://github.com/olliz0r/sys-botbase)
 - [@Koi-3088](https://www.github.com/Koi-3088) for a fork of the base bot, [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase) and [USB-Botbase](https://github.com/Koi-3088/USB-Botbase)
 - [@zyro670](https://www.github.com/zyro670) for [NotForkBot.NET](https://github.com/zyro670/NotForkBot.NET)
+- [@Manu098vm](https://github.com/Manu098vm) for [Sys-EncounterBot.NET](https://github.com/Manu098vm/Sys-EncounterBot.NET)
 - _Everyone else who contributed to the repositories this project uses. Are you supposed to be listed here? Just let me know! And you'll be added_
