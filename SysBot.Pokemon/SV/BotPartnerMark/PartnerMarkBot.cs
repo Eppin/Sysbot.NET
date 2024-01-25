@@ -1,12 +1,12 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PKHeX.Core;
-using static SysBot.Base.SwitchButton;
-using static SysBot.Base.SwitchStick;
+using static Base.SwitchButton;
+using static Base.SwitchStick;
 
 public class PartnerMarkBot : PokeRoutineExecutor9SV
 {
@@ -64,18 +64,34 @@ public class PartnerMarkBot : PokeRoutineExecutor9SV
         await SetStick(LEFT, -30000, 0, 0_800, token).ConfigureAwait(false);
         await Click(LSTICK, 1_000, token).ConfigureAwait(false);
 
+        Task.Run(async () =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                await Click(A, 0_500, token);
+            }
+        }, token);
+
         while (!token.IsCancellationRequested)
         {
-            var done = new bool[] { true, true, true, true, true, true };
-            for (int i = 0; i < 6; i++)
+            var done = new[] { true, true, true, true, true, true };
+            for (var i = 0; i < 6; i++)
             {
                 var (pk, _) = await ReadRawPartyPokemon(i, token).ConfigureAwait(false);
 
-                if (pk != null && pk.Species > 0 && pk.Valid && pk.ChecksumValid)
+                if (pk is { Species: > 0 } and { Valid: true, ChecksumValid: true })
                 {
-                    done[i] = pk.RibbonMarkPartner;
-                    var text = done[i] ? "HAS" : "doesn't have";
-                    Log($"Party member {i + 1} {text} the Partner mark!");
+                    if (pk.IsEgg)
+                    {
+                        done[i] = false;
+                        Log($"Party member {i + 1} is an Egg!");
+                    }
+                    else
+                    {
+                        done[i] = pk.RibbonMarkPartner;
+                        var text = done[i] ? "HAS" : "doesn't have";
+                        Log($"Party member {i + 1} {text} the Partner mark!");
+                    }
                 }
             }
 
@@ -85,7 +101,7 @@ public class PartnerMarkBot : PokeRoutineExecutor9SV
                 return;
             }
 
-            var wait = TimeSpan.FromMinutes(1);
+            var wait = TimeSpan.FromSeconds(10);
             Log($"Waiting {wait} for next party check");
             await Task.Delay((int)wait.TotalMilliseconds, token).ConfigureAwait(false);
             await Click(LSTICK, 1_000, token).ConfigureAwait(false);
