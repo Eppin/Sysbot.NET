@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SysBot.Pokemon;
@@ -69,6 +69,21 @@ public class PokeDataOffsetsSWSH
 
     public const int BoxFormatSlotSize = 0x158;
     public const int TrainerDataLength = 0x110;
+
+    /* Lair offsets */
+    public static IReadOnlyList<long> MaxLairPokemonRNGPointer { get; } = new long[] { 0x28F4060, 0x238, 0x2AB8 };
+
+    public const uint MaxLairPenaltyWarnOffset = 0x50B06FC0;
+    public const uint MaxLairPenaltyCountOffset = 0x50B12710;
+
+    public const uint AdventureSeedOffset = 0x4514A4B0;
+    public const uint LairRewardsOffset = 0x2977BC0;
+    public const uint DamageOutputOffset = 0x007E37F0;
+
+    public const uint LairSpeciesNote1 = 0x50B12278;
+    public const uint LairSpeciesNote2 = 0x50B122B0;
+    public const uint LairSpeciesNote3 = 0x50B122E8;
+    public const uint LairSpeciesNote4 = 0x50B12320;
 
     #region ScreenDetection
     // Stable overworld detection. Value is 1 on overworld and 0 otherwise.
