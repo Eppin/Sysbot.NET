@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 
 namespace SysBot.Pokemon;
@@ -16,6 +16,7 @@ public sealed class BotFactory8SWSH : BotFactory<PK8>
             => new PokeTradeBotSWSH(Hub, cfg),
 
         PokeRoutineType.RaidBot => new RaidBotSWSH(cfg, Hub),
+        PokeRoutineType.MaxLair => new EncounterBotMaxLairSWSH(cfg, Hub),
         PokeRoutineType.EncounterLine => new EncounterBotLineSWSH(cfg, Hub),
         PokeRoutineType.EggFetch => new EncounterBotEggSWSH(cfg, Hub),
         PokeRoutineType.FossilBot => new EncounterBotFossilSWSH(cfg, Hub),
@@ -37,6 +38,7 @@ public sealed class BotFactory8SWSH : BotFactory<PK8>
             => true,
 
         PokeRoutineType.RaidBot => true,
+        PokeRoutineType.MaxLair => true,
         PokeRoutineType.EncounterLine => true,
         PokeRoutineType.EggFetch => true,
         PokeRoutineType.FossilBot => true,
