@@ -18,12 +18,12 @@ These routines are new in comparison to the original SysBot.Net
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
 - Reset
--- Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
--- Static Paradox
--- _Probably all other Raid-a-like statics_
+  - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+  - Static Paradox
+  - _Probably all other Raid-a-like statics_
 - Overworld
--- Scanner, just walk and save
--- Research Station
+  - Scanner, just walk and save
+  - Research Station
 
 #### Sword/Shield
 
@@ -35,6 +35,7 @@ These routines are new in comparison to the original SysBot.Net
 
 | Version |                               SysBot Release                                |                                       Egg-mod Release                                       |
 | :-----: | :-------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+|  3.0.1  | [Latest](https://github.com/Eppin/Sysbot.NET/releases)                      | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.0  | [23.12.23.51](https://github.com/Eppin/Sysbot.NET/releases/tag/23.12.23.51) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  2.0.1  | [23.11.20.22](https://github.com/Eppin/Sysbot.NET/releases/tag/23.11.20.22) | [2.0.1](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/2.0.1.zip) |
 
