@@ -15,7 +15,6 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
     protected readonly PokeTradeHub<PK8> Hub;
     private readonly IDumper DumpSetting;
     protected readonly EncounterSettingsSWSH Settings;
-    protected readonly byte[] BattleMenuReady = [0, 0, 0, 255];
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
