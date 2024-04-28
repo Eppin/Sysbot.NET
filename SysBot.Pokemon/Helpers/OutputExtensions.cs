@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 using PKHeX.Core;
 using System;
@@ -37,8 +37,8 @@ public class OutputExtensions<T> where T : PKM, new()
 
             var pokeTotal = int.Parse(splitTotal[0].Split(' ')[1]) + 1;
             var eggTotal = int.Parse(splitTotal[1].Split(' ')[1]) + (pk.IsEgg ? 1 : 0);
-            var starTotal = int.Parse(splitTotal[2].Split(' ')[1]) + (pk.IsShiny && pk.ShinyXor > 0 ? 1 : 0);
-            var squareTotal = int.Parse(splitTotal[3].Split(' ')[1]) + (pk.IsShiny && pk.ShinyXor == 0 ? 1 : 0);
+            var starTotal = int.Parse(splitTotal[2].Split(' ')[1]) + (pk is { IsShiny: true, ShinyXor: > 0 } ? 1 : 0);
+            var squareTotal = int.Parse(splitTotal[3].Split(' ')[1]) + (pk is { IsShiny: true, ShinyXor: 0 } ? 1 : 0);
             var markTotal = int.Parse(splitTotal[4].Split(' ')[1]) + (mark ? 1 : 0);
 
             var form = FormOutput(pk.Species, pk.Form, out _);
@@ -60,7 +60,10 @@ public class OutputExtensions<T> where T : PKM, new()
                     var mTotal = int.Parse(sanitized[4]) + (mark ? 1 : 0);
                     content[i] = $"{speciesName}: {speciesTotal}, {stTotal}★, {sqTotal}■, {mTotal}🎀, {GetPercent(pokeTotal, speciesTotal)}%";
                 }
-                else content[i] = $"{sanitized[0]} {sanitized[1]}, {sanitized[2]}★, {sanitized[3]}■, {sanitized[4]}🎀, {GetPercent(pokeTotal, int.Parse(sanitized[1]))}%";
+                else
+                {
+                    content[i] = $"{sanitized[0]} {sanitized[1]}, {sanitized[2]}★, {sanitized[3]}■, {sanitized[4]}🎀, {GetPercent(pokeTotal, int.Parse(sanitized[1]))}%";
+                }
             }
 
             content.Sort();
@@ -83,7 +86,7 @@ public class OutputExtensions<T> where T : PKM, new()
 
         if (!File.Exists(filepath))
         {
-            var blank = "Totals: 0 Pokémon, 0 Mini, 0 Jumbo, 0 Miscellaneous\n_________________________________________________\n";
+            const string blank = "Totals: 0 Pokémon, 0 Mini, 0 Jumbo, 0 Miscellaneous\n_________________________________________________\n";
             File.WriteAllText(filepath, blank);
         }
 
@@ -95,7 +98,7 @@ public class OutputExtensions<T> where T : PKM, new()
 
             var isMini = pk.Scale == 0;
             var isJumbo = pk.Scale == 255;
-            var isMisc = pk.Scale > 0 && pk.Scale < 255;
+            var isMisc = pk.Scale is > 0 and < 255;
             var pokeTotal = int.Parse(splitTotal[0].Split(' ')[1]) + 1;
             var miniTotal = int.Parse(splitTotal[1].Split(' ')[1]) + (isMini ? 1 : 0);
             var jumboTotal = int.Parse(splitTotal[2].Split(' ')[1]) + (isJumbo ? 1 : 0);
@@ -153,10 +156,9 @@ public class OutputExtensions<T> where T : PKM, new()
     {
         var md = false;
         var fd = false;
-        string[] baseLink;
-        if (fullSize)
-            baseLink = "https://raw.githubusercontent.com/zyro670/HomeImages/master/512x512/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_');
-        else baseLink = "https://raw.githubusercontent.com/zyro670/HomeImages/master/128x128/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_');
+        var baseLink = fullSize
+            ? "https://raw.githubusercontent.com/zyro670/HomeImages/master/512x512/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_')
+            : "https://raw.githubusercontent.com/zyro670/HomeImages/master/128x128/poke_capture_0001_000_mf_n_00000000_f_n.png".Split('_');
 
         if (Enum.IsDefined(typeof(GenderDependent), pkm.Species) && !canGmax && pkm.Form is 0)
         {

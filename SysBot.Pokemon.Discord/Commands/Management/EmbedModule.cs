@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon.Discord;
+namespace SysBot.Pokemon.Discord;
 
 using System;
 using System.Collections.Generic;
@@ -89,15 +89,18 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
         await ReplyAsync("Logging embed cleared from all channels!").ConfigureAwait(false);
     }
 
-    private class LogAction : ChannelAction<T?, bool>
-    {
-        public LogAction(ulong id, Action<T?, bool> messenger, string channel) : base(id, messenger, channel)
-        {
-        }
-    }
+    private class LogAction(ulong id, Action<T?, bool> messenger, string channel)
+        : ChannelAction<T?, bool>(id, messenger, channel);
 
     private static void AddEmbedChannel(ISocketMessageChannel c, ulong cid)
     {
+        var l = Logger;
+        SysCord<T>.Runner.Hub.EmbedForwarders.Add(l);
+
+        var entry = new LogAction(cid, l, c.Name);
+        Channels.Add(cid, entry);
+        return;
+
         void Logger(T? pkm, bool success)
         {
             try
@@ -111,12 +114,7 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
             }
         }
 
-        var l = Logger;
-        SysCord<T>.Runner.Hub.EmbedForwarders.Add(l);
         static (string, Embed?) GetMessage(T? pkm, bool success) => Embed(pkm, success);
-
-        var entry = new LogAction(cid, l, c.Name);
-        Channels.Add(cid, entry);
     }
 
     private RemoteControlAccess GetReference(IChannel channel) => new()
@@ -131,13 +129,13 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
         return pkm switch
         {
             null => ("(no valid data to embed)", null),
-            PK8 pk8 => EmbedPK(pk8, success),
-            PK9 pk9 => EmbedPK(pk9, success),
+            PK8 pk8 => EmbedPk(pk8, success),
+            PK9 pk9 => EmbedPk(pk9, success),
             _ => ("(unsupported embed)", null)
         };
     }
 
-    private static (string Text, Embed? Embed) EmbedPK(PKM pkm, bool success)
+    private static (string Text, Embed? Embed) EmbedPk(PKM pkm, bool success)
     {
         if (pkm is not T pk)
             throw new Exception();
@@ -177,10 +175,7 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
                 ? "★ - "
                 : "";
 
-        var description = $"{shiny}{SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, 8)}{OutputExtensions<T>.FormOutput(pk.Species, pk.Form, out _)}{gender}{spec}\nIVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}";
-
-        if (SysCord<T>.Runner.Hub.Config.StopConditions.ShinyTarget == TargetShinyType.NonShiny)
-            description = $"{SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, 8)}{OutputExtensions<T>.FormOutput(pk.Species, pk.Form, out _)}{gender}{spec}\nIVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}";
+        var description = $"{shiny}{SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, 8)}{OutputExtensions<T>.FormOutput(pk.Species, pk.Form, out _)}{gender}{spec}\n{(Nature)pk.Nature}, {(Ability)pk.Ability}\nIVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}";
 
         var markUrl = success
             ? "https://i.imgur.com/T8vEiIk.jpg"

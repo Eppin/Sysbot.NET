@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using SysBot.Pokemon.Z3;
 using System;
@@ -14,9 +14,9 @@ namespace SysBot.Pokemon.WinForms;
 
 public sealed partial class Main : Form
 {
-    private readonly List<PokeBotState> Bots = new();
-    private readonly IPokeBotRunner RunningEnvironment;
-    private readonly ProgramConfig Config;
+    private readonly List<PokeBotState> _bots = [];
+    private readonly IPokeBotRunner _runningEnvironment;
+    private readonly ProgramConfig _config;
 
     public Main()
     {
@@ -26,12 +26,20 @@ public sealed partial class Main : Form
         if (File.Exists(Program.ConfigPath))
         {
             var lines = File.ReadAllText(Program.ConfigPath);
-            Config = JsonSerializer.Deserialize(lines, ProgramConfigContext.Default.ProgramConfig) ?? new ProgramConfig();
-            LogConfig.MaxArchiveFiles = Config.Hub.MaxArchiveFiles;
-            LogConfig.LoggingEnabled = Config.Hub.LoggingEnabled;
+            _config = JsonSerializer.Deserialize(lines, ProgramConfigContext.Default.ProgramConfig) ?? new ProgramConfig();
 
-            RunningEnvironment = GetRunner(Config);
-            foreach (var bot in Config.Bots)
+            if (string.IsNullOrWhiteSpace(_config.Hub.LoggingFolder))
+            {
+                // Always set logging folder to default, when it's not set
+                _config.Hub.CreateDefaults(Program.WorkingDirectory);
+            }
+
+            LogConfig.MaxArchiveFiles = _config.Hub.MaxArchiveFiles;
+            LogConfig.LoggingEnabled = _config.Hub.LoggingEnabled;
+            LogConfig.LoggingFolder = _config.Hub.LoggingFolder;
+
+            _runningEnvironment = GetRunner(_config);
+            foreach (var bot in _config.Bots)
             {
                 bot.Initialize();
                 AddBot(bot);
@@ -39,14 +47,15 @@ public sealed partial class Main : Form
         }
         else
         {
-            Config = new ProgramConfig();
-            RunningEnvironment = GetRunner(Config);
-            Config.Hub.Folder.CreateDefaults(Program.WorkingDirectory);
-            Config.Hub.Pointer.CreateDefaults(Program.WorkingDirectory);
-            Config.Hub.EncounterSV.CreateDefaults(Program.WorkingDirectory);
+            _config = new ProgramConfig();
+            _runningEnvironment = GetRunner(_config);
+            _config.Hub.Folder.CreateDefaults(Program.WorkingDirectory);
+            _config.Hub.Pointer.CreateDefaults(Program.WorkingDirectory);
+            _config.Hub.EncounterSV.CreateDefaults(Program.WorkingDirectory);
+            _config.Hub.CreateDefaults(Program.WorkingDirectory);
         }
 
-        string build = string.Empty;
+        var build = string.Empty;
 #if DEBUG
         var date = File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly()!.Location);
         build = $" (dev-{date:yyyyMMdd})";
@@ -55,10 +64,10 @@ public sealed partial class Main : Form
 
         RTB_Logs.MaxLength = 32_767; // character length
         LoadControls();
-        Text = $"{Text} v{v}{build} ({Config.Mode})";
+        Text = $"{Text} v{v}{build} ({_config.Mode})";
         Task.Run(BotMonitor);
 
-        InitUtil.InitializeStubs(Config.Mode);
+        InitUtil.InitializeStubs(_config.Mode);
     }
 
     private static IPokeBotRunner GetRunner(ProgramConfig cfg) => cfg.Mode switch
@@ -92,9 +101,9 @@ public sealed partial class Main : Form
     private void LoadControls()
     {
         MinimumSize = Size;
-        PG_Hub.SelectedObject = RunningEnvironment.Config;
+        PG_Hub.SelectedObject = _runningEnvironment.Config;
 
-        var routines = ((PokeRoutineType[])Enum.GetValues(typeof(PokeRoutineType))).Where(z => RunningEnvironment.SupportsRoutine(z));
+        var routines = ((PokeRoutineType[])Enum.GetValues(typeof(PokeRoutineType))).Where(z => _runningEnvironment.SupportsRoutine(z));
         var list = routines.Select(z => new ComboItem(z.ToString(), (int)z)).ToArray();
         CB_Routine.DisplayMember = nameof(ComboItem.Text);
         CB_Routine.ValueMember = nameof(ComboItem.Value);
@@ -140,14 +149,14 @@ public sealed partial class Main : Form
 
     private ProgramConfig GetCurrentConfiguration()
     {
-        Config.Bots = Bots.ToArray();
-        return Config;
+        _config.Bots = _bots.ToArray();
+        return _config;
     }
 
     private void Main_FormClosing(object sender, FormClosingEventArgs e)
     {
         SaveCurrentConfig();
-        var bots = RunningEnvironment;
+        var bots = _runningEnvironment;
         if (!bots.IsRunning)
             return;
 
@@ -180,11 +189,11 @@ public sealed partial class Main : Form
         SaveCurrentConfig();
 
         LogUtil.LogInfo("Starting all bots...", "Form");
-        RunningEnvironment.InitializeStart();
+        _runningEnvironment.InitializeStart();
         SendAll(BotControlCommand.Start);
         Tab_Logs.Select();
 
-        if (Bots.Count == 0)
+        if (_bots.Count == 0)
             WinFormsUtil.Alert("No bots configured, but all supporting services have been started.");
     }
 
@@ -198,7 +207,7 @@ public sealed partial class Main : Form
 
     private void B_Stop_Click(object sender, EventArgs e)
     {
-        var env = RunningEnvironment;
+        var env = _runningEnvironment;
         if (!env.IsRunning && (ModifierKeys & Keys.Alt) == 0)
         {
             WinFormsUtil.Alert("Nothing is currently running.");
@@ -239,14 +248,14 @@ public sealed partial class Main : Form
         if (!cfg.IsValid())
             return false;
 
-        if (Bots.Any(z => z.Connection.Equals(cfg.Connection)))
+        if (_bots.Any(z => z.Connection.Equals(cfg.Connection)))
             return false;
 
         PokeRoutineExecutorBase newBot;
         try
         {
-            Console.WriteLine($"Current Mode ({Config.Mode}) does not support this type of bot ({cfg.CurrentRoutineType}).");
-            newBot = RunningEnvironment.CreateBotFromConfig(cfg);
+            Console.WriteLine($"Current Mode ({_config.Mode}) does not support this type of bot ({cfg.CurrentRoutineType}).");
+            newBot = _runningEnvironment.CreateBotFromConfig(cfg);
         }
         catch
         {
@@ -255,7 +264,7 @@ public sealed partial class Main : Form
 
         try
         {
-            RunningEnvironment.Add(newBot);
+            _runningEnvironment.Add(newBot);
         }
         catch (ArgumentException ex)
         {
@@ -264,14 +273,14 @@ public sealed partial class Main : Form
         }
 
         AddBotControl(cfg);
-        Bots.Add(cfg);
+        _bots.Add(cfg);
         return true;
     }
 
     private void AddBotControl(PokeBotState cfg)
     {
         var row = new BotController { Width = FLP_Bots.Width };
-        row.Initialize(RunningEnvironment, cfg);
+        row.Initialize(_runningEnvironment, cfg);
         FLP_Bots.Controls.Add(row);
         FLP_Bots.SetFlowBreak(row, true);
         row.Click += (s, e) =>
@@ -285,8 +294,8 @@ public sealed partial class Main : Form
 
         row.Remove += (s, e) =>
         {
-            Bots.Remove(row.State);
-            RunningEnvironment.Remove(row.State, !RunningEnvironment.Config.SkipConsoleBotCreation);
+            _bots.Remove(row.State);
+            _runningEnvironment.Remove(row.State, !_runningEnvironment.Config.SkipConsoleBotCreation);
             FLP_Bots.Controls.Remove(row);
         };
     }
