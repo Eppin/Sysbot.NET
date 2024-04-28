@@ -35,19 +35,26 @@ jobs:
 
     # Build applications
     - name: Build Windows Forms
-      run: dotnet publish -c Release -r win-x64 --sc false -p:PublishSingleFile=true /p:Version=${{ steps.date.outputs.DATE }}.${{ github.run_number }} .\SysBot.Pokemon.WinForms\SysBot.Pokemon.WinForms.csproj
-
-    # Upload artifact
-    - name: Upload build Windows Forms artifacts
-      uses: actions/upload-artifact@v3
+      uses: ./.github/actions/sysbot-build
       with:
-        name: Windows-x64
-        path: .\SysBot.Pokemon.WinForms\bin\Release\net8.0-windows\win-x64\publish
+        dotnet: 'net8.0-windows'
+        platform: 'win-x64'
+        project: 'SysBot.Pokemon.WinForms'
+        artifact: 'desktop-winforms-x64'
+        version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
+    #   run: dotnet publish -c Release -r win-x64 --sc false -p:PublishSingleFile=true /p:Version=${{ steps.date.outputs.DATE }}.${{ github.run_number }} .\SysBot.Pokemon.WinForms\SysBot.Pokemon.WinForms.csproj
 
-    # Compress application
-    - name: Compress Windows Forms
-      if: github.event_name != 'pull_request'
-      run: Compress-Archive .\SysBot.Pokemon.WinForms\bin\Release\net8.0-windows\win-x64\publish\* WindowsForms
+    # # Upload artifact
+    # - name: Upload build Windows Forms artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: Windows-x64
+    #     path: .\SysBot.Pokemon.WinForms\bin\Release\net8.0-windows\win-x64\publish
+
+    # # Compress application
+    # - name: Compress Windows Forms
+    #   if: github.event_name != 'pull_request'
+    #   run: Compress-Archive .\SysBot.Pokemon.WinForms\bin\Release\net8.0-windows\win-x64\publish\* WindowsForms
 
     # Create pre-release
     - name: Pre-Release 
@@ -58,7 +65,7 @@ jobs:
         prerelease: true
         body: Pre-release, compare Git commits.
         files: |
-          WindowsForms.zip
+          desktop-winforms-x64.zip
 
     # Create release
     - name: Release 
@@ -69,4 +76,4 @@ jobs:
         prerelease: false
         body: Release, compare Git commits.
         files: |
-          WindowsForms.zip
+          desktop-winforms-x64.zip

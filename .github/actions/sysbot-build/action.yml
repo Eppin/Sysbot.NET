@@ -1,0 +1,48 @@
+name: 'Build Sysbot.NET'
+description: 'Build Sysbot.NET, upload artifact and compress'
+
+inputs:
+  dotnet:
+    description: '.NET version'
+    required: true
+    default: 'net8.0-windows'
+
+  platform:
+    description: 'Platform'
+    required: true
+    default: 'win-x64'
+
+  project:
+    description: 'Project'
+    required: true
+    default: 'SysBot.Pokemon.WinForms'
+
+  artifact:
+    description: 'Artifact name'
+    required: true
+
+  version:
+    description: 'Version'
+    required: true
+    default: 1.0.0.0
+
+runs:
+  using: "composite"
+  steps:
+  # Build applications
+    - name: Build application
+      shell: pwsh
+      run: dotnet publish -c Release -r ${{ inputs.platform }} --sc false -p:PublishSingleFile=true /p:Version=${{ inputs.version }} .\${{ inputs.project }}\${{ inputs.project }}.csproj
+
+    # Upload artifact
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.artifact }}
+        path: .\${{ inputs.project }}\bin\Release\${{ inputs.dotnet }}\${{ inputs.platform }}\publish
+
+    # Compress application
+    - name: application
+      if: github.event_name != 'pull_request'
+      shell: pwsh
+      run: Compress-Archive .\${{ inputs.project }}\bin\Release\${{ inputs.dotnet }}\${{ inputs.platform }}\publish\* ${{ inputs.artifact }}
