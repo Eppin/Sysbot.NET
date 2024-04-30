@@ -60,6 +60,9 @@ public enum PokeRoutineType
     /// <summary> Searches the overworld until the criteria is satisfied.  </summary>
     EncounterOverworld = 7_003,
 
+    /// <summary> Catches Royal three until the criteria is satisfied, (optionally) using 100% catch cheat.  </summary>
+    EncounterParadox = 7_004,
+
     /// <summary> Keeps running circles until all party members have the Partner mark.  </summary>
     PartnerMark = 7_050,
 

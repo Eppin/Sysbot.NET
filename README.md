@@ -14,12 +14,11 @@ These routines are new in comparison to the original SysBot.Net
 
 #### Scarlet/Violet
 
-- Encounters (Ruinous, Loyal Three and Gimmighoul)
+- Encounters (Ruinous, Loyal Three, Gimmighoul and static/new Paradox' in Area Zero)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
-  - Static Paradox
   - _Probably all other Raid-a-like statics_
 - Overworld
   - Scanner, just walk and save
