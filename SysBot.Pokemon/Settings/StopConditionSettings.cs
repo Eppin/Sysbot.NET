@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -110,7 +110,7 @@ public class StopConditionSettings
 
         return settings.SearchConditions.Any(s =>
             MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
-            (s.Nature == (Nature)pk.Nature || s.Nature == Nature.Random) &&
+            (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             s.IsEnabled);
     }
