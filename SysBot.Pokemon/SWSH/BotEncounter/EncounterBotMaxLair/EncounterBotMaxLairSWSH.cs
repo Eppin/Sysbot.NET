@@ -365,7 +365,7 @@ public class EncounterBotMaxLairSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : 
 
         var pk = new PK8
         {
-            Nature = nature,
+            Nature = (Nature)nature,
             IV_HP = ivs[0],
             IV_ATK = ivs[1],
             IV_DEF = ivs[2],

@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
     protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
     {
         await SetupBoxState(DumpSetting, token).ConfigureAwait(false);
-        await EnableAlwaysEgg((GameVersion)sav.Game, token).ConfigureAwait(false);
+        await EnableAlwaysEgg(sav.Version, token).ConfigureAwait(false);
 
         while (!token.IsCancellationRequested)
         {

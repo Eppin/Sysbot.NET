@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
@@ -51,8 +51,7 @@ public abstract class PokeRoutineExecutor8BS : PokeRoutineExecutor<PB8>
         if (sav != null)
         {
             // Update PKM to the current save's handler data
-            DateTime Date = DateTime.Now;
-            pkm.Trade(sav, Date.Day, Date.Month, Date.Year);
+            pkm.UpdateHandler(sav);
             pkm.RefreshChecksum();
         }
 
