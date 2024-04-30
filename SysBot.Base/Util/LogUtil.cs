@@ -12,6 +12,7 @@ public static class LogConfig
 {
     public static int MaxArchiveFiles { get; set; } = 14; // 2 weeks
     public static bool LoggingEnabled { get; set; } = true;
+    public static string LoggingFolder { get; set; } = "logs";
 }
 
 public static class LogUtil
@@ -21,16 +22,18 @@ public static class LogUtil
         if (!LogConfig.LoggingEnabled)
             return;
 
+        var logFolder = LogConfig.LoggingFolder;
+
         var config = new LoggingConfiguration();
-        Directory.CreateDirectory("logs");
+        Directory.CreateDirectory(logFolder);
         var logfile = new FileTarget("logfile")
         {
-            FileName = Path.Combine("logs", "SysBotLog.txt"),
+            FileName = Path.Combine(logFolder, "SysBotLog.txt"),
             ConcurrentWrites = true,
 
             ArchiveEvery = FileArchivePeriod.Day,
             ArchiveNumbering = ArchiveNumberingMode.Date,
-            ArchiveFileName = Path.Combine("logs", "SysBotLog.{#}.txt"),
+            ArchiveFileName = Path.Combine(logFolder, "SysBotLog.{#}.txt"),
             ArchiveDateFormat = "yyyy-MM-dd",
             ArchiveAboveSize = 104857600, // 100MB (never)
             MaxArchiveFiles = LogConfig.MaxArchiveFiles,

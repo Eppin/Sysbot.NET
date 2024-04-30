@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
+using System.IO;
 
 namespace SysBot.Pokemon;
 
@@ -20,6 +21,9 @@ public abstract class BaseConfig
     [Category(FeatureToggle), Description("Maximum number of old text log files to retain. Set this to <= 0 to disable log cleanup. Restart to apply changes.")]
     public int MaxArchiveFiles { get; set; } = 14;
 
+    [Category(FeatureToggle), Description("Folder to store log files. Restart to apply changes.")]
+    public string LoggingFolder { get; set; } = string.Empty;
+
     [Category(Debug), Description("Skips creating bots when the program is started; helpful for testing integrations.")]
     public bool SkipConsoleBotCreation { get; set; }
 
@@ -36,4 +40,12 @@ public abstract class BaseConfig
     public PointerSettings Pointer { get; set; } = new();
 
     public abstract bool Shuffled { get; }
+
+    public void CreateDefaults(string path)
+    {
+        var loggingFolder = Path.Combine(path, "logs");
+        Directory.CreateDirectory(loggingFolder);
+
+        LoggingFolder = loggingFolder;
+    }
 }

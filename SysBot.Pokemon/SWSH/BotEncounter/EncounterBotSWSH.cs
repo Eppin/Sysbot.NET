@@ -1,7 +1,8 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -73,7 +74,7 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
         var print = Hub.Config.StopConditions.GetPrintName(pk);
         Log($"Encounter: {encounterCount}");
 
-        if(!string.IsNullOrWhiteSpace(print))
+        if (!string.IsNullOrWhiteSpace(print))
             Log($"{print}{Environment.NewLine}", !minimize);
 
         var folder = IncrementAndGetDumpFolder(pk);
@@ -143,28 +144,33 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
     {
         try
         {
+            var loggingFolder = string.IsNullOrWhiteSpace(Hub.Config.LoggingFolder)
+                ? string.Empty
+                : Hub.Config.LoggingFolder;
+
             var legendary = SpeciesCategory.IsLegendary(pk.Species) || SpeciesCategory.IsMythical(pk.Species) || SpeciesCategory.IsSubLegendary(pk.Species);
             if (legendary)
             {
                 Settings.AddCompletedLegends();
-                OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_LegendSWSH.txt");
+                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_LegendSWSH.txt"));
                 return "legends";
             }
-            else if (pk.IsEgg)
+
+            if (pk.IsEgg)
             {
                 Settings.AddCompletedEggs();
-                OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_EggSWSH.txt");
+                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EggSWSH.txt"));
                 return "egg";
             }
-            else if (pk.Species >= (int)Species.Dracozolt && pk.Species <= (int)Species.Arctovish)
+            if (pk.Species is >= (int)Species.Dracozolt and <= (int)Species.Arctovish)
             {
                 Settings.AddCompletedFossils();
-                OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_FosilSWSH.txt");
+                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_FosilSWSH.txt"));
                 return "fossil";
             }
 
             Settings.AddCompletedEncounters();
-            OutputExtensions<PK8>.EncounterLogs(pk, "EncounterLogPretty_EncounterSWSH.txt");
+            OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EncounterSWSH.txt"));
             return "encounters";
         }
         catch (Exception e)
