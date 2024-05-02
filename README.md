@@ -19,6 +19,7 @@ These routines are new in comparison to the original SysBot.Net
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+  - Pecharunt (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/5.-Encounter-(Pecharunt)) for proper setup)
   - _Probably all other Raid-a-like statics_
 - Overworld
   - Scanner, just walk and save
