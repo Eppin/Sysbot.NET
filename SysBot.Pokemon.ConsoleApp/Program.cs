@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using SysBot.Pokemon.Z3;
 using System;
@@ -14,7 +14,7 @@ public static class Program
 
     private static void Main(string[] args)
     {
-        string build = string.Empty;
+        var build = string.Empty;
 #if DEBUG
         var date = File.GetLastWriteTime(System.Reflection.Assembly.GetEntryAssembly()!.Location);
         build = $" (dev-{date:yyyyMMdd})";
@@ -35,9 +35,13 @@ public static class Program
         try
         {
             var lines = File.ReadAllText(ConfigPath);
-            var cfg = JsonSerializer.Deserialize(lines, ProgramConfigContext.Default.ProgramConfig) ?? new ProgramConfig();
+            var config = JsonSerializer.Deserialize(lines, ProgramConfigContext.Default.ProgramConfig) ?? new ProgramConfig();
+            LogConfig.MaxArchiveFiles = config.Hub.MaxArchiveFiles;
+            LogConfig.LoggingEnabled = config.Hub.LoggingEnabled;
+            LogConfig.LoggingFolder = config.Hub.LoggingFolder;
+
             PokeTradeBotSWSH.SeedChecker = new Z3SeedSearchHandler<PK8>();
-            BotContainer.RunBots(cfg);
+            BotContainer.RunBots(config);
         }
         catch (Exception)
         {

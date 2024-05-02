@@ -14,12 +14,12 @@ These routines are new in comparison to the original SysBot.Net
 
 #### Scarlet/Violet
 
-- Encounters (Ruinous, Loyal Three and Gimmighoul)
+- Encounters (Ruinous, Loyal Three, Gimmighoul and static/new Paradox' in Area Zero)
 - Fast egg hatch (~1,800 eggs/hour)
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
-  - Static Paradox
+  - Pecharunt (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/5.-Encounter-(Pecharunt)) for proper setup)
   - _Probably all other Raid-a-like statics_
 - Overworld
   - Scanner, just walk and save
@@ -49,8 +49,9 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 - [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase) client for remote control using a hybrid connection (USB or WiFi)
 - [USB-Botbase](https://github.com/Koi-3088/USB-Botbase) client for remote USB control.
 
-#Dependencies
+# Dependencies
 
+- [.NET 8 runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [PKHeX](https://github.com/kwsch/PKHeX/)
 - [AutoMod](https://github.com/architdate/PKHeX-Plugins/)
 - [Discord.Net](https://github.com/discord-net/Discord.Net)

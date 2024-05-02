@@ -4,6 +4,7 @@ using Base;
 using PKHeX.Core;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static Base.SwitchButton;
@@ -154,26 +155,30 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
     {
         try
         {
+            var loggingFolder = string.IsNullOrWhiteSpace(Hub.Config.LoggingFolder)
+                ? string.Empty
+                : Hub.Config.LoggingFolder;
+
             var legendary = SpeciesCategory.IsLegendary(pk.Species) || SpeciesCategory.IsMythical(pk.Species) || SpeciesCategory.IsSubLegendary(pk.Species);
             if (legendary)
             {
                 Settings.AddCompletedLegends();
-                OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_LegendSV.txt");
-                OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_LegendSV.txt");
+                OutputExtensions<PK9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_LegendSV.txt"));
+                OutputExtensions<PK9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_LegendSV.txt"));
                 return "legends";
             }
 
             if (pk.IsEgg)
             {
                 Settings.AddCompletedEggs();
-                OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_EggSV.txt");
-                OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_EggSV.txt");
+                OutputExtensions<PK9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EggSV.txt"));
+                OutputExtensions<PK9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_EggSV.txt"));
                 return "egg";
             }
 
             Settings.AddCompletedEncounters();
-            OutputExtensions<PK9>.EncounterLogs(pk, "EncounterLogPretty_EncounterSV.txt");
-            OutputExtensions<PK9>.EncounterScaleLogs(pk, "EncounterLogScale_EncounterSV.txt");
+            OutputExtensions<PK9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EncounterSV.txt"));
+            OutputExtensions<PK9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_EncounterSV.txt"));
             return "encounters";
         }
         catch (Exception e)

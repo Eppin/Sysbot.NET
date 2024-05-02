@@ -91,14 +91,14 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
 
         if (pk.IsShiny)
         {
-            if (pk.Format >= 8 && (pk.ShinyXor == 0 || pk.FatefulEncounter || pk.Version == (int)GameVersion.GO))
+            if (pk.Format >= 8 && (pk.ShinyXor == 0 || pk.FatefulEncounter || pk.Version == GameVersion.GO))
                 shinyType = " ■";
             else
                 shinyType = " ★";
         }
 
         var IVList = pk.IV_HP + "." + pk.IV_ATK + "." + pk.IV_DEF + "." + pk.IV_SPA + "." + pk.IV_SPD + "." + pk.IV_SPE;
-        var nature = $" - {(Nature)pk.Nature}";
+        var nature = $" - {pk.Nature}";
 
         var TIDFormatted = pk.Generation >= 7 ? $"{pk.TrainerTID7:000000}" : $"{pk.TID16:00000}";
 
@@ -109,7 +109,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         if (pk is IGigantamax gmax && gmax.CanGigantamax)
             speciesName += "-Gmax";
 
-        var OTInfo = string.IsNullOrEmpty(pk.OT_Name) ? "" : $" - {pk.OT_Name} - {TIDFormatted}{ballFormatted}";
+        var OTInfo = string.IsNullOrEmpty(pk.OriginalTrainerName) ? "" : $" - {pk.OriginalTrainerName} - {TIDFormatted}{ballFormatted}";
 
         markType = pk switch
         {
