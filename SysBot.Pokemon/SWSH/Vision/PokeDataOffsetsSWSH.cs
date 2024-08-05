@@ -19,6 +19,7 @@ public class PokeDataOffsetsSWSH
     public const uint IsConnectedOffset = 0x30c7cca8;
     public const uint TextSpeedOffset = 0x450690A0;
     public const uint ItemTreasureAddress = 0x45068970;
+    public const uint CalyrexFusionSlotAddress = 0x450CAE28;
 
     // Raid Offsets
     // The dex number of the Pokémon the host currently has chosen. 
@@ -90,7 +91,7 @@ public class PokeDataOffsetsSWSH
     public IReadOnlyList<long> OverworldPointer { get; } = new long[] { 0x2636678, 0xC0, 0x80 };
 
     // For detecting when we're on the in-battle menu, so we can flee.
-    public const uint BattleMenuOffset = 0x6B578EDC;
+    public const uint BattleMenuOffset = 0x8398A470;
 
     // Original screen detection offset.
     public const uint CurrentScreenOffset = 0x6B30FA00;

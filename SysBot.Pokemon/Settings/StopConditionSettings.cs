@@ -11,7 +11,7 @@ public class StopConditionSettings
     private const string StopConditions = nameof(StopConditions);
     public override string ToString() => "Stop Condition Settings";
 
-    [Category(StopConditions), Description("Stops only on Pokémon of this species. No restrictions if set to \"None\".")]
+    [Category(StopConditions), Description("Stops only on Pokémon of this species. This overrides species set in \"SearchCondition\" No restrictions if set to \"None\".")]
     public Species StopOnSpecies { get; set; }
 
     [Category(StopConditions), Description("Stops only on Pokémon with this FormID. No restrictions if left blank.")]
@@ -44,21 +44,24 @@ public class StopConditionSettings
     [Category(StopConditions)]
     public class SearchCondition
     {
-        public override string ToString() => $"{(!IsEnabled ? $"{Nature}, condition is disabled" : $"{Nature}, {TargetMinIVs} - {TargetMaxIVs}")}";
+        public override string ToString() => $"{(!IsEnabled ? $"{Nature}, condition is disabled" : $"{Nature}, {StopOnSpecies}, {TargetMinIVs} - {TargetMaxIVs}")}";
 
         [Category(StopConditions), DisplayName("1. Enabled")]
         public bool IsEnabled { get; set; } = true;
 
-        [Category(StopConditions), DisplayName("2. Nature")]
+        [Category(StopConditions), DisplayName("2. Species")]
+        public Species StopOnSpecies { get; set; }
+
+        [Category(StopConditions), DisplayName("3. Nature")]
         public Nature Nature { get; set; }
 
-        [Category(StopConditions), DisplayName("3. Gender")]
+        [Category(StopConditions), DisplayName("4. Gender")]
         public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
 
-        [Category(StopConditions), DisplayName("4. Minimum accepted IVs")]
+        [Category(StopConditions), DisplayName("5. Minimum accepted IVs")]
         public string TargetMinIVs { get; set; } = "";
 
-        [Category(StopConditions), DisplayName("5. Maximum accepted IVs")]
+        [Category(StopConditions), DisplayName("6. Maximum accepted IVs")]
         public string TargetMaxIVs { get; set; } = "";
     }
 
@@ -111,6 +114,7 @@ public class StopConditionSettings
         return settings.SearchConditions.Any(s =>
             MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
             (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
+            (s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             s.IsEnabled);
     }

@@ -28,6 +28,7 @@ These routines are new in comparison to the original SysBot.Net
 #### Sword/Shield
 
 - Max Lair (resets for IVs/Nature)
+- Calyrex and Spectrier/Glastrier combined resetting (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
 
 ## Version compatibility
 
@@ -38,6 +39,10 @@ These routines are new in comparison to the original SysBot.Net
 |  3.0.1  | [24.05.02.134](https://github.com/Eppin/Sysbot.NET/releases/tag/24.05.02.134) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.0  | [23.12.23.51](https://github.com/Eppin/Sysbot.NET/releases/tag/23.12.23.51)   | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  2.0.1  | [23.11.20.22](https://github.com/Eppin/Sysbot.NET/releases/tag/23.11.20.22)   | [2.0.1](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/2.0.1.zip) |
+
+### Sword/Shield
+
+All releases are only compatible with the latest version of Sword and Shield, version 1.3.2.
 
 ## Support Discord:
 
