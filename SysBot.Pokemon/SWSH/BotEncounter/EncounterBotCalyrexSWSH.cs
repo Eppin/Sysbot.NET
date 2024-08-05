@@ -13,7 +13,9 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
     {
         while (!token.IsCancellationRequested)
         {
-            Log("Looking for a new king and a horse...");
+            Log("Looking for a new king and the horse...");
+
+            await EnableAlwaysCatch(token).ConfigureAwait(false);
 
             // At the start of each loop, an A press is needed to exit out of a prompt.
             await Click(A, 0_100, token).ConfigureAwait(false);
@@ -23,7 +25,7 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             while (!await IsInBattle(token).ConfigureAwait(false))
                 await Click(A, 0_300, token).ConfigureAwait(false);
 
-            Log("Encounter started! Checking details...");
+            Log("Encounter with king started! Checking details...");
             var pk = await ReadUntilPresent(LegendaryPokemonOffset, 2_000, 0_200, BoxFormatSlotSize, token).ConfigureAwait(false);
             if (pk == null)
             {
@@ -37,19 +39,40 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             // Wait for the entire cutscene.
             await Task.Delay(15_000, token).ConfigureAwait(false);
 
-            // Offsets are flickery so make sure we see it 3 times.
-            for (int i = 0; i < 3; i++)
-                await ReadUntilChanged(BattleMenuOffset, BattleMenuReady, 5_000, 0_100, true, token).ConfigureAwait(false);
+            while (!await IsOnBattleMenu(token).ConfigureAwait(false))
+                await Task.Delay(0_100, token).ConfigureAwait(false);
+            await Task.Delay(0_100, token).ConfigureAwait(false);
 
             var (stop, _) = await HandleEncounter(pk, token).ConfigureAwait(false);
             if (stop)
                 return;
 
-            Log("Running away...");
-            await FleeToOverworld(token).ConfigureAwait(false);
+            Log("Catching Calyrex...");
+            await Catch(token).ConfigureAwait(false);
 
-            // Extra delay to be sure we're fully out of the battle.
-            await Task.Delay(0_250, token).ConfigureAwait(false);
+            Log("Exiting battle!");
+
+            PK8? horse = null;
+            while (horse is not { Valid: true, Species: > 0 })
+            {
+                horse = await ReadPokemon(CalyrexFusionSlotAddress, BoxFormatSlotSize, token).ConfigureAwait(false);
+                await Click(A, 0_200, token).ConfigureAwait(false);
+            }
+
+            Log("Checking horse details...");
+            (stop, _) = await HandleEncounter(horse, token).ConfigureAwait(false);
+            if (stop)
+                return;
+
+            Log("No match, resetting the game...");
+            await CloseGame(Hub.Config, token).ConfigureAwait(false);
+            await StartGame(Hub.Config, token).ConfigureAwait(false);
         }
+    }
+
+    private async Task Catch(CancellationToken token)
+    {
+        await Click(X, 750, token).ConfigureAwait(false);
+        await Click(A, 7_500, token).ConfigureAwait(false);
     }
 }

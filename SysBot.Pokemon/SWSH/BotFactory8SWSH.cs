@@ -22,6 +22,7 @@ public sealed class BotFactory8SWSH : BotFactory<PK8>
         PokeRoutineType.FossilBot => new EncounterBotFossilSWSH(cfg, Hub),
         PokeRoutineType.Reset => new EncounterBotResetSWSH(cfg, Hub),
         PokeRoutineType.DogBot => new EncounterBotDogSWSH(cfg, Hub),
+        PokeRoutineType.CalyrexBot => new EncounterBotCalyrexSWSH(cfg, Hub),
 
         PokeRoutineType.RemoteControl => new RemoteControlBotSWSH(cfg),
         _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
@@ -44,6 +45,7 @@ public sealed class BotFactory8SWSH : BotFactory<PK8>
         PokeRoutineType.FossilBot => true,
         PokeRoutineType.Reset => true,
         PokeRoutineType.DogBot => true,
+        PokeRoutineType.CalyrexBot => true,
 
         PokeRoutineType.RemoteControl => true,
 

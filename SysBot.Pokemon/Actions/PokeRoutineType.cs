@@ -43,6 +43,9 @@ public enum PokeRoutineType
     /// <summary> Revives fossils until the criteria is satisfied. </summary>
     FossilBot = 1_004,
 
+    /// <summary> Triggers encounters with Sword &amp; Shield Calyrex legend until the criteria is satisfied. </summary>
+    CalyrexBot = 1_005,
+
     /// <summary> Similar to idle, but identifies the bot as available for Remote input (Twitch Plays, etc). </summary>
     RemoteControl = 6_000,
 
