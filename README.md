@@ -36,13 +36,16 @@ These routines are new in comparison to the original SysBot.Net
 
 | Version |                                SysBot Release                                 |                                       Egg-mod Release                                       |
 | :-----: | :---------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+|  3.0.1  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.1  | [24.05.02.134](https://github.com/Eppin/Sysbot.NET/releases/tag/24.05.02.134) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.0  | [23.12.23.51](https://github.com/Eppin/Sysbot.NET/releases/tag/23.12.23.51)   | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  2.0.1  | [23.11.20.22](https://github.com/Eppin/Sysbot.NET/releases/tag/23.11.20.22)   | [2.0.1](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/2.0.1.zip) |
 
 ### Sword/Shield
 
-All releases are only compatible with the latest version of Sword and Shield, version 1.3.2.
+| Version |                                SysBot Release                                 |
+| :-----: | :---------------------------------------------------------------------------: |
+|  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151)
 
 ## Support Discord:
 
