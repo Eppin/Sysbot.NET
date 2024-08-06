@@ -41,9 +41,9 @@ public sealed class EncounterBotDogSWSH : EncounterBotSWSH
             // Wait for the entire cutscene.
             await Task.Delay(15_000, token).ConfigureAwait(false);
 
-            // Offsets are flickery so make sure we see it 3 times.
-            for (int i = 0; i < 3; i++)
-                await ReadUntilChanged(BattleMenuOffset, BattleMenuReady, 5_000, 0_100, true, token).ConfigureAwait(false);
+            while (!await IsOnBattleMenu(token).ConfigureAwait(false))
+                await Task.Delay(0_100, token).ConfigureAwait (false);
+            await Task.Delay(0_100, token).ConfigureAwait(false);
 
             var (stop, _) = await HandleEncounter(pk, token).ConfigureAwait(false);
             if (stop)

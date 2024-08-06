@@ -26,6 +26,9 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
     public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
 
+    [Category(Encounter), Description("When enabled, the 100% catch cheat will be enabled. Only applicable for the Calyrex routine")]
+    public bool EnableCatchCheat { get; set; }
+
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
 

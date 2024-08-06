@@ -15,7 +15,6 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
     protected readonly PokeTradeHub<PK8> Hub;
     private readonly IDumper DumpSetting;
     protected readonly EncounterSettingsSWSH Settings;
-    protected readonly byte[] BattleMenuReady = [0, 0, 0, 255];
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
@@ -202,5 +201,22 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
             await Click(DUP, 0_200, token).ConfigureAwait(false);
             await Click(A, 1_000, token).ConfigureAwait(false);
         }
+    }
+
+    protected async Task EnableAlwaysCatch(CancellationToken token)
+    {
+        if (!Hub.Config.EncounterSWSH.EnableCatchCheat)
+            return;
+
+        Log("Enable critical capture cheat", false);
+        // Source: https://gbatemp.net/threads/pokemon-sword-shield-v1-3-1-cfw-emu-cheat-codes.579372/post-9782611
+
+        // Original cheat:
+        /*
+         * [08# Catch Rate set to 100% Capture]
+         * 04000000 0077F6E8 529FFFE0
+         */
+
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x529FFFE0), 0x0077F6E8, token);
     }
 }

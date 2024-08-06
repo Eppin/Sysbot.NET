@@ -59,6 +59,6 @@ public sealed class EncounterBotResetSWSH : EncounterBotSWSH
         EncounterMode.Gift                                 => BoxStartOffset,
         EncounterMode.Regigigas or EncounterMode.Eternatus => RaidPokemonOffset,
         EncounterMode.MotostokeGym                         => LegendaryPokemonOffset,
-        _ => WildPokemonOffset,
+        _                                                  => WildPokemonOffset,
     };
 }
