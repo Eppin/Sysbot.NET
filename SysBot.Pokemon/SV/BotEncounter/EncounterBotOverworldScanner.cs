@@ -135,7 +135,7 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
     {
         if (_massOutbreakBlocks.Count == 0)
         {
-            var endsWith = new List<string> { /*"NumActive",*/ "Species", "Form", /*"Found", "NumKOed", "TotalSpawns"*/ };
+            var endsWith = new List<string> { "NumActive", "Species", "Form", /*"Found", "NumKOed", "TotalSpawns"*/ };
 
             _massOutbreakBlocks = typeof(SaveBlockAccessor9SV)
                 .GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy)
@@ -191,6 +191,11 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
 
             return false;
         }
+    }
 
+    private async Task<bool> DoPicknickResetting(CancellationToken token)
+    {
+        Log("This routine isn't implemented!");
+        throw new NotImplementedException();
     }
 }
