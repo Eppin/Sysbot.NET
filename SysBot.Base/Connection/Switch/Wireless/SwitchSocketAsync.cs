@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -146,6 +146,11 @@ public sealed class SwitchSocketAsync : SwitchSocket, ISwitchConnectionAsync
     {
         var bytes = await ReadRaw(SwitchCommand.IsProgramRunning(pid), 17, token).ConfigureAwait(false);
         return ulong.TryParse(Encoding.ASCII.GetString(bytes).Trim(), out var value) && value == 1;
+    }
+
+    public Task DateSet(DateTimeOffset date, CancellationToken token)
+    {
+        return SendRaw(SwitchCommand.DateSet(date), token);
     }
 
     private async Task<byte[]> Read(ulong offset, int length, SwitchOffsetType type, CancellationToken token)

@@ -1,10 +1,12 @@
 namespace SysBot.Pokemon;
 
+using PKHeX.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using PKHeX.Core;
 using static Base.SwitchStick;
 
 public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
@@ -32,6 +34,16 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
 
                 case EncounterSettingsSV.OverworldMode.ResearchStation:
                     if (await DoResearchStation(token).ConfigureAwait(false))
+                        return;
+                    break;
+
+                case EncounterSettingsSV.OverworldMode.Outbreak:
+                    if (await DoMassOutbreakResetting(token).ConfigureAwait(false))
+                        return;
+                    break;
+
+                case EncounterSettingsSV.OverworldMode.Picknick:
+                    if (await DoPicknickResetting(token).ConfigureAwait(false))
                         return;
                     break;
 
@@ -116,5 +128,69 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         }
 
         return results;
+    }
+
+    private Dictionary<string, uint> _massOutbreakBlocks = [];
+    private async Task<bool> DoMassOutbreakResetting(CancellationToken token)
+    {
+        if (_massOutbreakBlocks.Count == 0)
+        {
+            var endsWith = new List<string> { /*"NumActive",*/ "Species", "Form", /*"Found", "NumKOed", "TotalSpawns"*/ };
+
+            _massOutbreakBlocks = typeof(SaveBlockAccessor9SV)
+                .GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(f => f.Name.StartsWith("KOutbreak") && !f.Name.Contains("BC") && endsWith.Any(e => f.Name.EndsWith(e)))
+                .Select(f => new KeyValuePair<string, uint>(f.Name, (uint)(f.GetRawConstantValue() ?? throw new InvalidOperationException())))
+                .ToDictionary();
+        }
+
+        if (await Scan())
+            return true;
+
+        if (await Scan(1))
+            return true;
+
+        if (await Scan(2))
+            return true;
+
+        // Skip datetime
+        await SwitchConnection.DateSet(DateTimeOffset.Now.Date, token).ConfigureAwait(false);
+        await SaveGame(token).ConfigureAwait(false);
+
+        return false;
+
+        async Task<bool> Scan(int? dlc = null)
+        {
+            var middle = dlc == null ? "Main" : $"DLC{dlc}";
+            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], token).ConfigureAwait(false);
+
+            Log($"Scan first {activeSize} outbreaks in {middle} map");
+
+            for (var i = 1; i <= activeSize; i++)
+            {
+                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], token).ConfigureAwait(false);
+                var species = (Species)SpeciesConverter.GetNational9((ushort)speciesData);
+
+                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], token).ConfigureAwait(false);
+
+                var searchConditions = Hub.Config.EncounterSV.MassOutbreakSearchConditions;
+
+                if (!searchConditions.Any(s => s.IsEnabled))
+                    return true;
+
+                var result = searchConditions
+                    .Where(s => s.StopOnSpecies == species && s.Form == form && s.IsEnabled)
+                    .ToList();
+
+                if (result.Count != 0)
+                {
+                    Log($"Result found in {middle}: {string.Join(",", result.Select(r => $"{r.StopOnSpecies}-{r.Form}"))}");
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
     }
 }

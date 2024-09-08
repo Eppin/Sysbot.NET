@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -96,6 +96,11 @@ public sealed class SwitchUSBAsync : SwitchUSB, ISwitchConnectionAsync
             byte[] baseBytes = ReadBulkUSB();
             return baseBytes.Length == 1 && BitConverter.ToBoolean(baseBytes, 0);
         }, token);
+    }
+
+    public Task DateSet(DateTimeOffset date, CancellationToken token)
+    {
+        return Task.Run(() => Send(SwitchCommand.DateSet(date, false)), token);
     }
 
     public Task<byte[]> ReadRaw(byte[] command, int length, CancellationToken token)
