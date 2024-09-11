@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using static Base.SwitchButton;
 using static Base.SwitchStick;
 
 public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
@@ -40,6 +41,13 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
                 case EncounterSettingsSV.OverworldMode.Outbreak:
                     if (await DoMassOutbreakResetting(token).ConfigureAwait(false))
                         return;
+                    break;
+
+                case EncounterSettingsSV.OverworldMode.KOCount:
+                    if (await DoKOCounting(token).ConfigureAwait(false))
+                        return;
+
+                    await Task.Delay(5000, token);
                     break;
 
                 case EncounterSettingsSV.OverworldMode.Picknick:
@@ -133,16 +141,7 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
     private Dictionary<string, uint> _massOutbreakBlocks = [];
     private async Task<bool> DoMassOutbreakResetting(CancellationToken token)
     {
-        if (_massOutbreakBlocks.Count == 0)
-        {
-            var endsWith = new List<string> { "NumActive", "Species", "Form", /*"Found", "NumKOed", "TotalSpawns"*/ };
-
-            _massOutbreakBlocks = typeof(SaveBlockAccessor9SV)
-                .GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-                .Where(f => f.Name.StartsWith("KOutbreak") && !f.Name.Contains("BC") && endsWith.Any(e => f.Name.EndsWith(e)))
-                .Select(f => new KeyValuePair<string, uint>(f.Name, (uint)(f.GetRawConstantValue() ?? throw new InvalidOperationException())))
-                .ToDictionary();
-        }
+        GetMassOutbreakBlocks();
 
         if (await Scan())
             return true;
@@ -193,9 +192,94 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         }
     }
 
+    private async Task<bool> DoKOCounting(CancellationToken token)
+    {
+        GetMassOutbreakBlocks();
+
+        if (await Scan())
+            return true;
+
+        if (await Scan(1))
+            return true;
+
+        if (await Scan(2))
+            return true;
+
+        return false;
+
+        async Task<bool> Scan(int? dlc = null)
+        {
+            var middle = dlc == null ? "Main" : $"DLC{dlc}";
+            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], token).ConfigureAwait(false);
+
+            var displayed = false;
+            for (var i = 1; i <= activeSize; i++)
+            {
+                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], token).ConfigureAwait(false);
+                var species = (Species)SpeciesConverter.GetNational9((ushort)speciesData);
+
+                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], token).ConfigureAwait(false);
+
+                var koCount = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}NumKOed"], token).ConfigureAwait(false);
+
+                if (koCount > 0)
+                {
+                    if (!displayed)
+                    {
+                        Log($"Scan first {activeSize} outbreaks in {middle} map", false);
+                        displayed = true;
+                    }
+
+                    Log($"KO count of [{koCount}] for {species}-{form}", false);
+                }
+
+                if (koCount >= 60)
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
     private async Task<bool> DoPicknickResetting(CancellationToken token)
     {
-        Log("This routine isn't implemented!");
-        throw new NotImplementedException();
+        Log("Open Picnic");
+        await Click(X, 2_500, token).ConfigureAwait(false);
+        await Click(A, 6_500, token).ConfigureAwait(false);
+
+        Log("Close Picnic", false);
+        await Click(Y, 2_500, token).ConfigureAwait(false);
+        await Click(A, 3_500, token).ConfigureAwait(false);
+
+        await SaveGame(token).ConfigureAwait(false);
+
+        Log("In overworld, scanning", false);
+        var results = await GetOverworld(token);
+
+        foreach (var current in results)
+        {
+            var (stop, success) = await HandleEncounter(current, token, minimize: true, skipDump: true).ConfigureAwait(false);
+
+            if (success)
+                Log("Your Pokémon has been found in the overworld!");
+
+            if (stop)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void GetMassOutbreakBlocks()
+    {
+        if (_massOutbreakBlocks.Count != 0) return;
+
+        var endsWith = new List<string> { "NumActive", "Species", "Form", /*"Found",*/ "NumKOed", "TotalSpawns" };
+
+        _massOutbreakBlocks = typeof(SaveBlockAccessor9SV)
+            .GetFields(BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+            .Where(f => f.Name.StartsWith("KOutbreak") && !f.Name.Contains("BC") && endsWith.Any(e => f.Name.EndsWith(e)))
+            .Select(f => new KeyValuePair<string, uint>(f.Name, (uint)(f.GetRawConstantValue() ?? throw new InvalidOperationException())))
+            .ToDictionary();
     }
 }

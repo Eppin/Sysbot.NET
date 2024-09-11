@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -163,7 +164,8 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
     public async Task VerifyBotbaseVersion(CancellationToken token)
     {
         var data = await SwitchConnection.GetBotbaseVersion(token).ConfigureAwait(false);
-        var version = decimal.TryParse(data, CultureInfo.InvariantCulture, out var v) ? v : 0;
+
+        var version = System.Version.TryParse(data, out var v) ? v : new Version();
         if (version < BotbaseVersion)
         {
             var protocol = Config.Connection.Protocol;
