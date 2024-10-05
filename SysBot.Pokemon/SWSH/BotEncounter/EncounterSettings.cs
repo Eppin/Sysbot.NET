@@ -1,6 +1,7 @@
 using SysBot.Base;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 
 namespace SysBot.Pokemon;
@@ -28,6 +29,12 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
 
     [Category(Encounter), Description("When enabled, the 100% catch cheat will be enabled. Only applicable for the Calyrex routine")]
     public bool EnableCatchCheat { get; set; }
+
+    [Category(Encounter), Description("Set egg mode to unlimited")]
+    public bool UnlimitedMode { get; set; }
+
+    [Category(Encounter), Description("When mode is unlimited, this folder will be used for parents.")]
+    public string UnlimitedParentsFolder { get; set; } = string.Empty;
 
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
@@ -81,6 +88,13 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     public int AddCompletedLegends() => Interlocked.Increment(ref _completedLegend);
     public int AddCompletedEggs() => Interlocked.Increment(ref _completedEggs);
     public int AddCompletedFossils() => Interlocked.Increment(ref _completedFossils);
+
+    public void CreateDefaults(string path)
+    {
+        var unlimited = Path.Combine(path, "unlimited");
+        Directory.CreateDirectory(unlimited);
+        UnlimitedParentsFolder = unlimited;
+    }
 
     public IEnumerable<string> GetNonZeroCounts()
     {

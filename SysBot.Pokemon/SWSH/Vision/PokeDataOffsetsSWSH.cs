@@ -67,9 +67,11 @@ public class PokeDataOffsetsSWSH
     /* Route 5 Daycare */
     public const uint DayCare_Route5_Step_Counter = 0x4511F99C;
     public const uint DayCare_Route5_Egg_Is_Ready = 0x4511F9A8;
+    public const uint DayCare_Start = 0x4511F708;
 
     public const int BoxFormatSlotSize = 0x158;
     public const int TrainerDataLength = 0x110;
+    public const int DayCareSize = 2 + (0x148 * 2);
 
     /* Lair offsets */
     public static IReadOnlyList<long> MaxLairPokemonRNGPointer { get; } = new long[] { 0x28F4060, 0x238, 0x2AB8 };
