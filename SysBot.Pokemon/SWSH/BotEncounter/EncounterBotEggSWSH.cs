@@ -197,6 +197,9 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
         var dittoFirstSlot = slot1?.Species == (int)Species.Ditto;
         await SetDayCare(pk8, !dittoFirstSlot, token);
 
+        (slot1, slot2) = await GetDayCare(token);
+        Log($"Set parent: {pk8.FileName}, slot 1 is {slot1?.Species}, valid: {slot1?.Valid} and slot 2 is {slot2?.Species}, valid: {slot2?.Valid}");
+
         var info = new FileInfo(parent);
         File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
 
