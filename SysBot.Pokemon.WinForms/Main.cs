@@ -51,6 +51,7 @@ public sealed partial class Main : Form
             _runningEnvironment = GetRunner(_config);
             _config.Hub.Folder.CreateDefaults(Program.WorkingDirectory);
             _config.Hub.Pointer.CreateDefaults(Program.WorkingDirectory);
+            _config.Hub.EncounterSWSH.CreateDefaults(Program.WorkingDirectory);
             _config.Hub.EncounterSV.CreateDefaults(Program.WorkingDirectory);
             _config.Hub.CreateDefaults(Program.WorkingDirectory);
         }
