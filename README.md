@@ -16,6 +16,7 @@ These routines are new in comparison to the original SysBot.Net
 
 - Encounters (Ruinous, Loyal Three, Gimmighoul and static/new Paradox' in Area Zero)
 - Fast egg hatch (~1,800 eggs/hour)
+- Unlimited egg hatching with multiple parents (see Wiki)
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
@@ -29,6 +30,7 @@ These routines are new in comparison to the original SysBot.Net
 
 - Max Lair (resets for IVs/Nature)
 - Calyrex and Spectrier/Glastrier combined resetting (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
+- Unlimited egg hatching with multiple parents (see Wiki)
 
 ## Version compatibility
 
