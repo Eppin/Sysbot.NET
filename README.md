@@ -24,7 +24,7 @@ These routines are new in comparison to the original SysBot.Net
 - Overworld
   - Scanner, just walk and save
   - Research Station
-  - Mass Outbreak (search for species, list KO count and Picnic resetting)
+  - Mass Outbreak (search for species, list KO count and Picnic resetting)__**__
 
 #### Sword/Shield
 
