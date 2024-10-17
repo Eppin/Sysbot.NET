@@ -32,6 +32,11 @@ These routines are new in comparison to the original SysBot.Net
 - Calyrex and Spectrier/Glastrier combined resetting (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
 - Unlimited egg hatching with multiple parents (see Wiki)
 
+## New sys-botbase fork
+
+Routines marked with a __**__ require to use my fork of [sys-botbase](https://github.com/Eppin/sys-botbase/releases). 
+Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.428](https://github.com/Eppin/sys-botbase/releases/tag/2.428). But make sure to use the latest and greatest version :)
+
 ## Version compatibility
 
 ### Scarlet/Violet
@@ -47,7 +52,7 @@ These routines are new in comparison to the original SysBot.Net
 
 | Version |                                SysBot Release                                 |
 | :-----: | :---------------------------------------------------------------------------: |
-|  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151)
+|  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151) |
 
 ## Support Discord:
 
