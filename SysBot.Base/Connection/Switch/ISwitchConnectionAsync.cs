@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ public interface ISwitchConnectionAsync : IConsoleConnectionAsync
     Task<string> GetBotbaseVersion(CancellationToken token);
     Task<string> GetGameInfo(string info, CancellationToken token);
     Task<bool> IsProgramRunning(ulong pid, CancellationToken token);
+    Task DateSet(DateTimeOffset date, CancellationToken token);
 
     Task<byte[]> ReadBytesMainAsync(ulong offset, int length, CancellationToken token);
     Task<byte[]> ReadBytesAbsoluteAsync(ulong offset, int length, CancellationToken token);

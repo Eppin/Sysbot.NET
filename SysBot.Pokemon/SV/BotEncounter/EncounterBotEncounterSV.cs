@@ -21,7 +21,7 @@ public abstract class EncounterBotEncounterSV(PokeBotState cfg, PokeTradeHub<PK9
             await SetupBoxState(DumpSetting, token);
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
-            Log($"Starting battle");
+            Log("Starting battle");
             var later = DateTime.Now.AddSeconds(StartBattleA);
             Log($"Press A till [{later}]", false);
             while (DateTime.Now <= later)

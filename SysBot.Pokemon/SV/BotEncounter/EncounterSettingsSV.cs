@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
+using PKHeX.Core;
 using SysBot.Base;
 
 namespace SysBot.Pokemon;
@@ -36,6 +37,24 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
 
     [Category(Encounter), Description("When mode is Scanner, keep saving the game to let the bot scan the overworld.")]
     public OverworldMode Overworld { get; set; }
+
+    [Category(Encounter), Description("Stop condition for Mass Outbreak only.")]
+    public List<MassOutbreakSearchCondition> MassOutbreakSearchConditions { get; set; } = new();
+
+    [Category(Encounter)]
+    public class MassOutbreakSearchCondition
+    {
+        public override string ToString() => $"{(!IsEnabled ? $"{StopOnSpecies}, condition is disabled" : $"{StopOnSpecies}-{Form}")}";
+
+        [Category(Encounter), DisplayName("1. Enabled")]
+        public bool IsEnabled { get; set; } = true;
+
+        [Category(Encounter), DisplayName("2. Species")]
+        public Species StopOnSpecies { get; set; }
+
+        [Category(Encounter), DisplayName("3. Form, if applicable")]
+        public int Form { get; set; }
+    }
 
     private int _completedWild;
     private int _completedLegend;
@@ -90,6 +109,9 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
     public enum OverworldMode
     {
         Scanner,
-        ResearchStation
+        ResearchStation,
+        Outbreak,
+        KOCount,
+        Picnic
     }
 }

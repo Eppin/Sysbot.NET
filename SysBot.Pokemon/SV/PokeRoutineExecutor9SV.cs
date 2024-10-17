@@ -399,7 +399,6 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
     }
 
     private ulong _saveKeyAddress;
-
     public async Task<byte[]> ReadEncryptedBlock(ulong baseBlock, uint blockKey, bool init, CancellationToken token)
     {
         if (init)
@@ -418,6 +417,63 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
         var res = DecryptBlock(blockKey, data)[5..];
 
         return res;
+    }
+
+    private readonly Dictionary<uint, ulong> _cacheBlockArrays = new();
+    public async Task<byte[]> ReadEncryptedBlockArray(ulong baseBlock, uint blockKey, int blockSize, CancellationToken token)
+    {
+        if (!_cacheBlockArrays.TryGetValue(blockKey, out var cachedAddress))
+        {
+            var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
+            address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
+            cachedAddress = address;
+
+            _cacheBlockArrays.Add(blockKey, cachedAddress);
+            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+        }
+
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 6 + blockSize, token).ConfigureAwait(false);
+        data = DecryptBlock(blockKey, data);
+
+        return data[6..];
+    }
+
+    private readonly Dictionary<uint, ulong> _cacheBlockUint32s = new();
+    public async Task<uint> ReadEncryptedBlockUInt32(ulong baseBlock, uint blockKey, CancellationToken token)
+    {
+        if (!_cacheBlockUint32s.TryGetValue(blockKey, out var cachedAddress))
+        {
+            var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
+            address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
+            cachedAddress = address;
+
+            _cacheBlockUint32s.Add(blockKey, cachedAddress);
+            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+        }
+
+        var header = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 5, token).ConfigureAwait(false);
+        header = DecryptBlock(blockKey, header);
+
+        return ReadUInt32LittleEndian(header.AsSpan()[1..]);
+    }
+
+    private readonly Dictionary<uint, ulong> _cacheBlockBytes = new();
+    public async Task<byte> ReadEncryptedBlockByte(ulong baseBlock, uint blockKey, CancellationToken token)
+    {
+        if (!_cacheBlockBytes.TryGetValue(blockKey, out var cachedAddress))
+        {
+            var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
+            address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
+            cachedAddress = address;
+
+            _cacheBlockBytes.Add(blockKey, cachedAddress);
+            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+        }
+
+        var header = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 5, token).ConfigureAwait(false);
+        header = DecryptBlock(blockKey, header);
+
+        return header[1];
     }
 
     public async Task<ulong> SearchSaveKey(ulong baseBlock, uint key, CancellationToken token)
@@ -440,7 +496,8 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
                 end = mid;
             else start = mid + 48;
         }
-        return start;
+
+        throw new Exception("Can't be possible to reach this!");
     }
 
     private static byte[] DecryptBlock(uint key, byte[] block)

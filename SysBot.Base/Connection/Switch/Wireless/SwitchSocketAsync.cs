@@ -148,6 +148,11 @@ public sealed class SwitchSocketAsync : SwitchSocket, ISwitchConnectionAsync
         return ulong.TryParse(Encoding.ASCII.GetString(bytes).Trim(), out var value) && value == 1;
     }
 
+    public Task DateSet(DateTimeOffset date, CancellationToken token)
+    {
+        return SendRaw(SwitchCommand.DateSet(date), token);
+    }
+
     private async Task<byte[]> Read(ulong offset, int length, SwitchOffsetType type, CancellationToken token)
     {
         var method = type.GetReadMethod();
