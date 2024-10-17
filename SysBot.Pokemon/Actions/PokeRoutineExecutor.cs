@@ -165,7 +165,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
     {
         var data = await SwitchConnection.GetBotbaseVersion(token).ConfigureAwait(false);
 
-        var version = System.Version.TryParse(data, out var v) ? v : new Version();
+        var version = decimal.TryParse(data, CultureInfo.InvariantCulture, out var v) ? v : 0;
         if (version < BotbaseVersion)
         {
             var protocol = Config.Connection.Protocol;

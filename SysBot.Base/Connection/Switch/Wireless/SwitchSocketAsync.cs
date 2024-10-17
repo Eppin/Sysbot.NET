@@ -132,7 +132,7 @@ public sealed class SwitchSocketAsync : SwitchSocket, ISwitchConnectionAsync
     public async Task<string> GetBotbaseVersion(CancellationToken token)
     {
         // Allows up to 9 characters for version, and trims extra '\0' if unused.
-        var bytes = await ReadRaw(SwitchCommand.GetBotbaseVersion(), 12, token).ConfigureAwait(false);
+        var bytes = await ReadRaw(SwitchCommand.GetBotbaseVersion(), 10, token).ConfigureAwait(false);
         return Encoding.ASCII.GetString(bytes).Trim('\0');
     }
 
