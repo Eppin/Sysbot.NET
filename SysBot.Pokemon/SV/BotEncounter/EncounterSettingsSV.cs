@@ -112,6 +112,6 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
         ResearchStation,
         Outbreak,
         KOCount,
-        Picknick
+        Picnic
     }
 }

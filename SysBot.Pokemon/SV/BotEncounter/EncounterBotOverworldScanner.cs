@@ -50,8 +50,8 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
                     await Task.Delay(5000, token);
                     break;
 
-                case EncounterSettingsSV.OverworldMode.Picknick:
-                    if (await DoPicknickResetting(token).ConfigureAwait(false))
+                case EncounterSettingsSV.OverworldMode.Picnic:
+                    if (await DoPicnicResetting(token).ConfigureAwait(false))
                         return;
                     break;
 
@@ -241,7 +241,7 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         }
     }
 
-    private async Task<bool> DoPicknickResetting(CancellationToken token)
+    private async Task<bool> DoPicnicResetting(CancellationToken token)
     {
         Log("Open Picnic");
         await Click(X, 2_500, token).ConfigureAwait(false);
