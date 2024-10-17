@@ -1,4 +1,4 @@
-﻿namespace SysBot.Pokemon;
+namespace SysBot.Pokemon;
 
 public enum EncounterMode
 {
@@ -36,4 +36,9 @@ public enum EncounterMode
     /// Bot resets Motostoke Gym encounters
     /// </summary>
     MotostokeGym,
+
+    /// <summary>
+    /// Bot runs for eggs to be hatched
+    /// </summary>
+    EggHatch
 }

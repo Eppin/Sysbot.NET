@@ -28,6 +28,14 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
 
     protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
     {
+        // Hatch a party full of Eggs
+        if (Settings.EncounteringType == EncounterMode.EggHatch)
+        {
+            await MassEggHatch(token);
+            return;
+        }
+
+        // Fetch lots of Eggs?
         if (!await IsUnlimited(token).ConfigureAwait(false))
             return;
 
@@ -249,5 +257,21 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
         }
 
         await SwitchConnection.WriteBytesAsync([.. newBytes], DayCare_Start, token);
+    }
+
+    private async Task MassEggHatch(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await SetStick(LEFT, -30000, 0, 2_400, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_100, token).ConfigureAwait(false); // reset
+
+            await Click(B, 0, token);
+
+            await SetStick(LEFT, 30000, 0, 2_400, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_100, token).ConfigureAwait(false); // reset
+
+            await Click(B, 0, token);
+        }
     }
 }
