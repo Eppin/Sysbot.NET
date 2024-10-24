@@ -65,10 +65,10 @@ public class StopConditionSettings
         public string TargetMaxIVs { get; set; } = "";
     }
 
-    public static bool EncounterFound<T>(T pk, StopConditionSettings settings, IReadOnlyList<string>? markList) where T : PKM
+    public static bool EncounterFound<T>(T pk, StopConditionSettings settings, IReadOnlyList<string>? markList, bool skipSpeciesCheck = false) where T : PKM
     {
         // Match Nature and Species if they were specified.
-        if (settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
+        if (!skipSpeciesCheck && settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
             return false;
 
         if (settings.StopOnForm.HasValue && settings.StopOnForm != pk.Form)
@@ -114,7 +114,7 @@ public class StopConditionSettings
         return settings.SearchConditions.Any(s =>
             MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
             (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
-            (s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
+            (skipSpeciesCheck || s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             s.IsEnabled);
     }

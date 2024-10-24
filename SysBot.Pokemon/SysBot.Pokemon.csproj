@@ -1,17 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<ItemGroup>
-		<PackageReference Include="PKHeX.Core" Version="24.7.27" />
-		<ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="KdSoft.FlatBuffers" Version="1.12.0" />
+    <PackageReference Include="PKHeX.Core" Version="24.7.27" />
+    <ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="deps\" />
-	</ItemGroup>
-	<ItemGroup>
-		<Reference Include="PKHeX.Core.AutoMod">
-			<HintPath>deps\PKHeX.Core.AutoMod.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <Folder Include="deps\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SWSH\BotEncounter\EncounterBotDen\FlatbuffersResource\ShieldData.bin" />
+    <EmbeddedResource Include="SWSH\BotEncounter\EncounterBotDen\FlatbuffersResource\SwordData.bin" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PKHeX.Core.AutoMod">
+      <HintPath>deps\PKHeX.Core.AutoMod.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

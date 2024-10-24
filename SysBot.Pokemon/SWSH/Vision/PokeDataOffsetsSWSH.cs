@@ -19,7 +19,12 @@ public class PokeDataOffsetsSWSH
     public const uint IsConnectedOffset = 0x30c7cca8;
     public const uint TextSpeedOffset = 0x450690A0;
     public const uint ItemTreasureAddress = 0x45068970;
-    public const uint CalyrexFusionSlotAddress = 0x450CAE28;
+    public const uint CalyrexFusionSlotOffset = 0x450CAE28;
+
+    public const uint DenVanillaOffset = 0x450C8A70;
+    public const uint DenIslandOfArmorOffset = 0x450C94D8;
+    public const uint DenCrownTundraOffset = 0x450C9F40;
+    public const uint DenEventStartOffset = 0x2F9EB320;
 
     // Raid Offsets
     // The dex number of the Pokémon the host currently has chosen. 
