@@ -36,7 +36,7 @@ These routines are new in comparison to the original SysBot.Net
 ## New sys-botbase fork
 
 Routines marked with a __**__ require to use my fork of [sys-botbase](https://github.com/Eppin/sys-botbase/releases). 
-Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.428](https://github.com/Eppin/sys-botbase/releases/tag/2.428). But make sure to use the latest and greatest version :)
+Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.438](https://github.com/Eppin/sys-botbase/releases/tag/2.438). But make sure to use the latest and greatest version :)
 
 ## Version compatibility
 
