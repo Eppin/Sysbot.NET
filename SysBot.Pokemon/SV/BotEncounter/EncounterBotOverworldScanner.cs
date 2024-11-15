@@ -19,6 +19,7 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
 
     protected override async Task EncounterLoop(SAV9SV sav, CancellationToken token)
     {
+        _saveKeyInitialized = false;
         _baseBlockKeyPointer = await SwitchConnection.PointerAll(Offsets.BlockKeyPointer, token).ConfigureAwait(false);
         _previous.Clear();
 
@@ -161,16 +162,16 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         async Task<bool> Scan(int? dlc = null)
         {
             var middle = dlc == null ? "Main" : $"DLC{dlc}";
-            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], token).ConfigureAwait(false);
+            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], !_saveKeyInitialized, token).ConfigureAwait(false);
 
             Log($"Scan first {activeSize} outbreaks in {middle} map");
 
             for (var i = 1; i <= activeSize; i++)
             {
-                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], token).ConfigureAwait(false);
+                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], !_saveKeyInitialized, token).ConfigureAwait(false);
                 var species = (Species)SpeciesConverter.GetNational9((ushort)speciesData);
 
-                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], token).ConfigureAwait(false);
+                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], !_saveKeyInitialized, token).ConfigureAwait(false);
 
                 var searchConditions = Hub.Config.EncounterSV.MassOutbreakSearchConditions;
 
@@ -210,17 +211,17 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         async Task<bool> Scan(int? dlc = null)
         {
             var middle = dlc == null ? "Main" : $"DLC{dlc}";
-            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], token).ConfigureAwait(false);
+            var activeSize = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak{middle}NumActive"], !_saveKeyInitialized, token).ConfigureAwait(false);
 
             var displayed = false;
             for (var i = 1; i <= activeSize; i++)
             {
-                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], token).ConfigureAwait(false);
+                var speciesData = await ReadEncryptedBlockUInt32(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Species"], !_saveKeyInitialized, token).ConfigureAwait(false);
                 var species = (Species)SpeciesConverter.GetNational9((ushort)speciesData);
 
-                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], token).ConfigureAwait(false);
+                var form = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}Form"], !_saveKeyInitialized, token).ConfigureAwait(false);
 
-                var koCount = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}NumKOed"], token).ConfigureAwait(false);
+                var koCount = await ReadEncryptedBlockByte(_baseBlockKeyPointer, _massOutbreakBlocks[$"KOutbreak0{i}{middle}NumKOed"], !_saveKeyInitialized, token).ConfigureAwait(false);
 
                 if (koCount > 0)
                 {
