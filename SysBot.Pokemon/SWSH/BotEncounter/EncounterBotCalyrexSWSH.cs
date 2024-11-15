@@ -51,7 +51,7 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             Log("Catching Calyrex...");
             await Catch(token).ConfigureAwait(false);
 
-            var later = DateTime.Now.AddMinutes(2);
+            var later = DateTime.Now.AddMinutes(1);
             Log($"Exit battle, wait till [{later}] before we force a game restart", false);
 
             PK8? horse = null;
