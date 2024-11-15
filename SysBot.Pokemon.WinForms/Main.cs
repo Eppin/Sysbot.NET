@@ -3,6 +3,7 @@ using SysBot.Base;
 using SysBot.Pokemon.Z3;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -62,6 +63,8 @@ public sealed partial class Main : Form
         build = $" (dev-{date:yyyyMMdd})";
 #endif
         var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
+
+        FormLoadCheckForUpdates(); // Check for updates, thanks to PKHeX
 
         RTB_Logs.MaxLength = 32_767; // character length
         LoadControls();
@@ -324,4 +327,40 @@ public sealed partial class Main : Form
     {
         TB_IP.Visible = CB_Protocol.SelectedIndex == 0;
     }
+
+    // Start of original source of PKHeX
+    // https://github.com/kwsch/PKHeX/blob/24.11.11/PKHeX.WinForms/MainWindow/Main.cs#L197-L225
+    private void FormLoadCheckForUpdates()
+    {
+        Task.Run(async () =>
+        {
+            Version? latestVersion;
+            // User might not be connected to the internet or with a flaky connection.
+            try { latestVersion = UpdateUtil.GetLatestVersion(); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception while checking for latest version: {ex}");
+                return;
+            }
+
+            if (latestVersion is null || latestVersion <= System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+                return;
+
+            while (!IsHandleCreated) // Wait for form to be ready
+                await Task.Delay(2_000).ConfigureAwait(false);
+
+            await InvokeAsync(() => NotifyNewVersionAvailable(latestVersion)); // invoke on GUI thread
+        });
+    }
+
+    private void NotifyNewVersionAvailable(Version version)
+    {
+        var date = $"{version.Major:00}.{version.Minor:00}.{version.Build:00}.{version.Revision}";
+        var lbl = L_UpdateAvailable;
+        lbl.Text = $"New Update Available! {date}";
+        lbl.Click += (_, _) => Process.Start(new ProcessStartInfo("https://github.com/Eppin/Sysbot.NET") { UseShellExecute = true });
+        lbl.Visible = lbl.TabStop = lbl.Enabled = true;
+    }
+    // End of original source of PKHeX
+    // https://github.com/kwsch/PKHeX/blob/24.11.11/PKHeX.WinForms/MainWindow/Main.cs#L197-L225
 }
