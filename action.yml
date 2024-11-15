@@ -5,7 +5,7 @@ inputs:
   dotnet:
     description: '.NET version'
     required: true
-    default: 'net8.0-windows'
+    default: 'net9.0-windows'
 
   platform:
     description: 'Platform'

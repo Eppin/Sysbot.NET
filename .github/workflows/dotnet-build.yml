@@ -23,7 +23,7 @@ jobs:
     - name: Install .NET Core
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 9.0.x
 
     - name: Restore packages
       run: dotnet restore
@@ -37,19 +37,10 @@ jobs:
     - name: Build WinForms - Windows x64
       uses: ./.github/actions/sysbot-build
       with:
-        dotnet: 'net8.0-windows'
+        dotnet: 'net9.0-windows'
         platform: 'win-x64'
         project: 'SysBot.Pokemon.WinForms'
         artifact: 'winforms-windows-x64'
-        version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
-
-    - name: Build ConsoleApp - Linux arm64
-      uses: ./.github/actions/sysbot-build
-      with:
-        dotnet: 'net8.0'
-        platform: 'linux-arm64'
-        project: 'SysBot.Pokemon.ConsoleApp'
-        artifact: 'consoleapp-linux-arm64'
         version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
 
     # Create pre-release
@@ -74,4 +65,3 @@ jobs:
         body: Release, compare Git commits.
         files: |
           winforms-windows-x64.zip
-          consoleapp-linux-arm64.zip
