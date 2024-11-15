@@ -15,7 +15,11 @@ public class BotModule<T> : ModuleBase<SocketCommandContext> where T : PKM, new(
     public async Task GetStatusAsync()
     {
         var me = SysCord<T>.Runner;
+
+#pragma warning disable CA2021
         var bots = me.Bots.Select(z => z.Bot).OfType<PokeRoutineExecutorBase>().ToArray();
+#pragma warning restore CA2021
+
         if (bots.Length == 0)
         {
             await ReplyAsync("No bots configured.").ConfigureAwait(false);
