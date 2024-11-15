@@ -1,6 +1,7 @@
 namespace SysBot.Pokemon;
 
 using PKHeX.Core;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static Base.SwitchButton;
@@ -21,7 +22,7 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             await Click(A, 0_100, token).ConfigureAwait(false);
             await SetStick(LEFT, 0, 30000, 1_000, token).ConfigureAwait(false);
 
-            // Encounters Zacian/Zamazenta and clicks through all the menus.
+            // Encounters Calyrex and clicks through all the menus.
             while (!await IsInBattle(token).ConfigureAwait(false))
                 await Click(A, 0_300, token).ConfigureAwait(false);
 
@@ -50,21 +51,28 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             Log("Catching Calyrex...");
             await Catch(token).ConfigureAwait(false);
 
-            Log("Exiting battle!");
+            var later = DateTime.Now.AddMinutes(2);
+            Log($"Exit battle, wait till [{later}] before we force a game restart", false);
 
             PK8? horse = null;
-            while (horse is not { Valid: true, Species: > 0 })
+            while (horse is not { Valid: true, Species: > 0 } && DateTime.Now <= later)
             {
                 horse = await ReadPokemon(CalyrexFusionSlotAddress, BoxFormatSlotSize, token).ConfigureAwait(false);
                 await Click(A, 0_200, token).ConfigureAwait(false);
             }
 
-            Log("Checking horse details...");
-            (stop, _) = await HandleEncounter(horse, token).ConfigureAwait(false);
-            if (stop)
-                return;
+            if (DateTime.Now >= later)
+                Log("Force restart of the game...");
+            else
+            {
+                Log("Checking horse details...");
+                (stop, _) = await HandleEncounter(horse, token).ConfigureAwait(false);
+                if (stop)
+                    return;
 
-            Log("No match, resetting the game...");
+                Log("No match, resetting the game...");
+            }
+
             await CloseGame(Hub.Config, token).ConfigureAwait(false);
             await StartGame(Hub.Config, token).ConfigureAwait(false);
         }
