@@ -44,7 +44,16 @@ public class StopConditionSettings
     [Category(StopConditions)]
     public class SearchCondition
     {
-        public override string ToString() => $"{(!IsEnabled ? $"{Nature}, condition is disabled" : $"{Nature}, {StopOnSpecies}, {TargetMinIVs} - {TargetMaxIVs}")}";
+        public override string ToString()
+        {
+            if (!IsEnabled) return $"{Nature}, condition is disabled";
+
+            var ivsStr = FlawlessIVs == TargetFlawlessIVsType.Disabled
+                ? $"{TargetMinIVs} - {TargetMaxIVs}"
+                : $"Flawless IVs: {Convert(FlawlessIVs)}";
+
+            return $"{Nature}, {StopOnSpecies}, {ivsStr}";
+        }
 
         [Category(StopConditions), DisplayName("1. Enabled")]
         public bool IsEnabled { get; set; } = true;
@@ -58,10 +67,14 @@ public class StopConditionSettings
         [Category(StopConditions), DisplayName("4. Gender")]
         public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
 
-        [Category(StopConditions), DisplayName("5. Minimum accepted IVs")]
+        [Category(StopConditions), DisplayName("5. Minimum flawless IVs")]
+        [TypeConverter(typeof(TargetFlawlessIVsConverter))]
+        public TargetFlawlessIVsType FlawlessIVs { get; set; } = TargetFlawlessIVsType.Disabled;
+
+        [Category(StopConditions), DisplayName("6. Minimum accepted IVs")]
         public string TargetMinIVs { get; set; } = "";
 
-        [Category(StopConditions), DisplayName("6. Maximum accepted IVs")]
+        [Category(StopConditions), DisplayName("7. Maximum accepted IVs")]
         public string TargetMaxIVs { get; set; } = "";
     }
 
@@ -112,13 +125,13 @@ public class StopConditionSettings
             return true;
 
         return settings.SearchConditions.Any(s =>
-            MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
+            (MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs, s.FlawlessIVs) || MatchFlawlessIVs(pkIVsArr, s.FlawlessIVs)) &&
             (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
             (s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             s.IsEnabled);
     }
-  
+
     private static bool MatchGender(TargetGenderType target, Gender result)
     {
         return target switch
@@ -131,8 +144,28 @@ public class StopConditionSettings
         };
     }
 
-    private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr)
+    private static bool MatchFlawlessIVs(IReadOnlyList<int> pkIVs, TargetFlawlessIVsType targetFlawlessIVs)
     {
+        var count = pkIVs.Count(iv => iv == 31);
+
+        return targetFlawlessIVs switch
+        {
+            TargetFlawlessIVsType.Disabled => false,
+            TargetFlawlessIVsType._0 => count >= 0,
+            TargetFlawlessIVsType._1 => count >= 1,
+            TargetFlawlessIVsType._2 => count >= 2,
+            TargetFlawlessIVsType._3 => count >= 3,
+            TargetFlawlessIVsType._4 => count >= 4,
+            TargetFlawlessIVsType._5 => count >= 5,
+            TargetFlawlessIVsType._6 => count == 6,
+            _ => throw new ArgumentOutOfRangeException(nameof(targetFlawlessIVs), targetFlawlessIVs, null)
+        };
+    }
+
+    private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr, TargetFlawlessIVsType targetFlawlessIVs)
+    {
+        if (targetFlawlessIVs != TargetFlawlessIVsType.Disabled) return false;
+
         var targetMinIVs = ReadTargetIVs(targetMinIVsStr, true);
         var targetMaxIVs = ReadTargetIVs(targetMaxIVsStr, false);
 
@@ -215,6 +248,25 @@ public class StopConditionSettings
         }
         return "";
     }
+
+    // Quite ugly solution to display DescriptionAttribute
+    private static string Convert<T>(T value) where T : Enum
+    {
+        var k = typeof(T);
+        var g = k.Name;
+
+        var name = Enum.GetName(typeof(T), value);
+        if (string.IsNullOrWhiteSpace(name))
+            return value.ToString();
+
+        var fieldInfo = typeof(T).GetField(name);
+        if (fieldInfo == null)
+            return value.ToString();
+
+        return Attribute.GetCustomAttribute(fieldInfo, typeof(DescriptionAttribute)) is DescriptionAttribute dna
+            ? dna.Description
+            : value.ToString();
+    }
 }
 
 public enum TargetShinyType
@@ -232,4 +284,16 @@ public enum TargetGenderType
     Male,           // Match male only
     Female,         // Match female only
     Genderless,     // Match genderless only
+}
+
+public enum TargetFlawlessIVsType
+{
+    Disabled,
+    [Description("0")] _0,
+    [Description("1")] _1,
+    [Description("2")] _2,
+    [Description("3")] _3,
+    [Description("4")] _4,
+    [Description("5")] _5,
+    [Description("6")] _6,
 }

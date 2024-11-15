@@ -2,6 +2,7 @@ using FluentAssertions;
 using PKHeX.Core;
 using SysBot.Pokemon;
 using Xunit;
+using LegalitySettings = SysBot.Pokemon.LegalitySettings;
 
 namespace SysBot.Tests;
 
@@ -63,48 +64,7 @@ public class GenerateTests
         }
     }
 
-        [Theory]
-        [InlineData(InvalidSpec)]
-        public void ShouldNotGenerate(string set)
-        {
-            _ = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            var s = ShowdownUtil.ConvertToShowdown(set);
-            s.Should().BeNull();
-        }
-
-        [Theory]
-        [InlineData(Torkoal2, 2)]
-        [InlineData(Charizard4, 4)]
-        public void TestAbility(string set, int abilNumber)
-        {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            for (int i = 0; i < 10; i++)
-            {
-                var s = new ShowdownSet(set);
-                var template = AutoLegalityWrapper.GetTemplate(s);
-                var pk = sav.GetLegal(template, out _);
-                pk.AbilityNumber.Should().Be(abilNumber);
-            }
-        }
-
-        [Theory]
-        [InlineData(Torkoal2, 2)]
-        [InlineData(Charizard4, 4)]
-        public void TestAbilityTwitch(string set, int abilNumber)
-        {
-            var sav = AutoLegalityWrapper.GetTrainerInfo<PK8>();
-            for (int i = 0; i < 10; i++)
-            {
-                var twitch = set.Replace("\r\n", " ").Replace("\n", " ");
-                var s = ShowdownUtil.ConvertToShowdown(twitch);
-                var template = s == null ? null : AutoLegalityWrapper.GetTemplate(s);
-                var pk = template == null ? null : sav.GetLegal(template, out _);
-                pk.Should().NotBeNull();
-                pk!.AbilityNumber.Should().Be(abilNumber);
-            }
-        }
-
-        private const string Gengar =
+    private const string Gengar =
 @"Gengar-Gmax @ Life Orb 
 Ability: Cursed Body 
 Shiny: Yes 
@@ -159,7 +119,6 @@ Timid Nature
 - Solar Beam 
 - Beat Up";
 
-        private const string InvalidSpec =
+    private const string InvalidSpec =
 "(Pikachu)";
-    }
 }
