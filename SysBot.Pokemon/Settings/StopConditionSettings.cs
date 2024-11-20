@@ -252,9 +252,6 @@ public class StopConditionSettings
     // Quite ugly solution to display DescriptionAttribute
     private static string Convert<T>(T value) where T : Enum
     {
-        var k = typeof(T);
-        var g = k.Name;
-
         var name = Enum.GetName(typeof(T), value);
         if (string.IsNullOrWhiteSpace(name))
             return value.ToString();
