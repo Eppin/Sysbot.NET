@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace SysBot.Pokemon;
 
-public class TargetFlawlessIVsConverter(Type type) : EnumConverter(type)
+public class DescriptionAttributeConverter(Type type) : EnumConverter(type)
 {
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value, Type destinationType)
     {
