@@ -64,17 +64,21 @@ public class StopConditionSettings
         [Category(StopConditions), DisplayName("3. Nature")]
         public Nature Nature { get; set; }
 
-        [Category(StopConditions), DisplayName("4. Gender")]
+        [Category(StopConditions), DisplayName("4. Ability")]
+        [TypeConverter(typeof(DescriptionAttributeConverter))]
+        public TargetAbilityType AbilityTarget { get; set; } = TargetAbilityType.Any;
+
+        [Category(StopConditions), DisplayName("5. Gender")]
         public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
 
-        [Category(StopConditions), DisplayName("5. Minimum flawless IVs")]
-        [TypeConverter(typeof(TargetFlawlessIVsConverter))]
+        [Category(StopConditions), DisplayName("6. Minimum flawless IVs")]
+        [TypeConverter(typeof(DescriptionAttributeConverter))]
         public TargetFlawlessIVsType FlawlessIVs { get; set; } = TargetFlawlessIVsType.Disabled;
 
-        [Category(StopConditions), DisplayName("6. Minimum accepted IVs")]
+        [Category(StopConditions), DisplayName("7. Minimum accepted IVs")]
         public string TargetMinIVs { get; set; } = "";
 
-        [Category(StopConditions), DisplayName("7. Maximum accepted IVs")]
+        [Category(StopConditions), DisplayName("8. Maximum accepted IVs")]
         public string TargetMaxIVs { get; set; } = "";
     }
 
@@ -129,7 +133,20 @@ public class StopConditionSettings
             (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
             (s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
+            MatchAbility(s.AbilityTarget, pk.Ability) &&
             s.IsEnabled);
+    }
+
+    private static bool MatchAbility(TargetAbilityType target, int result)
+    {
+        return target switch
+        {
+            TargetAbilityType.Any => true,
+            TargetAbilityType.First => 1 == result,
+            TargetAbilityType.Second => 2 == result,
+            TargetAbilityType.Hidden => 4 == result,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), $"{nameof(TargetAbilityType)} value {target} is not valid"),
+        };
     }
 
     private static bool MatchGender(TargetGenderType target, Gender result)
@@ -264,6 +281,14 @@ public class StopConditionSettings
             ? dna.Description
             : value.ToString();
     }
+}
+
+public enum TargetAbilityType
+{
+    Any,            // Doesn't care
+    First,          // Match first only
+    Second,         // Match second only
+    Hidden,         // Match hidden only
 }
 
 public enum TargetShinyType
