@@ -80,8 +80,8 @@ public class EncounterBotDenSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : Enco
         if (!_denMode.ThrowWishingPiece)
             return;
 
-        await Click(A, 3_500, token).ConfigureAwait(false); // Start dialogue
-        await Click(A, 2_500, token).ConfigureAwait(false); // Want to throw in a Wishing Piece?
+        await Click(A, 4_500, token).ConfigureAwait(false); // Start dialogue
+        await Click(A, 4_500, token).ConfigureAwait(false); // Want to throw in a Wishing Piece?
         await Click(A, 0_500, token).ConfigureAwait(false); // Would you like to save the game?
     }
 
