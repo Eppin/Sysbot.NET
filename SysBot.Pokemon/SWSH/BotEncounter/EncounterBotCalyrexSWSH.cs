@@ -8,7 +8,7 @@ using static Base.SwitchButton;
 using static Base.SwitchStick;
 using static PokeDataOffsetsSWSH;
 
-public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : EncounterBotEggSWSH(cfg, hub)
+public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : EncounterBotSWSH(cfg, hub)
 {
     protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
     {

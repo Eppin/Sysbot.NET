@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon;
 
@@ -9,6 +9,8 @@ public abstract class BasePokeDataOffsetsBS : IPokeDataOffsetsBS
     public const string BrilliantDiamondID = "0100000011D90000";
 
     public abstract IReadOnlyList<long> BoxStartPokemonPointer { get; }
+    public abstract IReadOnlyList<long> DayCareParent1PokemonPointer { get; }
+    public abstract IReadOnlyList<long> DayCareParent2PokemonPointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerNamePointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerIDPointer { get; }

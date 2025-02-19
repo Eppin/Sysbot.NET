@@ -130,6 +130,7 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
         {
             null => ("(no valid data to embed)", null),
             PK8 pk8 => EmbedPk(pk8, success),
+            PB8 pb8 => EmbedPk(pb8, success),
             PK9 pk9 => EmbedPk(pk9, success),
             _ => ("(unsupported embed)", null)
         };
@@ -175,7 +176,7 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
                 ? "★ - "
                 : "";
 
-        var description = $"{shiny}{SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, 8)}{OutputExtensions<T>.FormOutput(pk.Species, pk.Form, out _)}{gender}{spec}\n{(Nature)pk.Nature}, {(Ability)pk.Ability}\nIVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}";
+        var description = $"{shiny}{SpeciesName.GetSpeciesNameGeneration(pk.Species, 2, 8)}{OutputExtensions<T>.FormOutput(pk.Species, pk.Form, out _)}{gender}{spec}\n{pk.Nature}, {(Ability)pk.Ability}\nIVs: {pk.IV_HP}/{pk.IV_ATK}/{pk.IV_DEF}/{pk.IV_SPA}/{pk.IV_SPD}/{pk.IV_SPE}";
 
         var markUrl = success
             ? "https://i.imgur.com/T8vEiIk.jpg"

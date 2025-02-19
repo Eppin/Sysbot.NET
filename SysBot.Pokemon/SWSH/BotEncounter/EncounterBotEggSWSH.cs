@@ -77,14 +77,14 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
                 await Click(B, 0_200, token).ConfigureAwait(false);
 
             Log($"Egg received in B{Box + 1}S{Slot + 1}. Checking details.");
-            var pk = await ReadBoxPokemon(Box, Slot, token).ConfigureAwait(false);
+            var (pk, bytes) = await ReadRawBoxPokemon(Box, Slot, token).ConfigureAwait(false);
             if (pk.Species == 0)
             {
                 Log($"No egg found in B{Box + 1}S{Slot + 1}. Ensure that the party is full. Restarting loop.");
                 continue;
             }
 
-            var (stop, success) = await HandleEncounter(pk, token).ConfigureAwait(false);
+            var (stop, success) = await HandleEncounter(pk, token, bytes).ConfigureAwait(false);
 
             if (success)
             {
