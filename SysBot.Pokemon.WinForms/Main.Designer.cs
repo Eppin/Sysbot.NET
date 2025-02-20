@@ -1,4 +1,4 @@
-﻿using SysBot.Pokemon.WinForms.Properties;
+using SysBot.Pokemon.WinForms.Properties;
 
 namespace SysBot.Pokemon.WinForms
 {
@@ -213,12 +213,14 @@ namespace SysBot.Pokemon.WinForms
             // L_UpdateAvailable
             // 
             L_UpdateAvailable.AutoSize = true;
+            L_UpdateAvailable.Enabled = false;
             L_UpdateAvailable.Location = new System.Drawing.Point(130, 2);
             L_UpdateAvailable.Name = "L_UpdateAvailable";
             L_UpdateAvailable.Size = new System.Drawing.Size(211, 15);
             L_UpdateAvailable.TabIndex = 5;
-            L_UpdateAvailable.TabStop = true;
+            L_UpdateAvailable.TabStop = false;
             L_UpdateAvailable.Text = "New Update Available! YYYY.MM.DD.BBB";
+            L_UpdateAvailable.Visible = false;
             // 
             // Main
             // 

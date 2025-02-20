@@ -12,7 +12,7 @@ namespace System.Collections.Concurrent;
 [DebuggerDisplay("Count={" + nameof(Count) + "}")]
 public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection<KeyValuePair<TKey, TValue>> where TKey : IComparable<TKey> where TValue : IEquatable<TValue>
 {
-    protected readonly Lock SyncLock = new();
+    protected readonly object SyncLock = new();
     protected readonly MinQueue Queue = new();
 
     /// <summary>Initializes a new instance of the ConcurrentPriorityQueue class.</summary>

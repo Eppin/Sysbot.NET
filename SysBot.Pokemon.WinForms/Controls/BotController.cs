@@ -18,9 +18,9 @@ public partial class BotController : UserControl
     public BotController()
     {
         InitializeComponent();
-        var opt = (BotControlCommand[])Enum.GetValues(typeof(BotControlCommand));
+        var opt = Enum.GetValues<BotControlCommand>();
 
-        for (int i = 1; i < opt.Length; i++)
+        for (var i = 1; i < opt.Length; i++)
         {
             var cmd = opt[i];
             var item = new ToolStripMenuItem(cmd.ToString());
@@ -47,7 +47,7 @@ public partial class BotController : UserControl
         if (Runner == null)
             return;
 
-        bool runOnce = Runner.RunOnce;
+        var runOnce = Runner.RunOnce;
         var bot = Runner.GetBot(State);
         if (bot is null)
             return;
@@ -102,8 +102,8 @@ public partial class BotController : UserControl
 
         // Color decay from Green based on time
         const int threshold = 100;
-        Color good = Color.Green;
-        Color bad = Color.Red;
+        var good = Color.Green;
+        var bad = Color.Red;
 
         var delta = DateTime.Now - lastTime;
         var seconds = delta.Seconds;
@@ -129,9 +129,9 @@ public partial class BotController : UserControl
 
     private static Color Blend(Color color, Color backColor, double amount)
     {
-        byte r = (byte)((color.R * amount) + (backColor.R * (1 - amount)));
-        byte g = (byte)((color.G * amount) + (backColor.G * (1 - amount)));
-        byte b = (byte)((color.B * amount) + (backColor.B * (1 - amount)));
+        var r = (byte)((color.R * amount) + (backColor.R * (1 - amount)));
+        var g = (byte)((color.G * amount) + (backColor.G * (1 - amount)));
+        var b = (byte)((color.B * amount) + (backColor.B * (1 - amount)));
         return Color.FromArgb(r, g, b);
     }
 
@@ -211,7 +211,7 @@ public enum BotControlCommand
     Stop,
     Idle,
     Resume,
-    Restart,
+    Restart
 }
 
 public static class BotControlCommandExtensions
@@ -225,7 +225,7 @@ public static class BotControlCommandExtensions
             BotControlCommand.Idle => running && !paused,
             BotControlCommand.Resume => paused,
             BotControlCommand.Restart => true,
-            _ => false,
+            _ => false
         };
     }
 }
