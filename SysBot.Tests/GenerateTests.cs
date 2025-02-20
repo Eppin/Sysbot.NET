@@ -2,6 +2,7 @@ using FluentAssertions;
 using PKHeX.Core;
 using SysBot.Pokemon;
 using Xunit;
+using LegalitySettings = SysBot.Pokemon.LegalitySettings;
 
 namespace SysBot.Tests;
 
@@ -64,7 +65,7 @@ public class GenerateTests
     }
 
     private const string Gengar =
-        @"Gengar-Gmax @ Life Orb 
+@"Gengar-Gmax @ Life Orb 
 Ability: Cursed Body 
 Shiny: Yes 
 EVs: 252 SpA / 4 SpD / 252 Spe 

@@ -420,16 +420,26 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
     }
 
     private readonly Dictionary<uint, ulong> _cacheBlockArrays = new();
-    public async Task<byte[]> ReadEncryptedBlockArray(ulong baseBlock, uint blockKey, int blockSize, CancellationToken token)
+    public async Task<byte[]> ReadEncryptedBlockArray(ulong baseBlock, uint blockKey, int blockSize, bool init, CancellationToken token)
     {
-        if (!_cacheBlockArrays.TryGetValue(blockKey, out var cachedAddress))
+        var exists = _cacheBlockArrays.TryGetValue(blockKey, out var cachedAddress);
+        if (init || !exists)
         {
             var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
             address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
             cachedAddress = address;
 
-            _cacheBlockArrays.Add(blockKey, cachedAddress);
-            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            if (exists)
+            {
+                _cacheBlockArrays[blockKey] = cachedAddress;
+                Log($"Refreshed address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
+            else
+            {
+                _cacheBlockArrays.Add(blockKey, cachedAddress);
+                Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
+
         }
 
         var data = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 6 + blockSize, token).ConfigureAwait(false);
@@ -439,16 +449,25 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
     }
 
     private readonly Dictionary<uint, ulong> _cacheBlockUint32s = new();
-    public async Task<uint> ReadEncryptedBlockUInt32(ulong baseBlock, uint blockKey, CancellationToken token)
+    public async Task<uint> ReadEncryptedBlockUInt32(ulong baseBlock, uint blockKey, bool init, CancellationToken token)
     {
-        if (!_cacheBlockUint32s.TryGetValue(blockKey, out var cachedAddress))
+        var exists = _cacheBlockUint32s.TryGetValue(blockKey, out var cachedAddress);
+        if (init || !exists)
         {
             var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
             address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
             cachedAddress = address;
 
-            _cacheBlockUint32s.Add(blockKey, cachedAddress);
-            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            if (exists)
+            {
+                _cacheBlockUint32s[blockKey] = cachedAddress;
+                Log($"Refreshed address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
+            else
+            {
+                _cacheBlockUint32s.Add(blockKey, cachedAddress);
+                Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
         }
 
         var header = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 5, token).ConfigureAwait(false);
@@ -458,16 +477,25 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
     }
 
     private readonly Dictionary<uint, ulong> _cacheBlockBytes = new();
-    public async Task<byte> ReadEncryptedBlockByte(ulong baseBlock, uint blockKey, CancellationToken token)
+    public async Task<byte> ReadEncryptedBlockByte(ulong baseBlock, uint blockKey, bool init, CancellationToken token)
     {
-        if (!_cacheBlockBytes.TryGetValue(blockKey, out var cachedAddress))
+        var exists = _cacheBlockBytes.TryGetValue(blockKey, out var cachedAddress);
+        if (init || !exists)
         {
             var address = await SearchSaveKey(baseBlock, blockKey, token).ConfigureAwait(false);
             address = BitConverter.ToUInt64(await SwitchConnection.ReadBytesAbsoluteAsync(address + 8, 0x8, token).ConfigureAwait(false), 0);
             cachedAddress = address;
 
-            _cacheBlockBytes.Add(blockKey, cachedAddress);
-            Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            if (exists)
+            {
+                _cacheBlockBytes[blockKey] = cachedAddress;
+                Log($"Refreshed address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
+            else
+            {
+                _cacheBlockBytes.Add(blockKey, cachedAddress);
+                Log($"Initial address for {blockKey:X8} found at {cachedAddress:X8}");
+            }
         }
 
         var header = await SwitchConnection.ReadBytesAbsoluteAsync(cachedAddress, 5, token).ConfigureAwait(false);

@@ -59,7 +59,7 @@ public abstract class EncounterBotEncounterSV(PokeBotState cfg, PokeTradeHub<PK9
             }
 
             if (DateTime.Now >= later)
-                Log("Force restart of the game..");
+                Log("Force restart of the game...");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             Log($"Single encounter duration: [{sw.Elapsed}]", false);
