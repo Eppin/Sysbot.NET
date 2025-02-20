@@ -10,11 +10,11 @@ public class DescriptionAttributeConverter(Type type) : EnumConverter(type)
     {
         if (value == null) return base.ConvertTo(context, culture, value, destinationType);
 
-        var name = Enum.GetName(type, value);
+        var name = Enum.GetName(EnumType, value);
         if (string.IsNullOrWhiteSpace(name))
             return value.ToString();
 
-        var fieldInfo = type.GetField(name);
+        var fieldInfo = EnumType.GetField(name);
         if (fieldInfo == null)
             return value.ToString();
 
@@ -25,12 +25,12 @@ public class DescriptionAttributeConverter(Type type) : EnumConverter(type)
 
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value)
     {
-        foreach (var fieldInfo in type.GetFields())
+        foreach (var fieldInfo in EnumType.GetFields())
         {
             if (Attribute.GetCustomAttribute(fieldInfo, typeof(DescriptionAttribute)) is DescriptionAttribute dna && (string)value == dna.Description)
-                return Enum.Parse(type, fieldInfo.Name);
+                return Enum.Parse(EnumType, fieldInfo.Name);
         }
 
-        return Enum.Parse(type, (string)value);
+        return Enum.Parse(EnumType, (string)value);
     }
 }
