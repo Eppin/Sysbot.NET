@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
@@ -22,7 +22,7 @@ public sealed class FavoredCPQ<TKey, TValue> : ConcurrentPriorityQueue<TKey, TVa
             return;
         }
 
-        lock (_syncLock)
+        lock (SyncLock)
         {
             var q = Queue;
             var items = q.Items;

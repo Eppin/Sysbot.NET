@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -107,14 +108,14 @@ public sealed partial class Main : Form
         MinimumSize = Size;
         PG_Hub.SelectedObject = _runningEnvironment.Config;
 
-        var routines = ((PokeRoutineType[])Enum.GetValues(typeof(PokeRoutineType))).Where(z => _runningEnvironment.SupportsRoutine(z));
+        var routines = Enum.GetValues<PokeRoutineType>().Where(z => _runningEnvironment.SupportsRoutine(z));
         var list = routines.Select(z => new ComboItem(z.ToString(), (int)z)).ToArray();
         CB_Routine.DisplayMember = nameof(ComboItem.Text);
         CB_Routine.ValueMember = nameof(ComboItem.Value);
         CB_Routine.DataSource = list;
         CB_Routine.SelectedValue = (int)PokeRoutineType.FlexTrade; // default option
 
-        var protocols = (SwitchProtocol[])Enum.GetValues(typeof(SwitchProtocol));
+        var protocols = Enum.GetValues<SwitchProtocol>();
         var listP = protocols.Select(z => new ComboItem(z.ToString(), (int)z)).ToArray();
         CB_Protocol.DisplayMember = nameof(ComboItem.Text);
         CB_Protocol.ValueMember = nameof(ComboItem.Value);
@@ -133,7 +134,7 @@ public sealed partial class Main : Form
             UpdateLog(line);
     }
 
-    private readonly object _logLock = new();
+    private readonly Lock _logLock = new();
 
     private void UpdateLog(string line)
     {
