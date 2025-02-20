@@ -28,6 +28,9 @@ jobs:
     - name: Restore packages
       run: dotnet restore
 
+    - name: Run UnitTests
+      run: dotnet test
+
     # Get current date for release naming
     - name: Get current date
       id: date
@@ -51,6 +54,7 @@ jobs:
         project: 'SysBot.Pokemon.ConsoleApp'
         artifact: 'consoleapp-linux-arm64'
         version: '${{ steps.date.outputs.DATE }}.${{ github.run_number }}'
+        sc: true
 
     # Create pre-release
     - name: Pre-Release 
