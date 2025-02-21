@@ -1,4 +1,3 @@
-using System;
 using PKHeX.Core;
 using SysBot.Base;
 using System.Threading;

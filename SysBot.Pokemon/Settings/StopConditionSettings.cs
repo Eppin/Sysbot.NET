@@ -65,7 +65,6 @@ public class StopConditionSettings
         public Nature Nature { get; set; }
 
         [Category(StopConditions), DisplayName("4. Ability")]
-        [TypeConverter(typeof(DescriptionAttributeConverter))]
         public TargetAbilityType AbilityTarget { get; set; } = TargetAbilityType.Any;
 
         [Category(StopConditions), DisplayName("5. Gender")]

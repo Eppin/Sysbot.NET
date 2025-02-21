@@ -64,7 +64,7 @@ public class PartnerMarkBot : PokeRoutineExecutor9SV
         await SetStick(LEFT, -30000, 0, 0_800, token).ConfigureAwait(false);
         await Click(LSTICK, 1_000, token).ConfigureAwait(false);
 
-        Task.Run(async () =>
+        _ = Task.Run(async () =>
         {
             while (!token.IsCancellationRequested)
             {

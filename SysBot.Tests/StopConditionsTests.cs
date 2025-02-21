@@ -10,7 +10,7 @@ namespace SysBot.Tests;
 public class StopConditionsTests
 {
     [Theory]
-    [InlineData(TargetFlawlessIVsType.Any, true)]
+    [InlineData(TargetFlawlessIVsType.Disabled, true)]
     [InlineData(TargetFlawlessIVsType._0, true)]
     [InlineData(TargetFlawlessIVsType._1, true)]
     [InlineData(TargetFlawlessIVsType._2, true)]
@@ -43,7 +43,7 @@ public class StopConditionsTests
         var bytes = await GetResource("0813 - Scorbunny - 4F320450C78B.pk9");
 
         var pk9 = new PK9(bytes);
-        var sc = new StopConditionSettings { SearchConditions = [new() { TargetMinIVs = targetMinIVs, TargetMaxIVs = targetMaxIVs, FlawlessIVs = TargetFlawlessIVsType.Any }] };
+        var sc = new StopConditionSettings { SearchConditions = [new() { TargetMinIVs = targetMinIVs, TargetMaxIVs = targetMaxIVs, FlawlessIVs = TargetFlawlessIVsType.Disabled }] };
 
         // Act
         var result = StopConditionSettings.EncounterFound(pk9, sc, null);
