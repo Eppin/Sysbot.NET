@@ -71,7 +71,7 @@ public static class BotContainer
 {
     public static void RunBots(ProgramConfig prog)
     {
-        IPokeBotRunner env = GetRunner(prog);
+        var env = GetRunner(prog);
         foreach (var bot in prog.Bots)
         {
             bot.Initialize();
@@ -81,7 +81,7 @@ public static class BotContainer
 
         LogUtil.Forwarders.Add(((msg, ident) => Console.WriteLine($"{ident}: {msg}"), nameof(Program)));
         env.StartAll();
-        Console.WriteLine($"Started all bots (Count: {prog.Bots.Length}.");
+        Console.WriteLine($"Started all bots (Count: {prog.Bots.Length}).");
         WaitForExit();
         env.StopAll();
     }
@@ -97,22 +97,23 @@ public static class BotContainer
 
         Console.WriteLine("Running in non-interactive mode. Waiting for exit signal.");
 
-        bool cancel = false;
+        var cancel = false;
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
         {
             Console.WriteLine("Process exit detected. Stopping all bots.");
             cancel = true;
         };
+
         while (!cancel)
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(1_000);
     }
 
     private static IPokeBotRunner GetRunner(ProgramConfig prog) => prog.Mode switch
     {
         ProgramMode.SWSH => new PokeBotRunnerImpl<PK8>(prog.Hub, new BotFactory8SWSH()),
         ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(prog.Hub, new BotFactory8BS()),
-        ProgramMode.LA   => new PokeBotRunnerImpl<PA8>(prog.Hub, new BotFactory8LA()),
-        ProgramMode.SV   => new PokeBotRunnerImpl<PK9>(prog.Hub, new BotFactory9SV()),
+        ProgramMode.LA => new PokeBotRunnerImpl<PA8>(prog.Hub, new BotFactory8LA()),
+        ProgramMode.SV => new PokeBotRunnerImpl<PK9>(prog.Hub, new BotFactory9SV()),
         _ => throw new IndexOutOfRangeException("Unsupported mode."),
     };
 
@@ -134,6 +135,7 @@ public static class BotContainer
             Console.WriteLine($"Current Mode ({mode}) does not support this type of bot ({cfg.CurrentRoutineType}).");
             return false;
         }
+
         try
         {
             env.Add(newBot);
