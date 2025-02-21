@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using System;
 
 namespace SysBot.Pokemon;
@@ -12,8 +12,9 @@ public sealed class BotFactory8BS : BotFactory<PB8>
             or PokeRoutineType.Dump
             => new PokeTradeBotBS(Hub, cfg),
 
-        PokeRoutineType.RemoteControl => new RemoteControlBotBS(cfg),
+        PokeRoutineType.EggFetch => new EncounterBotEggBS(cfg, Hub),
 
+        PokeRoutineType.RemoteControl => new RemoteControlBotBS(cfg),
         _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
     };
 
@@ -23,6 +24,8 @@ public sealed class BotFactory8BS : BotFactory<PB8>
             or PokeRoutineType.LinkTrade
             or PokeRoutineType.Dump
             => true,
+
+        PokeRoutineType.EggFetch => true,
 
         PokeRoutineType.RemoteControl => true,
 

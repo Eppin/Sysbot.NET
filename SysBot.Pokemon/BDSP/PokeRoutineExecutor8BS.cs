@@ -33,6 +33,15 @@ public abstract class PokeRoutineExecutor8BS : PokeRoutineExecutor<PB8>
         return await ReadPokemon(offset, token).ConfigureAwait(false);
     }
 
+    public async Task SetPokemonPointer(IEnumerable<long> jumps, PB8 pkm, CancellationToken token)
+    {
+        var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+        if (!valid)
+            return;
+
+        await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, offset, token).ConfigureAwait(false);
+    }
+
     public async Task<bool> ReadIsChanged(uint offset, byte[] original, CancellationToken token)
     {
         var result = await Connection.ReadBytesAsync(offset, original.Length, token).ConfigureAwait(false);
@@ -46,6 +55,13 @@ public abstract class PokeRoutineExecutor8BS : PokeRoutineExecutor<PB8>
         return await ReadPokemonPointer(jumps, BoxFormatSlotSize, token).ConfigureAwait(false);
     }
 
+    public async Task SetBoxPokemon(PB8 pkm, CancellationToken token)
+    {
+        // Shouldn't be reading anything but box1slot1 here. Slots are not consecutive.
+        var jumps = Offsets.BoxStartPokemonPointer.ToArray();
+        await SetPokemonPointer(jumps, pkm, token).ConfigureAwait(false);
+    }
+
     public async Task SetBoxPokemonAbsolute(ulong offset, PB8 pkm, CancellationToken token, ITrainerInfo? sav = null)
     {
         if (sav != null)
@@ -57,6 +73,24 @@ public abstract class PokeRoutineExecutor8BS : PokeRoutineExecutor<PB8>
 
         pkm.ResetPartyStats();
         await SwitchConnection.WriteBytesAbsoluteAsync(pkm.EncryptedPartyData, offset, token).ConfigureAwait(false);
+    }
+
+    public async Task<(PB8, byte[]?)> ReadRawBoxPokemon(int box, int slot, CancellationToken token)
+    {
+        var jumps = Offsets.BoxStartPokemonPointer.ToArray();
+        var (valid, b1s1) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+        if (!valid)
+            return (new PB8(), null);
+
+        var copiedData = new byte[BoxFormatSlotSize];
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(b1s1, BoxFormatSlotSize, token).ConfigureAwait(false);
+
+        data.CopyTo(copiedData, 0);
+
+        if (!data.SequenceEqual(copiedData))
+            throw new InvalidOperationException("Raw data is not copied correctly");
+
+        return (new PB8(data), copiedData);
     }
 
     public async Task<SAV8BS> IdentifyTrainer(CancellationToken token)
