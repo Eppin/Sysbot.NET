@@ -67,7 +67,7 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 
 # Dependencies
 
-- [.NET 8 runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 9 runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [PKHeX](https://github.com/kwsch/PKHeX/)
 - [AutoMod](https://github.com/architdate/PKHeX-Plugins/)
 - [Discord.Net](https://github.com/discord-net/Discord.Net)

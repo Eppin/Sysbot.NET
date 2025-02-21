@@ -1,4 +1,4 @@
-﻿using SysBot.Pokemon.WinForms.Properties;
+using SysBot.Pokemon.WinForms.Properties;
 
 namespace SysBot.Pokemon.WinForms
 {
@@ -44,6 +44,7 @@ namespace SysBot.Pokemon.WinForms
             this.RTB_Logs = new System.Windows.Forms.RichTextBox();
             this.B_Stop = new System.Windows.Forms.Button();
             this.B_Start = new System.Windows.Forms.Button();
+            this.L_UpdateAvailable = new System.Windows.Forms.LinkLabel();
             this.TC_Main.SuspendLayout();
             this.Tab_Bots.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.NUD_Port)).BeginInit();
@@ -116,7 +117,7 @@ namespace SysBot.Pokemon.WinForms
             this.CB_Routine.FormattingEnabled = true;
             this.CB_Routine.Location = new System.Drawing.Point(312, 5);
             this.CB_Routine.Name = "CB_Routine";
-            this.CB_Routine.Size = new System.Drawing.Size(101, 21);
+            this.CB_Routine.Size = new System.Drawing.Size(131, 21);
             this.CB_Routine.TabIndex = 7;
             // 
             // NUD_Port
@@ -190,7 +191,7 @@ namespace SysBot.Pokemon.WinForms
             // B_Stop
             // 
             this.B_Stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.B_Stop.Location = new System.Drawing.Point(359, 0);
+            this.B_Stop.Location = new System.Drawing.Point(390, 0);
             this.B_Stop.Name = "B_Stop";
             this.B_Stop.Size = new System.Drawing.Size(59, 20);
             this.B_Stop.TabIndex = 4;
@@ -201,7 +202,7 @@ namespace SysBot.Pokemon.WinForms
             // B_Start
             // 
             this.B_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.B_Start.Location = new System.Drawing.Point(294, 0);
+            this.B_Start.Location = new System.Drawing.Point(330, 0);
             this.B_Start.Name = "B_Start";
             this.B_Start.Size = new System.Drawing.Size(59, 20);
             this.B_Start.TabIndex = 3;
@@ -209,11 +210,24 @@ namespace SysBot.Pokemon.WinForms
             this.B_Start.UseVisualStyleBackColor = true;
             this.B_Start.Click += new System.EventHandler(this.B_Start_Click);
             // 
+            // L_UpdateAvailable
+            // 
+            L_UpdateAvailable.AutoSize = true;
+            L_UpdateAvailable.Enabled = false;
+            L_UpdateAvailable.Location = new System.Drawing.Point(130, 2);
+            L_UpdateAvailable.Name = "L_UpdateAvailable";
+            L_UpdateAvailable.Size = new System.Drawing.Size(211, 15);
+            L_UpdateAvailable.TabIndex = 5;
+            L_UpdateAvailable.TabStop = false;
+            L_UpdateAvailable.Text = "New Update Available! YYYY.MM.DD.BBB";
+            L_UpdateAvailable.Visible = false;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(457, 309);
+            this.Controls.Add(this.L_UpdateAvailable);
             this.Controls.Add(this.B_Stop);
             this.Controls.Add(this.B_Start);
             this.Controls.Add(this.TC_Main);
@@ -247,6 +261,7 @@ namespace SysBot.Pokemon.WinForms
         private System.Windows.Forms.Button B_New;
         private System.Windows.Forms.FlowLayoutPanel FLP_Bots;
         private System.Windows.Forms.ComboBox CB_Protocol;
+        private System.Windows.Forms.LinkLabel L_UpdateAvailable;
     }
 }
 

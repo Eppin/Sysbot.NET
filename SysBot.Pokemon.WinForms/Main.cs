@@ -3,10 +3,12 @@ using SysBot.Base;
 using SysBot.Pokemon.Z3;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -63,6 +65,8 @@ public sealed partial class Main : Form
 #endif
         var v = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version!;
 
+        FormLoadCheckForUpdates(); // Check for updates, thanks to PKHeX
+
         RTB_Logs.MaxLength = 32_767; // character length
         LoadControls();
         Text = $"{Text} v{v}{build} ({_config.Mode})";
@@ -104,14 +108,14 @@ public sealed partial class Main : Form
         MinimumSize = Size;
         PG_Hub.SelectedObject = _runningEnvironment.Config;
 
-        var routines = ((PokeRoutineType[])Enum.GetValues(typeof(PokeRoutineType))).Where(z => _runningEnvironment.SupportsRoutine(z));
+        var routines = Enum.GetValues<PokeRoutineType>().Where(z => _runningEnvironment.SupportsRoutine(z));
         var list = routines.Select(z => new ComboItem(z.ToString(), (int)z)).ToArray();
         CB_Routine.DisplayMember = nameof(ComboItem.Text);
         CB_Routine.ValueMember = nameof(ComboItem.Value);
         CB_Routine.DataSource = list;
         CB_Routine.SelectedValue = (int)PokeRoutineType.FlexTrade; // default option
 
-        var protocols = (SwitchProtocol[])Enum.GetValues(typeof(SwitchProtocol));
+        var protocols = Enum.GetValues<SwitchProtocol>();
         var listP = protocols.Select(z => new ComboItem(z.ToString(), (int)z)).ToArray();
         CB_Protocol.DisplayMember = nameof(ComboItem.Text);
         CB_Protocol.ValueMember = nameof(ComboItem.Value);
@@ -130,7 +134,7 @@ public sealed partial class Main : Form
             UpdateLog(line);
     }
 
-    private readonly object _logLock = new();
+    private readonly Lock _logLock = new();
 
     private void UpdateLog(string line)
     {
@@ -324,4 +328,40 @@ public sealed partial class Main : Form
     {
         TB_IP.Visible = CB_Protocol.SelectedIndex == 0;
     }
+
+    // Start of original source of PKHeX
+    // https://github.com/kwsch/PKHeX/blob/24.11.11/PKHeX.WinForms/MainWindow/Main.cs#L197-L225
+    private void FormLoadCheckForUpdates()
+    {
+        Task.Run(async () =>
+        {
+            Version? latestVersion;
+            // User might not be connected to the internet or with a flaky connection.
+            try { latestVersion = UpdateUtil.GetLatestVersion(); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception while checking for latest version: {ex}");
+                return;
+            }
+
+            if (latestVersion is null || latestVersion <= System.Reflection.Assembly.GetExecutingAssembly().GetName().Version)
+                return;
+
+            while (!IsHandleCreated) // Wait for form to be ready
+                await Task.Delay(2_000).ConfigureAwait(false);
+
+            await InvokeAsync(() => NotifyNewVersionAvailable(latestVersion)); // invoke on GUI thread
+        });
+    }
+
+    private void NotifyNewVersionAvailable(Version version)
+    {
+        var date = $"{version.Major:00}.{version.Minor:00}.{version.Build:00}.{version.Revision}";
+        var lbl = L_UpdateAvailable;
+        lbl.Text = $"New Update Available! {date}";
+        lbl.Click += (_, _) => Process.Start(new ProcessStartInfo("https://github.com/Eppin/Sysbot.NET") { UseShellExecute = true });
+        lbl.Visible = lbl.TabStop = lbl.Enabled = true;
+    }
+    // End of original source of PKHeX
+    // https://github.com/kwsch/PKHeX/blob/24.11.11/PKHeX.WinForms/MainWindow/Main.cs#L197-L225
 }
