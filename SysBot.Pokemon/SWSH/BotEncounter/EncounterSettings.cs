@@ -24,6 +24,10 @@ public class EncounterSettingsSWSH : IBotStateSettings, ICountSettings
     [TypeConverter(typeof(ExpandableObjectConverter))]
     public MaxLairSettings MaxLair { get; set; } = new();
 
+    [Category(Settings)]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public DenSettings Den { get; set; } = new();
+
     [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
     public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
 

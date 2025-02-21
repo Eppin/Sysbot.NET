@@ -13,10 +13,9 @@ namespace SysBot.Pokemon;
 /// <summary>
 /// Executor for SW/SH games.
 /// </summary>
-public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
+public abstract class PokeRoutineExecutor8SWSH(PokeBotState cfg) : PokeRoutineExecutor<PK8>(cfg)
 {
     protected PokeDataOffsetsSWSH Offsets { get; } = new();
-    protected PokeRoutineExecutor8SWSH(PokeBotState cfg) : base(cfg) { }
 
     private static uint GetBoxSlotOffset(int box, int slot) => BoxStartOffset + (uint)(BoxFormatSlotSize * ((30 * box) + slot));
 
@@ -134,7 +133,14 @@ public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
             throw new Exception("Refer to the SysBot.NET wiki (https://github.com/kwsch/SysBot.NET/wiki/Troubleshooting) for more information.");
         }
 
-        if (await GetTextSpeed(token).ConfigureAwait(false) < TextSpeedOption.Fast)
+        var textSpeed = await GetTextSpeed(token).ConfigureAwait(false);
+
+        if (GetType().Name == nameof(EncounterBotDenSWSH))
+        {
+            if (textSpeed > TextSpeedOption.Slow)
+                throw new Exception($"Text speed should be set to SLOW for {nameof(PokeRoutineType.DenBot)}. Fix this for correct operation.");
+        }
+        else if (textSpeed < TextSpeedOption.Fast)
             throw new Exception("Text speed should be set to FAST. Fix this for correct operation.");
 
         return sav;
@@ -252,12 +258,17 @@ public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
         return data[0] > 1;
     }
 
-    public async Task CloseGame(PokeTradeHubConfig config, CancellationToken token)
+    public async Task CloseGame(PokeTradeHubConfig config, CancellationToken token, bool skipHomeButton = false)
     {
         var timing = config.Timings;
         // Close out of the game
-        await Click(B, 0_500, token).ConfigureAwait(false);
-        await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
+
+        if (!skipHomeButton)
+        {
+            await Click(B, 0_500, token).ConfigureAwait(false);
+            await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
+        }
+
         await Click(X, 1_000, token).ConfigureAwait(false);
         await Click(A, 5_000 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
         Log("Closed out of the game!");
@@ -308,6 +319,20 @@ public abstract class PokeRoutineExecutor8SWSH : PokeRoutineExecutor<PK8>
         }
 
         Log("Back in the overworld!");
+    }
+
+    public async Task SaveGame(CancellationToken token)
+    {
+        Log("Saving the game...");
+
+        await Click(B, 0_500, token).ConfigureAwait(false);
+        await Click(X, 2_000, token).ConfigureAwait(false);
+        await Click(R, 0_250, token).ConfigureAwait(false);
+
+        while (!await IsOnOverworldTitle(token).ConfigureAwait(false))
+            await Click(A, 0_500, token).ConfigureAwait(false);
+
+        Log("Game saved!");
     }
 
     public async Task<bool> IsCorrectScreen(uint expectedScreen, CancellationToken token)

@@ -57,7 +57,7 @@ public sealed class EncounterBotCalyrexSWSH(PokeBotState cfg, PokeTradeHub<PK8> 
             PK8? horse = null;
             while (horse is not { Valid: true, Species: > 0 } && DateTime.Now <= later)
             {
-                horse = await ReadPokemon(CalyrexFusionSlotAddress, BoxFormatSlotSize, token).ConfigureAwait(false);
+                horse = await ReadPokemon(CalyrexFusionSlotOffset, BoxFormatSlotSize, token).ConfigureAwait(false);
                 await Click(A, 0_200, token).ConfigureAwait(false);
             }
 
