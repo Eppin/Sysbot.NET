@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 // ms-lpl, removed from their website but archived on the internet, with alterations to be inheritable
 
@@ -11,7 +12,7 @@ namespace System.Collections.Concurrent;
 [DebuggerDisplay("Count={" + nameof(Count) + "}")]
 public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection<KeyValuePair<TKey, TValue>> where TKey : IComparable<TKey> where TValue : IEquatable<TValue>
 {
-    protected readonly object _syncLock = new();
+    protected readonly object SyncLock = new();
     protected readonly MinQueue Queue = new();
 
     /// <summary>Initializes a new instance of the ConcurrentPriorityQueue class.</summary>
@@ -40,7 +41,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// <param name="item">The key/value pair to be added to the queue.</param>
     public void Enqueue(KeyValuePair<TKey, TValue> item)
     {
-        lock (_syncLock)
+        lock (SyncLock)
             Queue.Insert(item);
     }
 
@@ -55,7 +56,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     public bool TryDequeue(out KeyValuePair<TKey, TValue> result)
     {
         result = default;
-        lock (_syncLock)
+        lock (SyncLock)
         {
             if (Queue.Count == 0)
                 return false;
@@ -75,7 +76,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     public bool TryPeek(out KeyValuePair<TKey, TValue> result)
     {
         result = default;
-        lock (_syncLock)
+        lock (SyncLock)
         {
             if (Queue.Count == 0)
                 return false;
@@ -85,7 +86,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     }
 
     /// <summary>Empties the queue.</summary>
-    public void Clear() { lock (_syncLock) Queue.Clear(); }
+    public void Clear() { lock (SyncLock) Queue.Clear(); }
 
     /// <summary>Gets whether the queue is empty.</summary>
     public bool IsEmpty => Count == 0;
@@ -93,7 +94,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// <summary>Gets the number of elements contained in the queue.</summary>
     public int Count
     {
-        get { lock (_syncLock) return Queue.Count; }
+        get { lock (SyncLock) return Queue.Count; }
     }
 
     /// <summary>Copies the elements of the collection to an array, starting at a particular array index.</summary>
@@ -106,14 +107,14 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// <remarks>The elements will not be copied to the array in any guaranteed order.</remarks>
     public void CopyTo(KeyValuePair<TKey, TValue>[] array, int index)
     {
-        lock (_syncLock) Queue.Items.CopyTo(array, index);
+        lock (SyncLock) Queue.Items.CopyTo(array, index);
     }
 
     /// <summary>Copies the elements stored in the queue to a new array.</summary>
     /// <returns>A new array containing a snapshot of elements copied from the queue.</returns>
     public KeyValuePair<TKey, TValue>[] ToArray()
     {
-        lock (_syncLock)
+        lock (SyncLock)
         {
             var clonedqueue = new MinQueue(Queue);
             var result = new KeyValuePair<TKey, TValue>[Queue.Count];
@@ -132,7 +133,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// <returns>Default empty if none matching</returns>
     public KeyValuePair<TKey, TValue> Find(Func<TValue, bool> match)
     {
-        lock (_syncLock)
+        lock (SyncLock)
         {
             return Queue.Items.Find(z => match(z.Value));
         }
@@ -188,7 +189,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// </param>
     void ICollection.CopyTo(Array array, int index)
     {
-        lock (_syncLock)
+        lock (SyncLock)
             ((ICollection)Queue.Items).CopyTo(array, index);
     }
 
@@ -200,7 +201,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
     /// <summary>
     /// Gets an object that can be used to synchronize access to the collection.
     /// </summary>
-    object ICollection.SyncRoot => _syncLock;
+    object ICollection.SyncRoot => SyncLock;
 
     /// <summary>Implements a queue that prioritizes smaller values.</summary>
     protected sealed class MinQueue
@@ -245,7 +246,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
 
     public int Remove(TValue detail)
     {
-        lock (_syncLock)
+        lock (SyncLock)
         {
             var items = Queue.Items;
             return items.RemoveAll(z => z.Value!.Equals(detail));
@@ -254,7 +255,7 @@ public class ConcurrentPriorityQueue<TKey, TValue> : IProducerConsumerCollection
 
     public int IndexOf(TValue detail)
     {
-        lock (_syncLock)
+        lock (SyncLock)
         {
             var items = Queue.Items;
             return items.FindIndex(z => z.Value!.Equals(detail));

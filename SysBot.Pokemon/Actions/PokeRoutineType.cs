@@ -46,6 +46,9 @@ public enum PokeRoutineType
     /// <summary> Triggers encounters with Sword &amp; Shield Calyrex legend until the criteria is satisfied. </summary>
     CalyrexBot = 1_005,
 
+    /// <summary> Searches for Den seeds, skips days and resets for species until the criteria is satisfied </summary>
+    DenBot = 1_006,
+
     /// <summary> Similar to idle, but identifies the bot as available for Remote input (Twitch Plays, etc). </summary>
     RemoteControl = 6_000,
 

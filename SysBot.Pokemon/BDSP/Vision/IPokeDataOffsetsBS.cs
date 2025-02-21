@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SysBot.Pokemon;
 
 public interface IPokeDataOffsetsBS
 {
     public IReadOnlyList<long> BoxStartPokemonPointer { get; }
+    public IReadOnlyList<long> DayCareParent1PokemonPointer { get; }
+    public IReadOnlyList<long> DayCareParent2PokemonPointer { get; }
     public IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; }
     public IReadOnlyList<long> LinkTradePartnerNamePointer { get; }
     public IReadOnlyList<long> LinkTradePartnerIDPointer { get; }

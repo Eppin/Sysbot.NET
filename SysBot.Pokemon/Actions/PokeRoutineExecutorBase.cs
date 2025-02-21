@@ -1,4 +1,4 @@
-﻿using PKHeX.Core;
+using PKHeX.Core;
 using SysBot.Base;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,7 +7,7 @@ namespace SysBot.Pokemon;
 
 public abstract class PokeRoutineExecutorBase : SwitchRoutineExecutor<PokeBotState>
 {
-    public const decimal BotbaseVersion = 2.3m;
+    public const decimal BotbaseVersion = 2.4m;
 
     protected PokeRoutineExecutorBase(IConsoleBotManaged<IConsoleConnection, IConsoleConnectionAsync> cfg) : base(cfg)
     {

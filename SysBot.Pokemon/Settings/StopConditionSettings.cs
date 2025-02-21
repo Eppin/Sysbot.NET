@@ -44,7 +44,16 @@ public class StopConditionSettings
     [Category(StopConditions)]
     public class SearchCondition
     {
-        public override string ToString() => $"{(!IsEnabled ? $"{Nature}, condition is disabled" : $"{Nature}, {StopOnSpecies}, {TargetMinIVs} - {TargetMaxIVs}")}";
+        public override string ToString()
+        {
+            if (!IsEnabled) return $"{Nature}, condition is disabled";
+
+            var ivsStr = FlawlessIVs == TargetFlawlessIVsType.Disabled
+                ? $"{TargetMinIVs} - {TargetMaxIVs}"
+                : $"Flawless IVs: {Convert(FlawlessIVs)}";
+
+            return $"{Nature}, {StopOnSpecies}, {ivsStr}";
+        }
 
         [Category(StopConditions), DisplayName("1. Enabled")]
         public bool IsEnabled { get; set; } = true;
@@ -55,20 +64,27 @@ public class StopConditionSettings
         [Category(StopConditions), DisplayName("3. Nature")]
         public Nature Nature { get; set; }
 
-        [Category(StopConditions), DisplayName("4. Gender")]
+        [Category(StopConditions), DisplayName("4. Ability")]
+        public TargetAbilityType AbilityTarget { get; set; } = TargetAbilityType.Any;
+
+        [Category(StopConditions), DisplayName("5. Gender")]
         public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
 
-        [Category(StopConditions), DisplayName("5. Minimum accepted IVs")]
+        [Category(StopConditions), DisplayName("6. Minimum flawless IVs")]
+        [TypeConverter(typeof(DescriptionAttributeConverter))]
+        public TargetFlawlessIVsType FlawlessIVs { get; set; } = TargetFlawlessIVsType.Disabled;
+
+        [Category(StopConditions), DisplayName("7. Minimum accepted IVs")]
         public string TargetMinIVs { get; set; } = "";
 
-        [Category(StopConditions), DisplayName("6. Maximum accepted IVs")]
+        [Category(StopConditions), DisplayName("8. Maximum accepted IVs")]
         public string TargetMaxIVs { get; set; } = "";
     }
 
-    public static bool EncounterFound<T>(T pk, StopConditionSettings settings, IReadOnlyList<string>? markList) where T : PKM
+    public static bool EncounterFound<T>(T pk, StopConditionSettings settings, IReadOnlyList<string>? markList, bool skipSpeciesCheck = false) where T : PKM
     {
         // Match Nature and Species if they were specified.
-        if (settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
+        if (!skipSpeciesCheck && settings.StopOnSpecies != Species.None && settings.StopOnSpecies != (Species)pk.Species)
             return false;
 
         if (settings.StopOnForm.HasValue && settings.StopOnForm != pk.Form)
@@ -112,13 +128,26 @@ public class StopConditionSettings
             return true;
 
         return settings.SearchConditions.Any(s =>
-            MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs) &&
+            (MatchIVs(pkIVsArr, s.TargetMinIVs, s.TargetMaxIVs, s.FlawlessIVs) || MatchFlawlessIVs(pkIVsArr, s.FlawlessIVs)) &&
             (s.Nature == pk.Nature || s.Nature == Nature.Random) &&
-            (s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
+            (skipSpeciesCheck || s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
+            MatchAbility(s.AbilityTarget, pk.Ability) &&
             s.IsEnabled);
     }
-  
+
+    private static bool MatchAbility(TargetAbilityType target, int result)
+    {
+        return target switch
+        {
+            TargetAbilityType.Any => true,
+            TargetAbilityType.First => 1 == result,
+            TargetAbilityType.Second => 2 == result,
+            TargetAbilityType.Hidden => 4 == result,
+            _ => throw new ArgumentOutOfRangeException(nameof(target), $"{nameof(TargetAbilityType)} value {target} is not valid"),
+        };
+    }
+
     private static bool MatchGender(TargetGenderType target, Gender result)
     {
         return target switch
@@ -131,8 +160,28 @@ public class StopConditionSettings
         };
     }
 
-    private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr)
+    private static bool MatchFlawlessIVs(IReadOnlyList<int> pkIVs, TargetFlawlessIVsType targetFlawlessIVs)
     {
+        var count = pkIVs.Count(iv => iv == 31);
+
+        return targetFlawlessIVs switch
+        {
+            TargetFlawlessIVsType.Disabled => false,
+            TargetFlawlessIVsType._0 => count >= 0,
+            TargetFlawlessIVsType._1 => count >= 1,
+            TargetFlawlessIVsType._2 => count >= 2,
+            TargetFlawlessIVsType._3 => count >= 3,
+            TargetFlawlessIVsType._4 => count >= 4,
+            TargetFlawlessIVsType._5 => count >= 5,
+            TargetFlawlessIVsType._6 => count == 6,
+            _ => throw new ArgumentOutOfRangeException(nameof(targetFlawlessIVs), targetFlawlessIVs, null)
+        };
+    }
+
+    private static bool MatchIVs(IReadOnlyList<int> pkIVs, string targetMinIVsStr, string targetMaxIVsStr, TargetFlawlessIVsType targetFlawlessIVs)
+    {
+        if (targetFlawlessIVs != TargetFlawlessIVsType.Disabled) return false;
+
         var targetMinIVs = ReadTargetIVs(targetMinIVsStr, true);
         var targetMaxIVs = ReadTargetIVs(targetMaxIVsStr, false);
 
@@ -215,6 +264,30 @@ public class StopConditionSettings
         }
         return "";
     }
+
+    // Quite ugly solution to display DescriptionAttribute
+    private static string Convert<T>(T value) where T : Enum
+    {
+        var name = Enum.GetName(typeof(T), value);
+        if (string.IsNullOrWhiteSpace(name))
+            return value.ToString();
+
+        var fieldInfo = typeof(T).GetField(name);
+        if (fieldInfo == null)
+            return value.ToString();
+
+        return Attribute.GetCustomAttribute(fieldInfo, typeof(DescriptionAttribute)) is DescriptionAttribute dna
+            ? dna.Description
+            : value.ToString();
+    }
+}
+
+public enum TargetAbilityType
+{
+    Any,            // Doesn't care
+    First,          // Match first only
+    Second,         // Match second only
+    Hidden,         // Match hidden only
 }
 
 public enum TargetShinyType
@@ -232,4 +305,16 @@ public enum TargetGenderType
     Male,           // Match male only
     Female,         // Match female only
     Genderless,     // Match genderless only
+}
+
+public enum TargetFlawlessIVsType
+{
+    Disabled,
+    [Description("0")] _0,
+    [Description("1")] _1,
+    [Description("2")] _2,
+    [Description("3")] _3,
+    [Description("4")] _4,
+    [Description("5")] _5,
+    [Description("6")] _6,
 }

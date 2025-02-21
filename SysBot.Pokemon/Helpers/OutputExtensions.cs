@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 public class OutputExtensions<T> where T : PKM, new()
 {
-    private static readonly object LockObj = new();
+    private static readonly Lock LockObj = new();
 
     public static void EncounterLogs(PKM pk, string filepath = "")
     {

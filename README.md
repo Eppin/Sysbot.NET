@@ -16,6 +16,7 @@ These routines are new in comparison to the original SysBot.Net
 
 - Encounters (Ruinous, Loyal Three, Gimmighoul and static/new Paradox' in Area Zero)
 - Fast egg hatch (~1,800 eggs/hour)
+- Unlimited egg hatching with multiple parents (see Wiki)
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
@@ -24,11 +25,18 @@ These routines are new in comparison to the original SysBot.Net
 - Overworld
   - Scanner, just walk and save
   - Research Station
+  - Mass Outbreak (search for species, list KO count and Picnic resetting)__**__
 
 #### Sword/Shield
 
 - Max Lair (resets for IVs/Nature)
 - Calyrex and Spectrier/Glastrier combined resetting (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
+- Unlimited egg hatching with multiple parents (see Wiki)
+
+## New sys-botbase fork
+
+Routines marked with a __**__ require to use my fork of [sys-botbase](https://github.com/Eppin/sys-botbase/releases). 
+Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.438](https://github.com/Eppin/sys-botbase/releases/tag/2.438). But make sure to use the latest and greatest version :)
 
 ## Version compatibility
 
@@ -45,7 +53,7 @@ These routines are new in comparison to the original SysBot.Net
 
 | Version |                                SysBot Release                                 |
 | :-----: | :---------------------------------------------------------------------------: |
-|  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151)
+|  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151) |
 
 ## Support Discord:
 
@@ -59,7 +67,7 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 
 # Dependencies
 
-- [.NET 8 runtime](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 9 runtime](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [PKHeX](https://github.com/kwsch/PKHeX/)
 - [AutoMod](https://github.com/architdate/PKHeX-Plugins/)
 - [Discord.Net](https://github.com/discord-net/Discord.Net)
@@ -81,4 +89,5 @@ Thanks for all the open source projects. Credits are in no particular order:
 - [@Koi-3088](https://www.github.com/Koi-3088) for a fork of the base bot, [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase) and [USB-Botbase](https://github.com/Koi-3088/USB-Botbase)
 - [@zyro670](https://www.github.com/zyro670) for [NotForkBot.NET](https://github.com/zyro670/NotForkBot.NET)
 - [@Manu098vm](https://github.com/Manu098vm) for [Sys-EncounterBot.NET](https://github.com/Manu098vm/Sys-EncounterBot.NET)
+- [@berichan](https://github.com/berichan) for a fork of [SysBot.NET](https://github.com/berichan/SysBot.NET)
 - _Everyone else who contributed to the repositories this project uses. Are you supposed to be listed here? Just let me know! And you'll be added_

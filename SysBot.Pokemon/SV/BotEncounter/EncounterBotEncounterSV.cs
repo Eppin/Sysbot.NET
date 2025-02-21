@@ -21,7 +21,7 @@ public abstract class EncounterBotEncounterSV(PokeBotState cfg, PokeTradeHub<PK9
             await SetupBoxState(DumpSetting, token);
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
-            Log($"Starting battle");
+            Log("Starting battle");
             var later = DateTime.Now.AddSeconds(StartBattleA);
             Log($"Press A till [{later}]", false);
             while (DateTime.Now <= later)
@@ -59,7 +59,7 @@ public abstract class EncounterBotEncounterSV(PokeBotState cfg, PokeTradeHub<PK9
             }
 
             if (DateTime.Now >= later)
-                Log("Force restart of the game..");
+                Log("Force restart of the game...");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             Log($"Single encounter duration: [{sw.Elapsed}]", false);

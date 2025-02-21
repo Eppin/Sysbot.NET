@@ -1,5 +1,9 @@
 using PKHeX.Core;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
@@ -8,14 +12,12 @@ using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon;
 
-using System.Diagnostics;
-
 public class EncounterBotEggSWSH : EncounterBotSWSH
 {
     private readonly IDumper DumpSetting;
 
-    private const int Box = 0;
-    private int Slot;
+    private byte Box = 0;
+    private byte Slot;
 
     public EncounterBotEggSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)
     {
@@ -26,6 +28,17 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
 
     protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
     {
+        // Hatch a party full of Eggs
+        if (Settings.EncounteringType == EncounterMode.EggHatch)
+        {
+            await MassEggHatch(token);
+            return;
+        }
+
+        // Fetch lots of Eggs?
+        if (!await IsUnlimited(token).ConfigureAwait(false))
+            return;
+
         await SetupBoxState(DumpSetting, token).ConfigureAwait(false);
         await EnableAlwaysEgg(sav.Version, token).ConfigureAwait(false);
 
@@ -64,19 +77,31 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
                 await Click(B, 0_200, token).ConfigureAwait(false);
 
             Log($"Egg received in B{Box + 1}S{Slot + 1}. Checking details.");
-            var pk = await ReadBoxPokemon(Box, Slot, token).ConfigureAwait(false);
+            var (pk, bytes) = await ReadRawBoxPokemon(Box, Slot, token).ConfigureAwait(false);
             if (pk.Species == 0)
             {
                 Log($"No egg found in B{Box + 1}S{Slot + 1}. Ensure that the party is full. Restarting loop.");
                 continue;
             }
 
-            var (stop, success) = await HandleEncounter(pk, token).ConfigureAwait(false);
+            var (stop, success) = await HandleEncounter(pk, token, bytes).ConfigureAwait(false);
 
             if (success)
             {
                 Log($"You're egg has been claimed and placed in B{Box + 1}S{Slot + 1}. Be sure to save your game!");
                 Slot += 1;
+
+                if (Slot == 30)
+                {
+                    Box++;
+                    Slot = 0;
+
+                    await SetCurrentBox(Box, token);
+                    Log($"Change current position to B{Box + 1}S{Slot + 1}!");
+                }
+
+                if (!await IsUnlimited(token).ConfigureAwait(false))
+                    return;
             }
 
             if (stop)
@@ -122,6 +147,131 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
             default:
                 Log($"Unsupported game {game} detected");
                 break;
+        }
+    }
+
+    private async Task<bool> IsUnlimited(CancellationToken token)
+    {
+        if (Settings.UnlimitedMode)
+        {
+            if (!Directory.Exists(Settings.UnlimitedParentsFolder))
+            {
+                Log($"Directory for unlimited doesn't exist: [{Settings.UnlimitedParentsFolder}]");
+                return false;
+            }
+
+            var parents = Directory.GetFiles(Settings.UnlimitedParentsFolder, "*pk*");
+            if (parents.Length == 0)
+            {
+                Log($"No valid parents found in [{Settings.UnlimitedParentsFolder}]");
+                return false;
+            }
+
+            if (!await SetNextParent(parents, token))
+                return false;
+        }
+
+        return true;
+    }
+
+    private async Task<bool> SetNextParent(IEnumerable<string> parents, CancellationToken token)
+    {
+        var parent = parents.FirstOrDefault();
+        if (parent == null)
+            return false;
+
+        var fileInfo = new FileInfo(parent);
+        var bytes = await File.ReadAllBytesAsync(parent, token);
+
+        if (!FileUtil.TryGetPKM(bytes, out var pk, fileInfo.Extension))
+        {
+            Log($"Parent file [{parent}] isn't valid!");
+            return false;
+        }
+
+        if (EntityConverter.ConvertToType(pk, typeof(PK8), out var result) is not PK8 pk8)
+        {
+            Log($"Parent {pk.FileName} isn't valid: {result}");
+            return false;
+        }
+
+        var (slot1, slot2) = await GetDayCare(token);
+        if (slot1?.Species != (int)Species.Ditto && slot2?.Species != (int)Species.Ditto)
+        {
+            Log($"There is not {Species.Ditto} in Day Care");
+            return false;
+        }
+
+        var dittoFirstSlot = slot1?.Species == (int)Species.Ditto;
+        await SetDayCare(pk8, !dittoFirstSlot, token);
+
+        (slot1, slot2) = await GetDayCare(token);
+        Log($"Set parent: {pk8.FileName}, slot 1 is {slot1?.Species}, valid: {slot1?.Valid} and slot 2 is {slot2?.Species}, valid: {slot2?.Valid}");
+
+        var info = new FileInfo(parent);
+        File.Move(info.FullName, Path.Combine(DumpSetting.DumpFolder, "saved", info.Name));
+
+        return true;
+    }
+
+    private async Task<(PK8? Slot1, PK8? Slot2)> GetDayCare(CancellationToken token)
+    {
+        PK8? slot1 = null;
+        PK8? slot2 = null;
+
+        var dayCareBytes = await SwitchConnection.ReadBytesAsync(DayCare_Start, DayCareSize, token);
+
+        if (dayCareBytes[0] == 1)
+        {
+            var slot1Bytes = dayCareBytes.Skip(1).Take(0x148).ToArray();
+            slot1 = new PK8(slot1Bytes);
+        }
+
+        if (dayCareBytes[0x149] == 1)
+        {
+            var slot1Bytes = dayCareBytes.Skip(0x149 + 1).Take(0x148).ToArray();
+            slot2 = new PK8(slot1Bytes);
+        }
+
+        return (slot1, slot2);
+    }
+
+    private async Task SetDayCare(PKM pk8, bool firstSlot, CancellationToken token)
+    {
+        var dayCareBytes = await SwitchConnection.ReadBytesAsync(DayCare_Start, DayCareSize, token);
+
+        var newBytes = new List<byte>();
+        if (firstSlot)
+        {
+            newBytes.Add(1);
+            newBytes.AddRange(pk8.EncryptedBoxData);
+
+            newBytes.AddRange(dayCareBytes.Skip(0x149).Take(0x148));
+        }
+        else
+        {
+            newBytes.AddRange(dayCareBytes.Take(0x149));
+
+            newBytes.Add(1);
+            newBytes.AddRange(pk8.EncryptedBoxData);
+        }
+
+        await SwitchConnection.WriteBytesAsync([.. newBytes], DayCare_Start, token);
+    }
+
+    private async Task MassEggHatch(CancellationToken token)
+    {
+        while (!token.IsCancellationRequested)
+        {
+            await SetStick(LEFT, -30000, 0, 2_400, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_100, token).ConfigureAwait(false); // reset
+
+            await Click(B, 0, token);
+
+            await SetStick(LEFT, 30000, 0, 2_400, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_100, token).ConfigureAwait(false); // reset
+
+            await Click(B, 0, token);
         }
     }
 }
