@@ -99,6 +99,8 @@ public abstract class PokeRoutineExecutor<T>(IConsoleBotManaged<IConsoleConnecti
                 msg += "https://github.com/Koi-3088/usb-botbase/releases/latest";
             throw new Exception(msg);
         }
+
+        Log($"Detected sys-botbase version {version}");
     }
 
     // Check if either Tesla or dmnt are active if the sanity check for Trainer Data fails, as these are common culprits.
