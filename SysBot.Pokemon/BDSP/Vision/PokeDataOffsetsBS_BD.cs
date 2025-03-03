@@ -8,6 +8,8 @@ public class PokeDataOffsetsBS_BD : BasePokeDataOffsetsBS
     public override IReadOnlyList<long> DayCareParent1PokemonPointer { get; } = [0x4C64DC0, 0x40, 0xB8, 0x10, 0x450, 0x20, 0x20];
     public override IReadOnlyList<long> DayCareParent2PokemonPointer { get; } = [0x4C64DC0, 0x40, 0xB8, 0x10, 0x450, 0x28, 0x20];
 
+    public override IReadOnlyList<long> WildEncounterPointer { get; } = [0x4C59EF0, 0x20, 0x98, 0x00, 0x20]; // Thanks to PokeViewer.NET
+
     public override IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; } = [0x4C603B0, 0xB8, 0x8, 0x20];
     public override IReadOnlyList<long> LinkTradePartnerNamePointer { get; } = [0x4C658D0, 0xB8, 0x30, 0x110, 0x28, 0x90, 0x20, 0x0];
     public override IReadOnlyList<long> LinkTradePartnerIDPointer { get; } = [0x4C658D0, 0xB8, 0x30, 0x110, 0x28, 0x90, 0x10];
