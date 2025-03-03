@@ -11,6 +11,7 @@ public abstract class BasePokeDataOffsetsBS : IPokeDataOffsetsBS
     public abstract IReadOnlyList<long> BoxStartPokemonPointer { get; }
     public abstract IReadOnlyList<long> DayCareParent1PokemonPointer { get; }
     public abstract IReadOnlyList<long> DayCareParent2PokemonPointer { get; }
+    public abstract IReadOnlyList<long> WildEncounterPointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerNamePointer { get; }
     public abstract IReadOnlyList<long> LinkTradePartnerIDPointer { get; }

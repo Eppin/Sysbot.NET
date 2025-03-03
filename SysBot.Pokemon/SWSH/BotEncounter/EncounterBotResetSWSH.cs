@@ -8,12 +8,8 @@ using static SysBot.Pokemon.PokeDataOffsetsSWSH;
 
 namespace SysBot.Pokemon;
 
-public sealed class EncounterBotResetSWSH : EncounterBotSWSH
+public sealed class EncounterBotResetSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : EncounterBotSWSH(cfg, hub)
 {
-    public EncounterBotResetSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg, hub)
-    {
-    }
-
     protected override async Task EncounterLoop(SAV8SWSH sav, CancellationToken token)
     {
         var monoffset = GetResetOffset(Hub.Config.EncounterSWSH.EncounteringType);
