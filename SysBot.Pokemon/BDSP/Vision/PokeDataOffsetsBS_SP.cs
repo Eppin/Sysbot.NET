@@ -4,11 +4,11 @@ namespace SysBot.Pokemon;
 
 public class PokeDataOffsetsBS_SP : BasePokeDataOffsetsBS
 {
+    public override ulong PlayerPrefsProviderInstance => 0x4EA7408;
+
     public override IReadOnlyList<long> BoxStartPokemonPointer { get; } = [0x4E7BE98, 0xB8, 0x10, 0xA0, 0x20, 0x20, 0x20];
     public override IReadOnlyList<long> DayCareParent1PokemonPointer { get; } = [0x4E7BE98, 0x40, 0xB8, 0x10, 0x450, 0x20, 0x20];
     public override IReadOnlyList<long> DayCareParent2PokemonPointer { get; } = [0x4E7BE98, 0x40, 0xB8, 0x10, 0x450, 0x28, 0x20];
-
-    public override IReadOnlyList<long> WildEncounterPointer { get; } = [0x4E70FC8, 0x20, 0x98, 0x00, 0x20]; // Thanks to PokeViewer.NET
 
     public override IReadOnlyList<long> LinkTradePartnerPokemonPointer { get; } = [0x4E77488, 0xB8, 0x8, 0x20];
     public override IReadOnlyList<long> LinkTradePartnerNamePointer { get; } = [0x4E7C9A8, 0xB8, 0x30, 0x110, 0x28, 0x90, 0x20, 0x0];

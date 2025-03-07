@@ -1,21 +1,16 @@
-using System.Diagnostics;
-using System.Linq;
-
 namespace SysBot.Pokemon;
 
-using FlatbuffersResource;
-using Google.FlatBuffers;
-using Microsoft.VisualBasic;
-using PKHeX.Core;
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using static SysBot.Base.SwitchButton;
-using static SysBot.Base.SwitchStick;
-using static SysBot.Pokemon.PokeDataOffsetsSWSH;
+using FlatbuffersResource;
+using Google.FlatBuffers;
+using PKHeX.Core;
+using static Base.SwitchButton;
+using static PokeDataOffsetsSWSH;
 
 public class EncounterBotDenSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : EncounterBotSWSH(cfg, hub)
 {
