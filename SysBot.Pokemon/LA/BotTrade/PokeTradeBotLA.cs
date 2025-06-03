@@ -576,7 +576,7 @@ public class PokeTradeBotLA : PokeRoutineExecutor8LA, ICountBot
         var la = new LegalityAnalysis(offered);
         if (!la.Valid)
         {
-            Log($"Clone request (from {poke.Trainer.TrainerName}) has detected an invalid Pokémon: {GameInfo.GetStrings(1).Species[offered.Species]}.");
+            Log($"Clone request (from {poke.Trainer.TrainerName}) has detected an invalid Pokémon: {GameInfo.GetStrings("en").Species[offered.Species]}.");
             if (DumpSetting.Dump)
                 DumpPokemon(DumpSetting.DumpFolder, "hacked", offered);
 
@@ -592,7 +592,7 @@ public class PokeTradeBotLA : PokeRoutineExecutor8LA, ICountBot
         if (Hub.Config.Legality.ResetHOMETracker)
             clone.Tracker = 0;
 
-        poke.SendNotification(this, $"**Cloned your {GameInfo.GetStrings(1).Species[clone.Species]}!**\nNow press B to cancel your offer and trade me a Pokémon you don't want.");
+        poke.SendNotification(this, $"**Cloned your {GameInfo.GetStrings("en").Species[clone.Species]}!**\nNow press B to cancel your offer and trade me a Pokémon you don't want.");
         Log($"Cloned a {(Species)clone.Species}. Waiting for user to change their Pokémon...");
 
         if (!await CheckCloneChangedOffer(token).ConfigureAwait(false))
@@ -665,6 +665,8 @@ public class PokeTradeBotLA : PokeRoutineExecutor8LA, ICountBot
         }
         else if (config.LedyQuitIfNoMatch)
         {
+            var nickname = offered.IsNicknamed ? $" (Nickname: \"{offered.Nickname}\")" : string.Empty;
+            poke.SendNotification(this, $"No match found for the offered {GameInfo.GetStrings("en").Species[offered.Species]}{nickname}.");
             return (toSend, PokeTradeResult.TrainerRequestBad);
         }
 

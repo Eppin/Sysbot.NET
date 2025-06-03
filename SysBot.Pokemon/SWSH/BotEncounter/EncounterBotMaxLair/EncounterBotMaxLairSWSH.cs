@@ -377,7 +377,7 @@ public class EncounterBotMaxLairSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : 
         pk.SetIsShiny(true);
         pk.Species = (ushort)Settings.MaxLair.Species;
 
-        var msg = $"IVs: {ivs[0]}/{ivs[1]}/{ivs[2]}/{ivs[3]}/{ivs[4]}/{ivs[5]}, Nature: {GameInfo.GetStrings(1).Natures[nature]}";
+        var msg = $"IVs: {ivs[0]}/{ivs[1]}/{ivs[2]}/{ivs[3]}/{ivs[4]}/{ivs[5]}, Nature: {GameInfo.GetStrings("en").Natures[nature]}";
 
         return (pk, msg);
     }

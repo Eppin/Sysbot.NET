@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="KdSoft.FlatBuffers" Version="1.12.0" />
-    <PackageReference Include="PKHeX.Core" Version="25.2.23" />
+    <PackageReference Include="PKHeX.Core" Version="25.5.18" />
     <ProjectReference Include="..\SysBot.Base\SysBot.Base.csproj" />
   </ItemGroup>
 

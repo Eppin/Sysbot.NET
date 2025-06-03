@@ -36,7 +36,7 @@ namespace SysBot.Pokemon.WinForms
             this.FLP_Bots = new System.Windows.Forms.FlowLayoutPanel();
             this.TB_IP = new System.Windows.Forms.TextBox();
             this.CB_Routine = new System.Windows.Forms.ComboBox();
-            this.NUD_Port = new System.Windows.Forms.NumericUpDown();
+            this.NUD_Port = new System.Windows.Forms.TextBox();
             this.B_New = new System.Windows.Forms.Button();
             this.Tab_Hub = new System.Windows.Forms.TabPage();
             this.PG_Hub = new System.Windows.Forms.PropertyGrid();
@@ -47,7 +47,6 @@ namespace SysBot.Pokemon.WinForms
             this.L_UpdateAvailable = new System.Windows.Forms.LinkLabel();
             this.TC_Main.SuspendLayout();
             this.Tab_Bots.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NUD_Port)).BeginInit();
             this.Tab_Hub.SuspendLayout();
             this.Tab_Logs.SuspendLayout();
             this.SuspendLayout();
@@ -124,19 +123,11 @@ namespace SysBot.Pokemon.WinForms
             // 
             this.NUD_Port.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NUD_Port.Location = new System.Drawing.Point(184, 6);
-            this.NUD_Port.Maximum = new decimal(new int[] {
-            65535,
-            0,
-            0,
-            0});
             this.NUD_Port.Name = "NUD_Port";
             this.NUD_Port.Size = new System.Drawing.Size(58, 20);
             this.NUD_Port.TabIndex = 6;
-            this.NUD_Port.Value = new decimal(new int[] {
-            6000,
-            0,
-            0,
-            0});
+            this.NUD_Port.Text = "6000";
+            this.NUD_Port.ReadOnly = true;
             // 
             // B_New
             // 
@@ -239,7 +230,6 @@ namespace SysBot.Pokemon.WinForms
             this.TC_Main.ResumeLayout(false);
             this.Tab_Bots.ResumeLayout(false);
             this.Tab_Bots.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NUD_Port)).EndInit();
             this.Tab_Hub.ResumeLayout(false);
             this.Tab_Logs.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -257,7 +247,7 @@ namespace SysBot.Pokemon.WinForms
         private System.Windows.Forms.Button B_Start;
         private System.Windows.Forms.TextBox TB_IP;
         private System.Windows.Forms.ComboBox CB_Routine;
-        private System.Windows.Forms.NumericUpDown NUD_Port;
+        private System.Windows.Forms.TextBox NUD_Port;
         private System.Windows.Forms.Button B_New;
         private System.Windows.Forms.FlowLayoutPanel FLP_Bots;
         private System.Windows.Forms.ComboBox CB_Protocol;
