@@ -16,11 +16,11 @@ These routines are new compared to the original SysBot.NET.
 
 - Encounters (Ruinous, Loyal Three, Gimmighoul, and static/new Paradox Pokémon in Area Zero)
 - Fast egg hatching (~1,800 eggs/hour)
-- Unlimited egg hatching with multiple parents (see Wiki)
+- Unlimited egg hatching with multiple parents (see [Documentation](./Documentation/README.md))
 - Partner Mark (just run circles)
 - Reset
-  - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
-  - Pecharunt (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/5.-Encounter-(Pecharunt)) for proper setup)
+  - Bloodmoon Ursaluna (see [Documentation](./Documentation/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
+  - Pecharunt (see [Documentation](./Documentation/5.-Encounter-(Pecharunt)) for proper setup)
   - _Probably all other Raid-like statics_
 - Overworld
   - Scanner (just walk and save)
@@ -30,8 +30,8 @@ These routines are new compared to the original SysBot.NET.
 #### Sword/Shield
 
 - Max Lair (resets for IVs/Nature)
-- Calyrex and Spectrier/Glastrier combined resetting (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
-- Unlimited egg hatching with multiple parents (see Wiki)
+- Calyrex and Spectrier/Glastrier combined resetting (see [Documentation](./Documentation/6.-Encounter-Calyrex-and-Spectrier-Glastrier) for proper setup)
+- Unlimited egg hatching with multiple parents (see [Documentation](./Documentation/README.md))
 
 ## New sys-botbase fork
 
@@ -44,6 +44,7 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 
 | Version |                                SysBot Release                                 |                                       Egg-mod Release                                       |
 | :-----: | :---------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: |
+|  4.0.0  | [25.06.03.262](https://github.com/Eppin/Sysbot.NET/releases/tag/25.06.03.262) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.1  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.1  | [24.05.02.134](https://github.com/Eppin/Sysbot.NET/releases/tag/24.05.02.134) | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
 |  3.0.0  | [23.12.23.51](https://github.com/Eppin/Sysbot.NET/releases/tag/23.12.23.51)   | [3.0.0](https://github.com/Eppin/Sysbot.NET/blob/develop/Resources/Instant%20egg/3.0.0.zip) |
@@ -57,7 +58,8 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 
 ## Support & Discord
 
-For support on setting up your own instance of SysBot.NET, please check the Wiki (currently under construction).
+For support on setting up your own instance of SysBot.NET.
+Detailed guides for specific routines can be found in the [Documentation](./Documentation/README.md) folder in this repository.
 
 - Create an issue here or send a message to **viletung** on Discord
 - ~[Official Discord support server](https://discord.gg/tDMvSRv)~ (please be aware this is a fork and you might not receive support!)
