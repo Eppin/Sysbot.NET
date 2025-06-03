@@ -4,28 +4,28 @@
 
 ## Disclaimer
 
-This is a fork with some new routines that I started working on since Scarlet/Violet (that's also my main focus). I'm working on this project for personal purposes, because I like to develop in my freetime (as a fulltime fullstack .NET developer). While my goal is to develop a working SysBot.NET for everyone, some routines may only work for me. If you run into any issues, just let me know and I'll try to help.
+This is a fork with some new routines that I started working on since Scarlet/Violet (which is also my main focus). I am working on this project for personal purposes, because I enjoy developing in my free time (as a full-time full-stack .NET developer). While my goal is to develop a working SysBot.NET for everyone, some routines may only work for me. If you run into any issues, just let me know and I'll try to help.
 
-If you don't like my work, that's fine, just don't use it, I guess... ;)
+If this project does not suit your needs, you are welcome to use an alternative.
 
 ## New routines
 
-These routines are new in comparison to the original SysBot.Net
+These routines are new compared to the original SysBot.NET.
 
 #### Scarlet/Violet
 
-- Encounters (Ruinous, Loyal Three, Gimmighoul and static/new Paradox' in Area Zero)
-- Fast egg hatch (~1,800 eggs/hour)
+- Encounters (Ruinous, Loyal Three, Gimmighoul, and static/new Paradox Pokémon in Area Zero)
+- Fast egg hatching (~1,800 eggs/hour)
 - Unlimited egg hatching with multiple parents (see Wiki)
 - Partner Mark (just run circles)
 - Reset
   - Bloodmoon Ursaluna (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/4.-Encounter-(Bloodmoon-Ursaluna)) for proper setup)
   - Pecharunt (see [Wiki](https://github.com/Eppin/Sysbot.NET/wiki/5.-Encounter-(Pecharunt)) for proper setup)
-  - _Probably all other Raid-a-like statics_
+  - _Probably all other Raid-like statics_
 - Overworld
-  - Scanner, just walk and save
+  - Scanner (just walk and save)
   - Research Station
-  - Mass Outbreak (search for species, list KO count and Picnic resetting)__**__
+  - Mass Outbreak (search for species, list KO count, and Picnic resetting) **[Requires fork]**
 
 #### Sword/Shield
 
@@ -35,8 +35,8 @@ These routines are new in comparison to the original SysBot.Net
 
 ## New sys-botbase fork
 
-Routines marked with a __**__ require to use my fork of [sys-botbase](https://github.com/Eppin/sys-botbase/releases). 
-Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.438](https://github.com/Eppin/sys-botbase/releases/tag/2.438). But make sure to use the latest and greatest version :)
+Routines marked with **[Requires fork]** require you to use my fork of [sys-botbase](https://github.com/Eppin/sys-botbase/releases).  
+Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.438](https://github.com/Eppin/sys-botbase/releases/tag/2.438). Please use the latest available version.
 
 ## Version compatibility
 
@@ -55,15 +55,15 @@ Currently the [latest](https://github.com/Eppin/sys-botbase/releases) version is
 | :-----: | :---------------------------------------------------------------------------: |
 |  1.3.2  | [24.08.06.151](https://github.com/Eppin/Sysbot.NET/releases/tag/24.08.06.151) |
 
-## Support Discord:
+## Support & Discord
 
-For support on setting up your own instance of SysBot.NET, feel free to check the wiki (which is under construction)
+For support on setting up your own instance of SysBot.NET, please check the Wiki (currently under construction).
 
-- Create an issue here or send me a message to **viletung** on Discord
-- ~[official Discord support server](https://discord.gg/tDMvSRv)~ (please, beaware this is a fork and you might not get help!)
-- [sys-botbase](https://github.com/olliz0r/sys-botbase) client for remote control automation of Nintendo Switch consoles.
-- [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase) client for remote control using a hybrid connection (USB or WiFi)
-- [USB-Botbase](https://github.com/Koi-3088/USB-Botbase) client for remote USB control.
+- Create an issue here or send a message to **viletung** on Discord
+- ~[Official Discord support server](https://discord.gg/tDMvSRv)~ (please be aware this is a fork and you might not receive support!)
+- [sys-botbase](https://github.com/olliz0r/sys-botbase): client for remote control automation of Nintendo Switch consoles
+- [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase): client for remote control using a hybrid connection (USB or WiFi)
+- [USB-Botbase](https://github.com/Koi-3088/USB-Botbase): client for remote USB control
 
 # Dependencies
 
@@ -72,7 +72,7 @@ For support on setting up your own instance of SysBot.NET, feel free to check th
 - [AutoMod](https://github.com/architdate/PKHeX-Plugins/)
 - [Discord.Net](https://github.com/discord-net/Discord.Net)
 - [TwitchLib](https://github.com/TwitchLib/TwitchLib)
-- [StreamingClientLibary](https://github.com/SaviorXTanren/StreamingClientLibrary)
+- [StreamingClientLibrary](https://github.com/SaviorXTanren/StreamingClientLibrary)
 
 # License
 
@@ -80,14 +80,14 @@ Refer to the `License.md` for details regarding licensing.
 
 # Credits
 
-Thanks for all the open source projects. Credits are in no particular order:
+Thank you to all the open source projects and contributors. Credits are listed in no particular order:
 
 - [@LegoFigure11](https://www.github.com/LegoFigure11) for [RaidCrawler](https://github.com/LegoFigure11/RaidCrawler)
 - [@kwsch](https://www.github.com/kwsch) for the base of this bot and [PKHeX](https://github.com/kwsch/PKHeX/)
 - [@Lusamine](https://github.com/Lusamine) for [moarencounterbots](https://github.com/Lusamine/SysBot.NET) fork
 - [@olliz0r](https://www.github.com/olliz0r) for [sys-botbase](https://github.com/olliz0r/sys-botbase)
-- [@Koi-3088](https://www.github.com/Koi-3088) for a fork of the base bot, [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase) and [USB-Botbase](https://github.com/Koi-3088/USB-Botbase)
+- [@Koi-3088](https://www.github.com/Koi-3088) for a fork of the base bot, [Hybrid sys-botbase](https://github.com/Koi-3088/sys-usb-botbase), and [USB-Botbase](https://github.com/Koi-3088/USB-Botbase)
 - [@zyro670](https://www.github.com/zyro670) for [NotForkBot.NET](https://github.com/zyro670/NotForkBot.NET)
 - [@Manu098vm](https://github.com/Manu098vm) for [Sys-EncounterBot.NET](https://github.com/Manu098vm/Sys-EncounterBot.NET)
 - [@berichan](https://github.com/berichan) for a fork of [SysBot.NET](https://github.com/berichan/SysBot.NET)
-- _Everyone else who contributed to the repositories this project uses. Are you supposed to be listed here? Just let me know! And you'll be added_
+- _Everyone else who contributed to the repositories this project uses. Did I miss you? Just let me know and you'll be added!_

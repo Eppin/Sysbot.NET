@@ -4,6 +4,8 @@ namespace SysBot.Pokemon;
 
 public interface IPokeDataOffsetsBS
 {
+    public ulong PlayerPrefsProviderInstance { get; }
+
     public IReadOnlyList<long> BoxStartPokemonPointer { get; }
     public IReadOnlyList<long> DayCareParent1PokemonPointer { get; }
     public IReadOnlyList<long> DayCareParent2PokemonPointer { get; }

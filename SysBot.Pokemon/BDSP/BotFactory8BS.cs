@@ -13,6 +13,7 @@ public sealed class BotFactory8BS : BotFactory<PB8>
             => new PokeTradeBotBS(Hub, cfg),
 
         PokeRoutineType.EggFetch => new EncounterBotEggBS(cfg, Hub),
+        PokeRoutineType.Reset => new EncounterBotResetBS(cfg, Hub),
 
         PokeRoutineType.RemoteControl => new RemoteControlBotBS(cfg),
         _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
@@ -26,6 +27,7 @@ public sealed class BotFactory8BS : BotFactory<PB8>
             => true,
 
         PokeRoutineType.EggFetch => true,
+        PokeRoutineType.Reset => true,
 
         PokeRoutineType.RemoteControl => true,
 

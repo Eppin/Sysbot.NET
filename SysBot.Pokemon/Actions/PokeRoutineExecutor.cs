@@ -169,6 +169,8 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
             var msg = $"sys-botbase version is not supported. Expected version {BotbaseVersion} or greater, and current version is {version}. Please download the latest version from: https://github.com/Eppin/sys-botbase/releases/latest";
             throw new Exception(msg);
         }
+
+        Log($"Detected sys-botbase version {version}");
     }
 
     // Check if either Tesla or dmnt are active if the sanity check for Trainer Data fails, as these are common culprits.

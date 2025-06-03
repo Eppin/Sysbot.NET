@@ -4,6 +4,8 @@ namespace SysBot.Pokemon;
 
 public class PokeDataOffsetsBS_SP : BasePokeDataOffsetsBS
 {
+    public override ulong PlayerPrefsProviderInstance => 0x4EA7408;
+
     public override IReadOnlyList<long> BoxStartPokemonPointer { get; } = [0x4E7BE98, 0xB8, 0x10, 0xA0, 0x20, 0x20, 0x20];
     public override IReadOnlyList<long> DayCareParent1PokemonPointer { get; } = [0x4E7BE98, 0x40, 0xB8, 0x10, 0x450, 0x20, 0x20];
     public override IReadOnlyList<long> DayCareParent2PokemonPointer { get; } = [0x4E7BE98, 0x40, 0xB8, 0x10, 0x450, 0x28, 0x20];

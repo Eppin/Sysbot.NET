@@ -78,3 +78,4 @@ jobs:
         body: Release, compare Git commits.
         files: |
           winforms-windows-x64.zip
+          consoleapp-linux-arm64.zip
