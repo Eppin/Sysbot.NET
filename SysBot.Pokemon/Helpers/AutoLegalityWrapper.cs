@@ -21,7 +21,6 @@ public static class AutoLegalityWrapper
 
     private static void InitializeAutoLegality(LegalitySettings cfg)
     {
-        InitializeCoreStrings();
         EncounterEvent.RefreshMGDB(cfg.MGDBPath);
         InitializeTrainerDatabase(cfg);
         InitializeSettings(cfg);
@@ -105,15 +104,6 @@ public static class AutoLegalityWrapper
         var exist = TrainerSettings.GetSavedTrainerData(version, generation, fallback);
         if (exist is SimpleTrainerInfo) // not anything from files; this assumes ALM returns SimpleTrainerInfo for non-user-provided fake templates.
             TrainerSettings.Register(fallback);
-    }
-
-    private static void InitializeCoreStrings()
-    {
-        var lang = Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName[..2];
-        LocalizationUtil.SetLocalization(typeof(LegalityCheckStrings), lang);
-        LocalizationUtil.SetLocalization(typeof(MessageStrings), lang);
-        RibbonStrings.ResetDictionary(GameInfo.Strings.ribbons);
-        ParseSettings.ChangeLocalizationStrings(GameInfo.Strings.movelist, GameInfo.Strings.specieslist);
     }
 
     public static bool CanBeTraded(this PKM pkm)
