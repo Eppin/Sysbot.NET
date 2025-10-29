@@ -242,7 +242,7 @@ public class PokeTradeBotLA : PokeRoutineExecutor8LA, ICountBot
         await Click(A, 1_500, token).ConfigureAwait(false);
 
         Log("Selecting Link Trade.");
-        await Click(DRIGHT, 0_500, token).ConfigureAwait(false);
+        //await Click(DRIGHT, 0_500, token).ConfigureAwait(false); // TODO only if we want to trade "Global", I want local only...!
         await Click(A, 1_500, token).ConfigureAwait(false);
         await Click(A, 2_000, token).ConfigureAwait(false);
 
