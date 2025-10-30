@@ -52,32 +52,40 @@ public class StopConditionSettings
                 ? $"{TargetMinIVs} - {TargetMaxIVs}"
                 : $"Flawless IVs: {Convert(FlawlessIVs)}";
 
-            return $"{Nature}, {StopOnSpecies}, {ivsStr}";
+            var isAlpha = Alpha ? " (A)" : "";
+
+            return $"{Nature}, {StopOnSpecies}{isAlpha}, {ivsStr}";
         }
 
-        [Category(StopConditions), DisplayName("1. Enabled")]
+        [Category(StopConditions), DisplayName("a. Enabled")]
         public bool IsEnabled { get; set; } = true;
 
-        [Category(StopConditions), DisplayName("2. Species")]
+        [Category(StopConditions), DisplayName("b. Species")]
         public Species StopOnSpecies { get; set; }
 
-        [Category(StopConditions), DisplayName("3. Nature")]
+        [Category(StopConditions), DisplayName("c. Alpha (if applicable)")]
+        public bool Alpha { get; set; }
+
+        [Category(StopConditions), DisplayName("d. Selects the shiny type to stop on.")]
+        public TargetShinyType ShinyTarget { get; set; } = TargetShinyType.DisableOption;
+
+        [Category(StopConditions), DisplayName("e. Nature")]
         public Nature Nature { get; set; }
 
-        [Category(StopConditions), DisplayName("4. Ability")]
+        [Category(StopConditions), DisplayName("f. Ability")]
         public TargetAbilityType AbilityTarget { get; set; } = TargetAbilityType.Any;
 
-        [Category(StopConditions), DisplayName("5. Gender")]
+        [Category(StopConditions), DisplayName("g. Gender")]
         public TargetGenderType GenderTarget { get; set; } = TargetGenderType.Any;
 
-        [Category(StopConditions), DisplayName("6. Minimum flawless IVs")]
+        [Category(StopConditions), DisplayName("h. Minimum flawless IVs")]
         [TypeConverter(typeof(DescriptionAttributeConverter))]
         public TargetFlawlessIVsType FlawlessIVs { get; set; } = TargetFlawlessIVsType.Disabled;
 
-        [Category(StopConditions), DisplayName("7. Minimum accepted IVs")]
+        [Category(StopConditions), DisplayName("i. Minimum accepted IVs")]
         public string TargetMinIVs { get; set; } = "";
 
-        [Category(StopConditions), DisplayName("8. Maximum accepted IVs")]
+        [Category(StopConditions), DisplayName("j. Maximum accepted IVs")]
         public string TargetMaxIVs { get; set; } = "";
     }
 
@@ -98,15 +106,7 @@ public class StopConditionSettings
 
         if (settings.ShinyTarget != TargetShinyType.DisableOption)
         {
-            bool shinyMatch = settings.ShinyTarget switch
-            {
-                TargetShinyType.AnyShiny => pk.IsShiny,
-                TargetShinyType.NonShiny => !pk.IsShiny,
-                TargetShinyType.StarOnly => pk.IsShiny && pk.ShinyXor != 0,
-                TargetShinyType.SquareOnly => pk.ShinyXor == 0,
-                TargetShinyType.DisableOption => true,
-                _ => throw new ArgumentException(nameof(TargetShinyType)),
-            };
+            var shinyMatch = MatchShiny(settings.ShinyTarget, pk);
 
             // If we only needed to match one of the criteria and it shinymatch'd, return true.
             // If we needed to match both criteria and it didn't shinymatch, return false.
@@ -133,7 +133,22 @@ public class StopConditionSettings
             (skipSpeciesCheck || s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             MatchAbility(s.AbilityTarget, pk.Ability) &&
+            (!s.Alpha || pk is IAlpha { IsAlpha: true }) &&
+            MatchShiny(s.ShinyTarget, pk) &&
             s.IsEnabled);
+    }
+
+    private static bool MatchShiny<T>(TargetShinyType shinyTarget, T pk) where T : PKM
+    {
+        return shinyTarget switch
+        {
+            TargetShinyType.AnyShiny => pk.IsShiny,
+            TargetShinyType.NonShiny => !pk.IsShiny,
+            TargetShinyType.StarOnly => pk.IsShiny && pk.ShinyXor != 0,
+            TargetShinyType.SquareOnly => pk.ShinyXor == 0,
+            TargetShinyType.DisableOption => true,
+            _ => throw new ArgumentException(nameof(TargetShinyType)),
+        };
     }
 
     private static bool MatchAbility(TargetAbilityType target, int result)
@@ -266,7 +281,7 @@ public class StopConditionSettings
     }
 
     public static void ReadUnwantedMarks(StopConditionSettings settings, out IReadOnlyList<string> marks) =>
-        marks = settings.UnwantedMarks.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+        marks = settings.UnwantedMarks.Split([','], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
 
     public virtual bool IsUnwantedMark(string mark, IReadOnlyList<string> marklist) => marklist.Contains(mark);
 

@@ -36,7 +36,7 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
     public string UnlimitedParentsFolder { get; set; } = string.Empty;
 
     [Category(Encounter), Description("When mode is Scanner, keep saving the game to let the bot scan the overworld.")]
-    public OverworldMode Overworld { get; set; }
+    public OverworldModeSV Overworld { get; set; }
 
     [Category(Encounter), Description("Stop condition for Mass Outbreak only.")]
     public List<MassOutbreakSearchCondition> MassOutbreakSearchConditions { get; set; } = new();
@@ -106,7 +106,7 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
         UnlimitedParentsFolder = unlimited;
     }
 
-    public enum OverworldMode
+    public enum OverworldModeSV
     {
         Scanner,
         ResearchStation,

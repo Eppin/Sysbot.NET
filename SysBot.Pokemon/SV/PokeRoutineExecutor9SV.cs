@@ -407,14 +407,7 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
             Log($"Initial address found at {_saveKeyAddress:X8}");
         }
 
-        var header = await SwitchConnection.ReadBytesAbsoluteAsync(_saveKeyAddress, 5, token).ConfigureAwait(false);
-        header = DecryptBlock(blockKey, header);
-
-        var size = ReadUInt32LittleEndian(header.AsSpan()[1..]);
-        var data = await SwitchConnection.ReadBytesAbsoluteAsync(_saveKeyAddress, 5 + (int)size, token).ConfigureAwait(false);
-        var res = DecryptBlock(blockKey, data)[5..];
-
-        return res;
+        return await ReadEncryptedBlock(_saveKeyAddress, blockKey, token);
     }
 
     private readonly Dictionary<uint, ulong> _cacheBlockArrays = new();
@@ -524,14 +517,5 @@ public abstract class PokeRoutineExecutor9SV(PokeBotState cfg) : PokeRoutineExec
         }
 
         throw new Exception("Can't be possible to reach this!");
-    }
-
-    private static byte[] DecryptBlock(uint key, byte[] block)
-    {
-        var rng = new SCXorShift32(key);
-        for (var i = 0; i < block.Length; i++)
-            block[i] = (byte)(block[i] ^ rng.Next());
-
-        return block;
     }
 }

@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SysBot.Pokemon.ZA;
 
 namespace SysBot.Pokemon.WinForms;
 
@@ -81,6 +82,7 @@ public sealed partial class Main : Form
         ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(cfg.Hub, new BotFactory8BS()),
         ProgramMode.LA => new PokeBotRunnerImpl<PA8>(cfg.Hub, new BotFactory8LA()),
         ProgramMode.SV => new PokeBotRunnerImpl<PK9>(cfg.Hub, new BotFactory9SV()),
+        ProgramMode.ZA => new PokeBotRunnerImpl<PA9>(cfg.Hub, new BotFactory9ZA()),
         _ => throw new IndexOutOfRangeException("Unsupported mode."),
     };
 
@@ -184,10 +186,6 @@ public sealed partial class Main : Form
         var lines = JsonSerializer.Serialize(cfg, ProgramConfigContext.Default.ProgramConfig);
         File.WriteAllText(Program.ConfigPath, lines);
     }
-
-    [JsonSerializable(typeof(ProgramConfig))]
-    [JsonSourceGenerationOptions(WriteIndented = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
-    public sealed partial class ProgramConfigContext : JsonSerializerContext { }
 
     private void B_Start_Click(object sender, EventArgs e)
     {
