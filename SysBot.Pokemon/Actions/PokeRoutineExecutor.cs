@@ -346,12 +346,14 @@ public abstract class PokeRoutineExecutor<T>(IConsoleBotManaged<IConsoleConnecti
 
     public async Task<byte[]> ReadEncryptedBlock(ulong keyAddress, uint blockKey, CancellationToken token)
     {
+        const int warningSize = 1_024 * 10; // 10 KB
+
         var header = await SwitchConnection.ReadBytesAbsoluteAsync(keyAddress, 5, token).ConfigureAwait(false);
         header = DecryptBlock(blockKey, header);
 
         var size = ReadUInt32LittleEndian(header.AsSpan()[1..]);
 
-        if (size > 1_024) Log($"Retrieving {size/1024} kB (this may take a while)");
+        if (size > warningSize) Log($"Retrieving {size/1024} KB (this may take a while, using WiFi)");
 
         var data = await SwitchConnection.ReadBytesAbsoluteAsync(keyAddress, 5 + (int)size, token).ConfigureAwait(false);
         var res = DecryptBlock(blockKey, data)[5..];

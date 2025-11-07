@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
-public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
+public class EncounterBotOverworldScannerSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
 {
     private bool _saveKeyInitialized;
     private ulong _baseBlockKeyPointer;

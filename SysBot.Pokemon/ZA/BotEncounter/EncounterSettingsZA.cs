@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
+using PKHeX.Core;
 using SysBot.Base;
 
 namespace SysBot.Pokemon;
@@ -21,8 +22,24 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
 
-    [Category(Encounter), Description("Which mode should be used to find the target in the overworld.")]
-    public OverworldModeZA Overworld { get; set; }
+    [Category(Settings)]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public OverworldEncounter Overworld { get; set; } = new();
+
+    [Category(Encounter)]
+    public class OverworldEncounter
+    {
+        public override string ToString() => "Overworld Bot Settings";
+
+        [Category(Encounter), DisplayName("Which mode is used to find the target in the overworld.")]
+        public OverworldModeZA Mode { get; set; }
+
+        [Category(Encounter), DisplayName("Stop when maximum (10) shinies are stored")]
+        public bool StopOnMaxShiniesStored { get; set; } = true;
+
+        [Category(Encounter), DisplayName("Check overworld after amount of bench sitting (only applicable when searching for shinies), use '0' to disable")]
+        public int OverworldSpawnCheck { get; set; } = 1;
+    }
 
     private int _completedWild;
     private int _completedLegend;
@@ -58,6 +75,7 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
 
     public enum OverworldModeZA
     {
-        Bench
+        BenchSit,
+        WildZoneEntrance
     }
 }

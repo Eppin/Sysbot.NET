@@ -1,10 +1,10 @@
-using PKHeX.Core;
+namespace SysBot.Pokemon;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-
-namespace SysBot.Pokemon;
+using PKHeX.Core;
 
 public class StopConditionSettings
 {
@@ -20,9 +20,6 @@ public class StopConditionSettings
     [Category(StopConditions), Description("Desired spreads, search for nature and IVs. In the format HP/Atk/Def/SpA/SpD/Spe. Use \"x\" for unchecked IVs and \"/\" as a separator.")]
     public List<SearchCondition> SearchConditions { get; set; } = new();
 
-    [Category(StopConditions), Description("Selects the shiny type to stop on.")]
-    public TargetShinyType ShinyTarget { get; set; } = TargetShinyType.DisableOption;
-
     [Category(StopConditions), Description("Stop only on Pokémon that have a mark.")]
     public bool MarkOnly { get; set; }
 
@@ -34,9 +31,6 @@ public class StopConditionSettings
 
     [Category(StopConditions), Description("Extra time in milliseconds to wait after an encounter is matched before pressing Capture for EncounterBot or Fossilbot.")]
     public int ExtraTimeWaitCaptureVideo { get; set; } = 10000;
-
-    [Category(StopConditions), Description("If set to TRUE, matches both ShinyTarget and TargetIVs settings. Otherwise, looks for either ShinyTarget or TargetIVs match.")]
-    public bool MatchShinyAndIV { get; set; } = true;
 
     [Category(StopConditions), Description("If not empty, the provided string will be prepended to the result found log message to Echo alerts for whomever you specify. For Discord, use <@userIDnumber> to mention.")]
     public string MatchFoundEchoMention { get; set; } = string.Empty;
@@ -52,7 +46,7 @@ public class StopConditionSettings
                 ? $"{TargetMinIVs} - {TargetMaxIVs}"
                 : $"Flawless IVs: {Convert(FlawlessIVs)}";
 
-            var isAlpha = Alpha ? " (A)" : "";
+            var isAlpha = AlphaTarget == TargetAlphaType.AnyAlpha ? " (A)" : "";
 
             return $"{Nature}, {StopOnSpecies}{isAlpha}, {ivsStr}";
         }
@@ -61,16 +55,16 @@ public class StopConditionSettings
         public bool IsEnabled { get; set; } = true;
 
         [Category(StopConditions), DisplayName("b. Species")]
-        public Species StopOnSpecies { get; set; }
+        public Species StopOnSpecies { get; set; } = Species.None;
 
         [Category(StopConditions), DisplayName("c. Alpha (if applicable)")]
-        public bool Alpha { get; set; }
+        public TargetAlphaType AlphaTarget { get; set; } = TargetAlphaType.DisableOption;
 
         [Category(StopConditions), DisplayName("d. Selects the shiny type to stop on.")]
         public TargetShinyType ShinyTarget { get; set; } = TargetShinyType.DisableOption;
 
         [Category(StopConditions), DisplayName("e. Nature")]
-        public Nature Nature { get; set; }
+        public Nature Nature { get; set; } = Nature.Random;
 
         [Category(StopConditions), DisplayName("f. Ability")]
         public TargetAbilityType AbilityTarget { get; set; } = TargetAbilityType.Any;
@@ -104,19 +98,6 @@ public class StopConditionSettings
         if (settings.MarkOnly && (unmarked || unwanted))
             return false;
 
-        if (settings.ShinyTarget != TargetShinyType.DisableOption)
-        {
-            var shinyMatch = MatchShiny(settings.ShinyTarget, pk);
-
-            // If we only needed to match one of the criteria and it shinymatch'd, return true.
-            // If we needed to match both criteria and it didn't shinymatch, return false.
-            if (!settings.MatchShinyAndIV && shinyMatch)
-                return true;
-
-            if (settings.MatchShinyAndIV && !shinyMatch)
-                return false;
-        }
-
         // Reorder the speed to be last.
         Span<int> pkIVList = stackalloc int[6];
         pk.GetIVs(pkIVList);
@@ -133,9 +114,23 @@ public class StopConditionSettings
             (skipSpeciesCheck || s.StopOnSpecies == (Species)pk.Species || s.StopOnSpecies == Species.None) &&
             MatchGender(s.GenderTarget, (Gender)pk.Gender) &&
             MatchAbility(s.AbilityTarget, pk.Ability) &&
-            (!s.Alpha || pk is IAlpha { IsAlpha: true }) &&
+            MatchAlpha(s.AlphaTarget, pk as IAlpha) &&
             MatchShiny(s.ShinyTarget, pk) &&
             s.IsEnabled);
+    }
+
+    private static bool MatchAlpha(TargetAlphaType alphaTarget, IAlpha? pk)
+    {
+        if (pk is null)
+            return true;
+
+        return alphaTarget switch
+        {
+            TargetAlphaType.NonAlpha => !pk.IsAlpha,
+            TargetAlphaType.AnyAlpha => pk.IsAlpha,
+            TargetAlphaType.DisableOption => true,
+            _ => throw new ArgumentOutOfRangeException(nameof(alphaTarget), alphaTarget, null)
+        };
     }
 
     private static bool MatchShiny<T>(TargetShinyType shinyTarget, T pk) where T : PKM
@@ -268,8 +263,15 @@ public class StopConditionSettings
         var set = ShowdownParsing.GetShowdownText(pk, settings);
 
         // Since we can match on Min/Max Height for transfer to future games, display it.
+        var scales = new List<string>();
         if (pk is IScaledSize p)
-            set += $"\nHeight: {p.HeightScalar}";
+            scales.Add($"Height: {p.HeightScalar}");
+
+        if (pk is IScaledSize3 p3)
+            scales.Add($"Scale: {p3.Scale}");
+
+        if (scales.Count > 0)
+            set += $"\n{string.Join(", ", scales)}";
 
         if (pk is IRibbonIndex r)
         {
@@ -335,6 +337,13 @@ public enum TargetGenderType
     Male,           // Match male only
     Female,         // Match female only
     Genderless,     // Match genderless only
+}
+
+public enum TargetAlphaType
+{
+    DisableOption,  // Doesn't care
+    NonAlpha,       // Match non alpha only
+    AnyAlpha,       // Match alpha only
 }
 
 public enum TargetFlawlessIVsType

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.FlatBuffers;
 using PKHeX.Core;
 using SysBot.Base;
 using static SysBot.Base.SwitchButton;
@@ -11,38 +10,53 @@ using static SysBot.Pokemon.PokeDataOffsetsZA;
 
 namespace SysBot.Pokemon.ZA;
 
-public class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExecutor<PA9>(cfg)
+public abstract class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExecutor<PA9>(cfg)
 {
     protected PokeDataOffsetsZA Offsets { get; } = new();
 
-    public override Task MainLoop(CancellationToken token)
+    public override async Task<PA9> ReadPokemon(ulong offset, CancellationToken token) => await ReadPokemon(offset, FormatSlotSize, token).ConfigureAwait(false);
+
+    public override async Task<PA9> ReadPokemon(ulong offset, int size, CancellationToken token)
     {
-        throw new System.NotImplementedException();
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(offset, size, token).ConfigureAwait(false);
+        return new PA9(data);
     }
 
-    public override Task HardStop()
+    public override async Task<PA9> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
     {
-        throw new System.NotImplementedException();
+        var (valid, offset) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+        if (!valid)
+            return new PA9();
+
+        return await ReadPokemon(offset, token).ConfigureAwait(false);
     }
 
-    public override Task<PA9> ReadPokemon(ulong offset, CancellationToken token)
+    public async Task<(PA9, byte[]?)> ReadRawBoxPokemon(int box, int slot, CancellationToken token)
     {
-        throw new System.NotImplementedException();
+        var jumps = Offsets.BoxStartPokemonPointer.ToArray();
+        var (valid, b1s1) = await ValidatePointerAll(jumps, token).ConfigureAwait(false);
+        if (!valid)
+            return (new PA9(), null);
+
+        const int boxSize = 30 * BoxSlotSize;
+        var boxStart = b1s1 + (ulong)(box * boxSize);
+        var slotStart = boxStart + (ulong)(slot * BoxSlotSize);
+
+        var copiedData = new byte[BoxSlotSize];
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(slotStart, BoxSlotSize, token).ConfigureAwait(false);
+
+        data.CopyTo(copiedData, 0);
+
+        if (!data.SequenceEqual(copiedData))
+            throw new InvalidOperationException("Raw data is not copied correctly");
+
+        return (new PA9(data), copiedData);
     }
 
-    public override Task<PA9> ReadPokemon(ulong offset, int size, CancellationToken token)
+    public override async Task<PA9> ReadBoxPokemon(int box, int slot, CancellationToken token)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public override Task<PA9> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public override Task<PA9> ReadBoxPokemon(int box, int slot, CancellationToken token)
-    {
-        throw new System.NotImplementedException();
+        var (pa9, _) = await ReadRawBoxPokemon(box, slot, token).ConfigureAwait(false);
+        return pa9;
     }
 
     public async Task<SAV9ZA> IdentifyTrainer(CancellationToken token)
@@ -97,6 +111,17 @@ public class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExecutor<PA9>
         await SetScreen(ScreenState.On, token).ConfigureAwait(false);
         Log("Detaching controllers on routine exit.");
         await DetachController(token).ConfigureAwait(false);
+    }
+
+    public async Task SaveGame(CancellationToken token)
+    {
+        Log("Saving the game");
+        await Click(X, 1_000, token).ConfigureAwait(false);
+        await Click(R, 0_500, token).ConfigureAwait(false);
+        await Click(A, 3_500, token).ConfigureAwait(false);
+
+        for (var i = 0; i < 4; i++)
+            await Click(B, 0_400, token).ConfigureAwait(false);
     }
 
     private readonly Dictionary<uint, ulong> _cacheBlockAddresses = new();

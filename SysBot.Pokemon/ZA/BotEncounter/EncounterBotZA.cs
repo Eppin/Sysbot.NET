@@ -3,6 +3,7 @@ namespace SysBot.Pokemon;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Base;
@@ -99,7 +100,7 @@ public abstract class EncounterBotZA : PokeRoutineExecutor9ZA, IEncounterBot
 
         if (!StopConditionSettings.EncounterFound(pk, Hub.Config.StopConditions, UnwantedMarks))
         {
-            if (Hub.Config.StopConditions.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly && pk.IsShiny)
+            if (Hub.Config.StopConditions.SearchConditions.Any(sc => sc.IsEnabled && pk.IsShiny && sc.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly))
                 Hub.LogEmbed(pk, false);
 
             return (false, false);

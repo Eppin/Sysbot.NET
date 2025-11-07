@@ -11,7 +11,6 @@ public class EncounterSettingsSV : IBotStateSettings, ICountSettings
 {
     private const string Counts = nameof(Counts);
     private const string Encounter = nameof(Encounter);
-    private const string Settings = nameof(Settings);
     public override string ToString() => "Encounter Bot SV Settings";
 
     [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
