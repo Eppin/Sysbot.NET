@@ -353,7 +353,7 @@ public abstract class PokeRoutineExecutor<T>(IConsoleBotManaged<IConsoleConnecti
 
         var size = ReadUInt32LittleEndian(header.AsSpan()[1..]);
 
-        if (size > warningSize) Log($"Retrieving {size/1024} KB (this may take a while, using WiFi)");
+        if (size > warningSize) Log($"Retrieving {size/1024} KB (this may take a while, using WiFi, use USB if available)");
 
         var data = await SwitchConnection.ReadBytesAbsoluteAsync(keyAddress, 5 + (int)size, token).ConfigureAwait(false);
         var res = DecryptBlock(blockKey, data)[5..];
