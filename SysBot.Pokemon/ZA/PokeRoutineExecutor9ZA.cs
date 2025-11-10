@@ -113,6 +113,47 @@ public abstract class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExec
         await DetachController(token).ConfigureAwait(false);
     }
 
+    public async Task CloseGame(PokeTradeHubConfig config, CancellationToken token)
+    {
+        var timing = config.Timings;
+        // Close out of the game
+        await Click(B, 0_500, token).ConfigureAwait(false);
+        await Click(HOME, 2_000 + timing.ExtraTimeReturnHome, token).ConfigureAwait(false);
+        await Click(X, 1_000, token).ConfigureAwait(false);
+        await Click(A, 5_000 + timing.ExtraTimeCloseGame, token).ConfigureAwait(false);
+        Log("Closed out of the game!");
+    }
+
+    public async Task StartGame(PokeTradeHubConfig config, CancellationToken token)
+    {
+        var timing = config.Timings;
+        // Open game.
+        await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
+
+        // Menus here can go in the order: Update Prompt -> Profile -> Starts Game
+        //  The user can optionally turn on the setting if they know of a breaking system update incoming.
+        if (timing.AvoidSystemUpdate)
+        {
+            await Task.Delay(1_000, token).ConfigureAwait(false); // Reduce the chance of misclicking here.
+            await Click(DUP, 0_600, token).ConfigureAwait(false);
+            await Click(A, 1_000 + timing.ExtraTimeLoadProfile, token).ConfigureAwait(false);
+        }
+
+        await Click(DUP, 0_600, token).ConfigureAwait(false);
+        await Click(A, 0_600, token).ConfigureAwait(false);
+
+        Log("Restarting the game!");
+
+        // Switch Logo...
+        await Task.Delay(12_000 + timing.ExtraTimeLoadGame, token).ConfigureAwait(false);
+
+        // ... and game load screen
+        await Click(A, 1_000, token).ConfigureAwait(false);
+
+        await Task.Delay(4_000 + timing.ExtraTimeLoadOverworld, token).ConfigureAwait(false);
+        Log("Back in the overworld!");
+    }
+
     public async Task SaveGame(CancellationToken token)
     {
         Log("Saving the game");

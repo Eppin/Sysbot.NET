@@ -17,8 +17,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="PKHeX.Core" Version="25.10.27" />
-		<PackageReference Include="System.Resources.Extensions" Version="9.0.5" />
+		<PackageReference Include="PKHeX.Core" Version="25.11.7" />
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>

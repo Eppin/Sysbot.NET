@@ -22,4 +22,5 @@ Welcome to the Sysbot.NET wiki!
 ## Legends: Z-A
 
 11. [Bench Sitting](11.-Bench-Sitting-Legends-Z-A.md)
-11. [Wild Zone Entrance](12.-Wild-Zone-Entrance-Legends-Z-A.md)
+12. [Wild Zone Entrance](12.-Wild-Zone-Entrance-Legends-Z-A.md)
+13. [Fossil reviving](13.-Fossil-Revive-Legends-Z-A.md)

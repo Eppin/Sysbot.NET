@@ -16,18 +16,16 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
     [Category(Encounter), Description("When enabled, the bot will continue after finding a suitable match.")]
     public ContinueAfterMatch ContinueAfterMatch { get; set; } = ContinueAfterMatch.StopExit;
 
-    [Category(Encounter), Description("When enabled, the bot will only stop when encounter has a Scale of XXXS or XXXL.")]
-    public bool MinMaxScaleOnly { get; set; } = false;
-
-    [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
-    public bool ScreenOff { get; set; }
+    [Category(Settings)]
+    [TypeConverter(typeof(ExpandableObjectConverter))]
+    public FossilSettingsZA Fossil { get; set; } = new();
 
     [Category(Settings)]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public OverworldEncounter Overworld { get; set; } = new();
+    public OverworldEncounterZA Overworld { get; set; } = new();
 
     [Category(Encounter)]
-    public class OverworldEncounter
+    public class OverworldEncounterZA
     {
         public override string ToString() => "Overworld Bot Settings";
 
@@ -41,8 +39,15 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
         public int OverworldSpawnCheck { get; set; } = 1;
     }
 
+    [Category(Encounter), Description("When enabled, the bot will only stop when encounter has a Scale of XXXS or XXXL.")]
+    public bool MinMaxScaleOnly { get; set; } = false;
+
+    [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
+    public bool ScreenOff { get; set; }
+
     private int _completedWild;
     private int _completedLegend;
+    private int _completedFossils;
 
     [Category(Counts), Description("Encountered Wild Pokémon")]
     public int CompletedEncounters
@@ -58,11 +63,20 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
         set => _completedLegend = value;
     }
 
+    [Category(Counts), Description("Fossil Pokémon Revived")]
+    public int CompletedFossils
+    {
+        get => _completedFossils;
+        set => _completedFossils = value;
+    }
+
     [Category(Counts), Description("When enabled, the counts will be emitted when a status check is requested.")]
     public bool EmitCountsOnStatusCheck { get; set; }
 
     public int AddCompletedEncounters() => Interlocked.Increment(ref _completedWild);
     public int AddCompletedLegends() => Interlocked.Increment(ref _completedLegend);
+    public int AddCompletedFossils() => Interlocked.Increment(ref _completedFossils);
+
     public IEnumerable<string> GetNonZeroCounts()
     {
         if (!EmitCountsOnStatusCheck)
@@ -71,6 +85,8 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
             yield return $"Wild Encounters: {CompletedEncounters}";
         if (CompletedLegends != 0)
             yield return $"Legendary Encounters: {CompletedLegends}";
+        if (CompletedFossils != 0)
+            yield return $"Completed Fossils: {CompletedFossils}";
     }
 
     public enum OverworldModeZA

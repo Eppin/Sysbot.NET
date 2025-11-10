@@ -161,6 +161,15 @@ public abstract class EncounterBotZA : PokeRoutineExecutor9ZA, IEncounterBot
                 return "legends";
             }
 
+            if (new[] { (int)Species.Aerodactyl, (int)Species.Tyrunt, (int)Species.Amaura }.Contains(pk.Species))
+            {
+                Settings.AddCompletedFossils();
+                OutputExtensions<PA9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_FosilZA.txt"));
+                OutputExtensions<PA9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_FosilZA.txt"));
+
+                return "fossil";
+            }
+
             Settings.AddCompletedEncounters();
             OutputExtensions<PA9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EncounterZA.txt"));
             OutputExtensions<PA9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_EncounterZA.txt"));
