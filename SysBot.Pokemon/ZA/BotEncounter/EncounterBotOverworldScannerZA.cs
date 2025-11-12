@@ -48,13 +48,26 @@ public class EncounterBotOverworldScannerZA(PokeBotState cfg, PokeTradeHub<PA9> 
         if (walk > 0)
         {
             Log($"Walking forward for {walk} milliseconds.", false);
-            await SetStick(LEFT, 0, 30000, walk, token).ConfigureAwait(false);
-            await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false);
+            await Run(0, short.MaxValue, walk, token).ConfigureAwait(false);
 
             Log($"Walking back for {walk} milliseconds.", false);
-            await SetStick(LEFT, 0, -30000, walk, token).ConfigureAwait(false);
-            await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false);
+            await Run(0, short.MinValue, walk, token).ConfigureAwait(false);
         }
+    }
+
+    private async Task Run(short x, short y, int walk, CancellationToken token)
+    {
+        const int defaultDelay = 0_100;
+
+        await SetStick(LEFT, x, y, defaultDelay, token).ConfigureAwait(false);
+
+        // Only press B if the configured walk duration is large enough to fit both stick movement and the B press
+        const int clickDelay = defaultDelay * 2;
+        if (walk > clickDelay)
+            await Click(B, defaultDelay, token).ConfigureAwait(false);
+
+        await Task.Delay(walk, token).ConfigureAwait(false);
+        await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false);
     }
 
     private Task<bool> PerformOverworldScan(CancellationToken token)
