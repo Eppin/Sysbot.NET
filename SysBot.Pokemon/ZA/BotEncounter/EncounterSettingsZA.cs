@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
-using PKHeX.Core;
 using SysBot.Base;
 
 namespace SysBot.Pokemon;
@@ -37,6 +36,9 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
 
         [Category(Encounter), Description("Check overworld after amount of bench sitting (applicable when ONLY searching for shinies), use '0' to disable")]
         public int OverworldSpawnCheck { get; set; } = 1;
+
+        [Category(Encounter), Description("Duration in milliseconds to walk forward, then back, after a bench sit or when passing a Wild Zone entrance.")]
+        public int WalkDurationMs { get; set; }
     }
 
     [Category(Encounter), Description("When enabled, the bot will only stop when encounter has a Scale of XXXS or XXXL.")]

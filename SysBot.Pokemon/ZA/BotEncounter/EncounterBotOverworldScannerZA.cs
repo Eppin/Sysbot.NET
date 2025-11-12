@@ -31,12 +31,29 @@ public class EncounterBotOverworldScannerZA(PokeBotState cfg, PokeTradeHub<PA9> 
             {
                 EncounterSettingsZA.OverworldModeZA.BenchSit => BenchSit(token),
                 EncounterSettingsZA.OverworldModeZA.WildZoneEntrance => WildZoneEntrance(token),
-                _ => throw new ArgumentOutOfRangeException(),
+                _ => throw new ArgumentOutOfRangeException()
             };
             await task.ConfigureAwait(false);
 
+            await WalkInOverworld(token).ConfigureAwait(false);
+
             if (await PerformOverworldScan(token).ConfigureAwait(false))
                 return;
+        }
+    }
+
+    private async Task WalkInOverworld(CancellationToken token)
+    {
+        var walk = Settings.Overworld.WalkDurationMs;
+        if (walk > 0)
+        {
+            Log($"Walking forward for {walk} milliseconds.", false);
+            await SetStick(LEFT, 0, 30000, walk, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false);
+
+            Log($"Walking back for {walk} milliseconds.", false);
+            await SetStick(LEFT, 0, -30000, walk, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false);
         }
     }
 

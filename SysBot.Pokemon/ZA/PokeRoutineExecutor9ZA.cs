@@ -59,6 +59,24 @@ public abstract class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExec
         return pa9;
     }
 
+    public async Task SetBoxPokemonAbsolute(ulong offset, PK9 pkm, CancellationToken token, ITrainerInfo? sav = null)
+    {
+        if (sav != null)
+        {
+            // Update PKM to the current save's handler data
+            pkm.UpdateHandler(sav);
+            pkm.RefreshChecksum();
+        }
+
+        pkm.ResetPartyStats();
+
+        var encrypted = pkm.EncryptedBoxData;
+        var boxData = new byte[encrypted.Length + 0x40];
+        Buffer.BlockCopy(encrypted, 0, boxData, 0, encrypted.Length);
+
+        await SwitchConnection.WriteBytesAbsoluteAsync(boxData, offset, token).ConfigureAwait(false);
+    }
+
     public async Task<SAV9ZA> IdentifyTrainer(CancellationToken token)
     {
         // Check if botbase is on the correct version or later.
