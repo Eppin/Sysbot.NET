@@ -5,7 +5,7 @@ using SysBot.Base;
 
 namespace SysBot.Pokemon;
 
-public class EncounterSettingsZA : IBotStateSettings, ICountSettings
+public class EncounterSettingsLZA : IBotStateSettings, ICountSettings
 {
     private const string Counts = nameof(Counts);
     private const string Encounter = nameof(Encounter);
@@ -17,19 +17,19 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
 
     [Category(Settings)]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public FossilSettingsZA Fossil { get; set; } = new();
+    public FossilSettingsLZA Fossil { get; set; } = new();
 
     [Category(Settings)]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public OverworldEncounterZA Overworld { get; set; } = new();
+    public OverworldEncounterLZA Overworld { get; set; } = new();
 
     [Category(Encounter)]
-    public class OverworldEncounterZA
+    public class OverworldEncounterLZA
     {
         public override string ToString() => "Overworld Bot Settings";
 
         [Category(Encounter), Description("Which mode is used to find the target in the overworld.")]
-        public OverworldModeZA Mode { get; set; }
+        public OverworldModeLZA Mode { get; set; }
 
         [Category(Encounter), Description("Stop when maximum (10) shinies are stored (applicable when ONLY searching for shinies)")]
         public bool StopOnMaxShiniesStored { get; set; } = true;
@@ -91,7 +91,7 @@ public class EncounterSettingsZA : IBotStateSettings, ICountSettings
             yield return $"Completed Fossils: {CompletedFossils}";
     }
 
-    public enum OverworldModeZA
+    public enum OverworldModeLZA
     {
         BenchSit,
         WildZoneEntrance

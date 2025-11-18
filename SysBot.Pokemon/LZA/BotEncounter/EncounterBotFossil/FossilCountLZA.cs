@@ -3,7 +3,7 @@ namespace SysBot.Pokemon;
 using System;
 using PKHeX.Core;
 
-public class FossilCountZA
+public class FossilCountLZA
 {
     private int Jaw;
     private int Sail;
@@ -19,15 +19,15 @@ public class FossilCountZA
         }
     }
 
-    public static FossilCountZA GetFossilCounts(byte[] itemsBlock)
+    public static FossilCountLZA GetFossilCounts(byte[] itemsBlock)
     {
         var pouch = GetTreasurePouch(itemsBlock);
         return ReadCounts(pouch);
     }
 
-    private static FossilCountZA ReadCounts(InventoryPouch pouch)
+    private static FossilCountLZA ReadCounts(InventoryPouch pouch)
     {
-        var counts = new FossilCountZA();
+        var counts = new FossilCountLZA();
         foreach (var item in pouch.Items)
             counts.SetCount(item.Index, item.Count);
         return counts;
@@ -40,9 +40,9 @@ public class FossilCountZA
         return pouch;
     }
 
-    public int PossibleRevives(FossilSpeciesZA species)
+    public int PossibleRevives(FossilSpeciesLZA species)
     {
-        if (species == FossilSpeciesZA.Any) return Jaw + Sail + OldAmber;
+        if (species == FossilSpeciesLZA.Any) return Jaw + Sail + OldAmber;
 
         // Requirement: at least one of each fossil must be present to perform any revives.
         if (Jaw <= 0 || Sail <= 0 || OldAmber <= 0)
@@ -50,9 +50,9 @@ public class FossilCountZA
 
         return species switch
         {
-            FossilSpeciesZA.Tyrunt => Jaw,
-            FossilSpeciesZA.Amaura => Sail,
-            FossilSpeciesZA.Aerodactyl => OldAmber,
+            FossilSpeciesLZA.Tyrunt => Jaw,
+            FossilSpeciesLZA.Amaura => Sail,
+            FossilSpeciesLZA.Aerodactyl => OldAmber,
             _ => throw new ArgumentOutOfRangeException(nameof(species), species, "Fossil species was invalid."),
         };
     }

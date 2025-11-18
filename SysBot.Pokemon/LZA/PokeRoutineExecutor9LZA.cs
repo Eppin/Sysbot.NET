@@ -1,18 +1,18 @@
+namespace SysBot.Pokemon;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Base;
 using PKHeX.Core;
-using SysBot.Base;
-using static SysBot.Base.SwitchButton;
-using static SysBot.Pokemon.PokeDataOffsetsZA;
+using static Base.SwitchButton;
+using static PokeDataOffsetsLZA;
 
-namespace SysBot.Pokemon.ZA;
-
-public abstract class PokeRoutineExecutor9ZA(PokeBotState cfg) : PokeRoutineExecutor<PA9>(cfg)
+public abstract class PokeRoutineExecutor9LZA(PokeBotState cfg) : PokeRoutineExecutor<PA9>(cfg)
 {
-    protected PokeDataOffsetsZA Offsets { get; } = new();
+    protected PokeDataOffsetsLZA Offsets { get; } = new();
 
     public override async Task<PA9> ReadPokemon(ulong offset, CancellationToken token) => await ReadPokemon(offset, FormatSlotSize, token).ConfigureAwait(false);
 

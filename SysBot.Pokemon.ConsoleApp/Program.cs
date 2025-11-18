@@ -111,7 +111,7 @@ public static class BotContainer
         ProgramMode.BDSP => new PokeBotRunnerImpl<PB8>(prog.Hub, new BotFactory8BS()),
         ProgramMode.LA => new PokeBotRunnerImpl<PA8>(prog.Hub, new BotFactory8LA()),
         ProgramMode.SV => new PokeBotRunnerImpl<PK9>(prog.Hub, new BotFactory9SV()),
-        ProgramMode.ZA => new PokeBotRunnerImpl<PA9>(prog.Hub, new BotFactory9ZA()),
+        ProgramMode.ZA => new PokeBotRunnerImpl<PA9>(prog.Hub, new BotFactory9LZA()),
         _ => throw new IndexOutOfRangeException("Unsupported mode."),
     };
 

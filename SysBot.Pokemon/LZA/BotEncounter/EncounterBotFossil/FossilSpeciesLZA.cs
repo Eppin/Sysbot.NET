@@ -1,6 +1,6 @@
 namespace SysBot.Pokemon;
 
-public enum FossilSpeciesZA
+public enum FossilSpeciesLZA
 {
     /// <summary>
     /// Bot will revive any fossil species

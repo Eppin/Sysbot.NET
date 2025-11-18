@@ -5,7 +5,7 @@ namespace SysBot.Pokemon;
 /// <summary>
 /// Pokémon Legends: Z-A RAM offsets
 /// </summary>
-public class PokeDataOffsetsZA
+public class PokeDataOffsetsLZA
 {
     public const string ZAGameVersion = "1.0.2";
     public const string LegendsZAID = "0100F43008C44000";

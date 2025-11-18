@@ -12,19 +12,19 @@ using ZA;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
-public abstract class EncounterBotZA : PokeRoutineExecutor9ZA, IEncounterBot
+public abstract class EncounterBotLZA : PokeRoutineExecutor9LZA, IEncounterBot
 {
     protected readonly PokeTradeHub<PA9> Hub;
-    protected readonly EncounterSettingsZA Settings;
+    protected readonly EncounterSettingsLZA Settings;
     protected readonly IDumper DumpSetting;
 
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
-    protected EncounterBotZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : base(cfg)
+    protected EncounterBotLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : base(cfg)
     {
         Hub = hub;
-        Settings = Hub.Config.EncounterZA;
+        Settings = Hub.Config.EncounterLZA;
         DumpSetting = Hub.Config.Folder;
         StopConditionSettings.ReadUnwantedMarks(Hub.Config.StopConditions, out UnwantedMarks);
     }

@@ -6,11 +6,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using PKHeX.Core;
-using static PokeDataOffsetsZA;
+using static PokeDataOffsetsLZA;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
-public class EncounterBotOverworldScannerZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : EncounterBotZA(cfg, hub)
+public class EncounterBotOverworldScannerLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : EncounterBotLZA(cfg, hub)
 {
     private bool _overworldKeyInitialized;
     private bool _shinyEntityKeyInitialized;
@@ -29,8 +29,8 @@ public class EncounterBotOverworldScannerZA(PokeBotState cfg, PokeTradeHub<PA9> 
         {
             var task = Settings.Overworld.Mode switch
             {
-                EncounterSettingsZA.OverworldModeZA.BenchSit => BenchSit(token),
-                EncounterSettingsZA.OverworldModeZA.WildZoneEntrance => WildZoneEntrance(token),
+                EncounterSettingsLZA.OverworldModeLZA.BenchSit => BenchSit(token),
+                EncounterSettingsLZA.OverworldModeLZA.WildZoneEntrance => WildZoneEntrance(token),
                 _ => throw new ArgumentOutOfRangeException()
             };
             await task.ConfigureAwait(false);

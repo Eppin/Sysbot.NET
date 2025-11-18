@@ -3,14 +3,14 @@ namespace SysBot.Pokemon.ZA;
 using System;
 using PKHeX.Core;
 
-public sealed class BotFactory9ZA : BotFactory<PA9>
+public sealed class BotFactory9LZA : BotFactory<PA9>
 {
     public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PA9> hub, PokeBotState cfg) => cfg.NextRoutineType switch
     {
-        PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScannerZA(cfg, hub),
-        PokeRoutineType.FossilBot => new EncounterBotFossilZA(cfg, hub),
+        PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScannerLZA(cfg, hub),
+        PokeRoutineType.FossilBot => new EncounterBotFossilLZA(cfg, hub),
 
-        PokeRoutineType.RemoteControl => new RemoteControlBotZA(cfg),
+        PokeRoutineType.RemoteControl => new RemoteControlBotLZA(cfg),
 
         _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
     };

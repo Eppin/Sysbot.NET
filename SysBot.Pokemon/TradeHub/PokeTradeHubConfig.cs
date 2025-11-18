@@ -43,7 +43,7 @@ public sealed class PokeTradeHubConfig : BaseConfig
 
     [Category(BotEncounter)]
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    public EncounterSettingsZA EncounterZA { get; set; } = new();
+    public EncounterSettingsLZA EncounterLZA { get; set; } = new();
 
     [Category(BotEncounter)]
     [TypeConverter(typeof(ExpandableObjectConverter))]

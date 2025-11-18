@@ -6,7 +6,7 @@ using SysBot.Pokemon.ZA;
 
 namespace SysBot.Pokemon;
 
-public class RemoteControlBotZA(PokeBotState cfg) : PokeRoutineExecutor9ZA(cfg)
+public class RemoteControlBotLZA(PokeBotState cfg) : PokeRoutineExecutor9LZA(cfg)
 {
     public override async Task MainLoop(CancellationToken token)
     {

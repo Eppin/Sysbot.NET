@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using PKHeX.Core;
 using static Base.SwitchButton;
-using static PokeDataOffsetsZA;
+using static PokeDataOffsetsLZA;
 
-public class EncounterBotFossilZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : EncounterBotZA(cfg, hub)
+public class EncounterBotFossilLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : EncounterBotLZA(cfg, hub)
 {
-    private new readonly FossilSettingsZA Settings = hub.Config.EncounterZA.Fossil;
+    private new readonly FossilSettingsLZA Settings = hub.Config.EncounterLZA.Fossil;
 
     private bool _itemKeyInitialized;
     private byte _box;
@@ -21,7 +21,7 @@ public class EncounterBotFossilZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : Enc
 
         Log("Checking item counts...");
         var pouchData = await GetPouchData(token).ConfigureAwait(false);
-        var counts = FossilCountZA.GetFossilCounts(pouchData);
+        var counts = FossilCountLZA.GetFossilCounts(pouchData);
 
         var reviveCount = counts.PossibleRevives(Settings.Species);
         if (reviveCount == 0)
@@ -30,7 +30,7 @@ public class EncounterBotFossilZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : Enc
             return;
         }
 
-        Log($"Enough fossil pieces are available to revive {reviveCount} {(Settings.Species is FossilSpeciesZA.Any ? "fossils" : Settings.Species)}.");
+        Log($"Enough fossil pieces are available to revive {reviveCount} {(Settings.Species is FossilSpeciesLZA.Any ? "fossils" : Settings.Species)}.");
 
         PA9? prev = null;
         while (!token.IsCancellationRequested)
@@ -90,7 +90,7 @@ public class EncounterBotFossilZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : Enc
     {
         Log("Starting fossil revival routine...");
 
-        if (Settings.Species == FossilSpeciesZA.Any)
+        if (Settings.Species == FossilSpeciesLZA.Any)
         {
             // Just mash the buttons through the menus if any fossil is acceptable.
             for (var i = 0; i < 14; i++)
@@ -110,12 +110,12 @@ public class EncounterBotFossilZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : Enc
         switch (Settings.Species)
         {
             // Selecting second fossil.
-            case FossilSpeciesZA.Amaura:
+            case FossilSpeciesLZA.Amaura:
                 await Click(DDOWN, 0_300, token).ConfigureAwait(false);
                 break;
 
             // Selecting third fossil.
-            case FossilSpeciesZA.Aerodactyl:
+            case FossilSpeciesLZA.Aerodactyl:
                 {
                     for (var i = 0; i < 2; i++) await Click(DDOWN, 0_300, token).ConfigureAwait(false);
                     break;
