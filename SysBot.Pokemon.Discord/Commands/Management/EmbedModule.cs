@@ -129,18 +129,12 @@ public class EmbedModule<T> : ModuleBase<SocketCommandContext> where T : PKM, ne
         return pkm switch
         {
             null => ("(no valid data to embed)", null),
-            PK8 pk8 => EmbedPk(pk8, success),
-            PB8 pb8 => EmbedPk(pb8, success),
-            PK9 pk9 => EmbedPk(pk9, success),
-            _ => ("(unsupported embed)", null)
+            _ => EmbedPk(pkm, success)
         };
     }
 
-    private static (string Text, Embed? Embed) EmbedPk(PKM pkm, bool success)
+    private static (string Text, Embed? Embed) EmbedPk(T pk, bool success)
     {
-        if (pkm is not T pk)
-            throw new Exception();
-
         var url = OutputExtensions<T>.PokeImage(pk, false, false);
 
         var is1of100 = (Species)pk.Species is Species.Dunsparce or Species.Tandemaus;

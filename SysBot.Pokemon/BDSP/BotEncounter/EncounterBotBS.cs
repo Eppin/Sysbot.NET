@@ -2,6 +2,7 @@ namespace SysBot.Pokemon;
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Base;
@@ -95,7 +96,7 @@ public abstract class EncounterBotBS : PokeRoutineExecutor8BS, IEncounterBot
 
         if (!StopConditionSettings.EncounterFound(pk, Hub.Config.StopConditions, null))
         {
-            if (folder.Equals("egg") && Hub.Config.StopConditions.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly && pk.IsShiny)
+            if (folder.Equals("egg") && Hub.Config.StopConditions.SearchConditions.Any(sc => sc.IsEnabled && pk.IsShiny && sc.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly))
                 Hub.LogEmbed(pk, false);
 
             return (false, false);

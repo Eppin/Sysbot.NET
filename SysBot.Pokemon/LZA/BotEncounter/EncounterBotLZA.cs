@@ -1,45 +1,42 @@
+namespace SysBot.Pokemon;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Base;
 using PKHeX.Core;
-using SysBot.Base;
-using static SysBot.Base.SwitchButton;
-using static SysBot.Base.SwitchStick;
+using ZA;
+using static Base.SwitchButton;
+using static Base.SwitchStick;
 
-namespace SysBot.Pokemon;
-
-public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
+public abstract class EncounterBotLZA : PokeRoutineExecutor9LZA, IEncounterBot
 {
-    protected readonly PokeTradeHub<PK8> Hub;
-    private readonly IDumper DumpSetting;
-    protected readonly EncounterSettingsSWSH Settings;
+    protected readonly PokeTradeHub<PA9> Hub;
+    protected readonly EncounterSettingsLZA Settings;
+    protected readonly IDumper DumpSetting;
+
     public ICountSettings Counts => Settings;
     public readonly IReadOnlyList<string> UnwantedMarks;
 
-    protected EncounterBotSWSH(PokeBotState cfg, PokeTradeHub<PK8> hub) : base(cfg)
+    protected EncounterBotLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : base(cfg)
     {
         Hub = hub;
-        Settings = Hub.Config.EncounterSWSH;
+        Settings = Hub.Config.EncounterLZA;
         DumpSetting = Hub.Config.Folder;
         StopConditionSettings.ReadUnwantedMarks(Hub.Config.StopConditions, out UnwantedMarks);
     }
 
-    // Cached offsets that stay the same per session.
-    protected ulong OverworldOffset;
-
-    protected int encounterCount;
+    protected int EncounterCount;
 
     public override async Task MainLoop(CancellationToken token)
     {
-        var settings = Hub.Config.EncounterSWSH;
+        var settings = Hub.Config.EncounterSV;
         Log("Identifying trainer data of the host console.");
         var sav = await IdentifyTrainer(token).ConfigureAwait(false);
         await InitializeHardware(settings, token).ConfigureAwait(false);
-
-        OverworldOffset = await SwitchConnection.PointerAll(Offsets.OverworldPointer, token).ConfigureAwait(false);
 
         try
         {
@@ -65,21 +62,21 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
         await CleanExit(CancellationToken.None).ConfigureAwait(false);
     }
 
-    protected abstract Task EncounterLoop(SAV8SWSH sav, CancellationToken token);
+    protected abstract Task EncounterLoop(SAV9ZA sav, CancellationToken token);
 
-    // return true if breaking loop
-    protected async Task<(bool Stop, bool Success)> HandleEncounter(PK8 pk, CancellationToken token, byte[]? raw = null, bool minimize = false)
+    // Return true if breaking loop
+    protected async Task<(bool Stop, bool Success)> HandleEncounter(PA9 pk, CancellationToken token, byte[]? raw = null, bool minimize = false, bool skipDump = false)
     {
-        encounterCount++;
+        EncounterCount++;
         var print = Hub.Config.StopConditions.GetPrintName(pk);
-        Log($"Encounter: {encounterCount}");
+        Log($"Encounter: {EncounterCount}");
 
         if (!string.IsNullOrWhiteSpace(print))
             Log($"{print}{Environment.NewLine}", !minimize);
 
         var folder = IncrementAndGetDumpFolder(pk);
 
-        if (pk.Valid)
+        if (!skipDump && pk.Valid)
         {
             switch (DumpSetting)
             {
@@ -103,9 +100,15 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
 
         if (!StopConditionSettings.EncounterFound(pk, Hub.Config.StopConditions, UnwantedMarks))
         {
-            if (folder.Equals("egg") && Hub.Config.StopConditions.SearchConditions.Any(sc => sc.IsEnabled && pk.IsShiny && sc.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly))
+            if (Hub.Config.StopConditions.SearchConditions.Any(sc => sc.IsEnabled && pk.IsShiny && sc.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly))
                 Hub.LogEmbed(pk, false);
 
+            return (false, false);
+        }
+
+        if (Settings.MinMaxScaleOnly && pk.Scale is > 0 and < 255)
+        {
+            Hub.LogEmbed(pk, false);
             return (false, false);
         }
 
@@ -118,10 +121,10 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
         var mode = Settings.ContinueAfterMatch;
         var msg = $"Result found!\n{print}\n" + mode switch
         {
-            ContinueAfterMatch.Continue             => "Continuing...",
+            ContinueAfterMatch.Continue => "Continuing...",
             ContinueAfterMatch.PauseWaitAcknowledge => "Waiting for instructions to continue.",
-            ContinueAfterMatch.StopExit             => "Stopping routine execution; restart the bot to search again.",
-            _ => throw new ArgumentOutOfRangeException(nameof(ContinueAfterMatch), "Match result type was invalid.")
+            ContinueAfterMatch.StopExit => "Stopping routine execution; restart the bot to search again.",
+            _ => throw new ArgumentOutOfRangeException("Match result type was invalid.", nameof(ContinueAfterMatch))
         };
 
         if (!string.IsNullOrWhiteSpace(Hub.Config.StopConditions.MatchFoundEchoMention))
@@ -134,13 +137,14 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
         if (mode == ContinueAfterMatch.Continue)
             return (false, true);
 
-        IsWaiting = true;
-        while (IsWaiting)
+        _isWaiting = true;
+        while (_isWaiting)
             await Task.Delay(1_000, token).ConfigureAwait(false);
+
         return (false, true);
     }
 
-    private string IncrementAndGetDumpFolder(PKM pk)
+    private string IncrementAndGetDumpFolder(PA9 pk)
     {
         try
         {
@@ -152,25 +156,23 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
             if (legendary)
             {
                 Settings.AddCompletedLegends();
-                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_LegendSWSH.txt"));
+                OutputExtensions<PA9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_LegendZA.txt"));
+                OutputExtensions<PA9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_LegendZA.txt"));
                 return "legends";
             }
 
-            if (pk.IsEgg)
-            {
-                Settings.AddCompletedEggs();
-                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EggSWSH.txt"));
-                return "egg";
-            }
-            if (pk.Species is >= (int)Species.Dracozolt and <= (int)Species.Arctovish)
+            if (new[] { (int)Species.Aerodactyl, (int)Species.Tyrunt, (int)Species.Amaura }.Contains(pk.Species))
             {
                 Settings.AddCompletedFossils();
-                OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_FosilSWSH.txt"));
+                OutputExtensions<PA9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_FosilZA.txt"));
+                OutputExtensions<PA9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_FosilZA.txt"));
+
                 return "fossil";
             }
 
             Settings.AddCompletedEncounters();
-            OutputExtensions<PK8>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EncounterSWSH.txt"));
+            OutputExtensions<PA9>.EncounterLogs(pk, Path.Combine(loggingFolder, "EncounterLogPretty_EncounterZA.txt"));
+            OutputExtensions<PA9>.EncounterScaleLogs(pk, Path.Combine(loggingFolder, "EncounterLogScale_EncounterZA.txt"));
             return "encounters";
         }
         catch (Exception e)
@@ -180,44 +182,12 @@ public abstract class EncounterBotSWSH : PokeRoutineExecutor8SWSH, IEncounterBot
         }
     }
 
-    private bool IsWaiting;
-    public void Acknowledge() => IsWaiting = false;
+    private bool _isWaiting;
+    public void Acknowledge() => _isWaiting = false;
 
     protected async Task ResetStick(CancellationToken token)
     {
         // If aborting the sequence, we might have the stick set at some position. Clear it just in case.
         await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false); // reset
-    }
-
-    protected async Task FleeToOverworld(CancellationToken token)
-    {
-        // This routine will always escape a battle.
-        await Click(DUP, 0_200, token).ConfigureAwait(false);
-        await Click(A, 1_000, token).ConfigureAwait(false);
-
-        while (await IsInBattle(token).ConfigureAwait(false))
-        {
-            await Click(B, 0_500, token).ConfigureAwait(false);
-            await Click(B, 1_000, token).ConfigureAwait(false);
-            await Click(DUP, 0_200, token).ConfigureAwait(false);
-            await Click(A, 1_000, token).ConfigureAwait(false);
-        }
-    }
-
-    protected async Task EnableAlwaysCatch(CancellationToken token)
-    {
-        if (!Hub.Config.EncounterSWSH.EnableCatchCheat)
-            return;
-
-        Log("Enable critical capture cheat", false);
-        // Source: https://gbatemp.net/threads/pokemon-sword-shield-v1-3-1-cfw-emu-cheat-codes.579372/post-9782611
-
-        // Original cheat:
-        /*
-         * [08# Catch Rate set to 100% Capture]
-         * 04000000 0077F6E8 529FFFE0
-         */
-
-        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x529FFFE0), 0x0077F6E8, token);
     }
 }

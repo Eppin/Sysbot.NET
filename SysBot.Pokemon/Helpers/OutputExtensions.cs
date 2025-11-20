@@ -80,8 +80,11 @@ public class OutputExtensions<T> where T : PKM, new()
         }
     }
 
-    public static void EncounterScaleLogs(PK9 pk, string filepath = "")
+    public static void EncounterScaleLogs(PKM pk, string filepath = "")
     {
+        if (pk is not IScaledSize3 scaledSize3)
+            return;
+
         if (filepath == "")
             filepath = "EncounterScaleLogPretty.txt";
 
@@ -97,9 +100,9 @@ public class OutputExtensions<T> where T : PKM, new()
             var splitTotal = content[0].Split(',');
             content.RemoveRange(0, 3);
 
-            var isMini = pk.Scale == 0;
-            var isJumbo = pk.Scale == 255;
-            var isMisc = pk.Scale is > 0 and < 255;
+            var isMini = scaledSize3.Scale == 0;
+            var isJumbo = scaledSize3.Scale == 255;
+            var isMisc = scaledSize3.Scale is > 0 and < 255;
             var pokeTotal = int.Parse(splitTotal[0].Split(' ')[1]) + 1;
             var miniTotal = int.Parse(splitTotal[1].Split(' ')[1]) + (isMini ? 1 : 0);
             var jumboTotal = int.Parse(splitTotal[2].Split(' ')[1]) + (isJumbo ? 1 : 0);

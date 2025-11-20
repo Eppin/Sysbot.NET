@@ -7,15 +7,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using static SysBot.Base.SwitchButton;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace SysBot.Pokemon;
 
-public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T : PKM, new()
+public abstract class PokeRoutineExecutor<T>(IConsoleBotManaged<IConsoleConnection, IConsoleConnectionAsync> cfg)
+    : PokeRoutineExecutorBase(cfg) where T : PKM, new()
 {
-    protected PokeRoutineExecutor(IConsoleBotManaged<IConsoleConnection, IConsoleConnectionAsync> cfg) : base(cfg)
-    {
-    }
-
     public abstract Task<T> ReadPokemon(ulong offset, CancellationToken token);
     public abstract Task<T> ReadPokemon(ulong offset, int size, CancellationToken token);
     public abstract Task<T> ReadPokemonPointer(IEnumerable<long> jumps, int size, CancellationToken token);
@@ -115,6 +113,7 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         {
             PK8 pk8 => StopConditionSettings.HasMark(pk8, out var mark) ? $"{mark.ToString().Replace("Mark", "")}Mark - " : "",
             PK9 pk9 => StopConditionSettings.HasMark(pk9, out var mark) ? $"{mark.ToString().Replace("Mark", "")}Mark - " : "",
+            PA9 pa9 => StopConditionSettings.HasMark(pa9, out var mark) ? $"{mark.ToString().Replace("Mark", "")}Mark - " : "",
             _ => markType
         };
 
@@ -128,6 +127,8 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
             filetype += "pa8";
         if (pk is PK9)
             filetype += "pk9";
+        if (pk is PA9)
+            filetype += "pa9";
 
         if (!Directory.Exists(folder))
         {
@@ -341,5 +342,31 @@ public abstract class PokeRoutineExecutor<T> : PokeRoutineExecutorBase where T :
         await Click(DUP, 0_300, token).ConfigureAwait(false);
         await Click(A, 1_100, token).ConfigureAwait(false);
         await Click(A, 1_100, token).ConfigureAwait(false);
+    }
+
+    public async Task<byte[]> ReadEncryptedBlock(ulong keyAddress, uint blockKey, CancellationToken token)
+    {
+        const int warningSize = 1_024 * 10; // 10 KB
+
+        var header = await SwitchConnection.ReadBytesAbsoluteAsync(keyAddress, 5, token).ConfigureAwait(false);
+        header = DecryptBlock(blockKey, header);
+
+        var size = ReadUInt32LittleEndian(header.AsSpan()[1..]);
+
+        if (size > warningSize) Log($"Retrieving {size/1024} KB (this may take a while, using WiFi, use USB if available)");
+
+        var data = await SwitchConnection.ReadBytesAbsoluteAsync(keyAddress, 5 + (int)size, token).ConfigureAwait(false);
+        var res = DecryptBlock(blockKey, data)[5..];
+
+        return res;
+    }
+
+    public static byte[] DecryptBlock(uint key, byte[] block)
+    {
+        var rng = new SCXorShift32(key);
+        for (var i = 0; i < block.Length; i++)
+            block[i] = (byte)(block[i] ^ rng.Next());
+
+        return block;
     }
 }
