@@ -11,10 +11,16 @@ Welcome to the Sysbot.NET wiki!
 
 ## Sword/Shield
 
-1.  [Encounter Calyrex and Spectrier/Glastrier](7.-Encounter-Calyrex-and-Spectrier-Glastrier.md)
-2.  [Unlimited egg mode](8.-Unlimited-egg-mode-Sword-Shield.md)
-3.  [(beta) Den/raid](9.-(beta)-Den-raid.md)
+7.  [Encounter Calyrex and Spectrier/Glastrier](7.-Encounter-Calyrex-and-Spectrier-Glastrier.md)
+8.  [Unlimited egg mode](8.-Unlimited-egg-mode-Sword-Shield.md)
+9.  [(beta) Den/raid](9.-(beta)-Den-raid.md)
 
 ## Brilliant Diamond/Shining Pearl
 
 10. [Eggs (including Unlimited egg mode)](10.-Eggs-(including-Unlimited-egg-mode)-Brilliant-Diamond-Shining-Pearl.md)
+
+## Legends: Z-A
+
+11. [Bench Sitting](11.-Bench-Sitting-Legends-Z-A.md)
+12. [Wild Zone Entrance](12.-Wild-Zone-Entrance-Legends-Z-A.md)
+13. [Fossil reviving](13.-Fossil-Revive-Legends-Z-A.md)

@@ -13,7 +13,7 @@ public sealed class BotFactory9SV : BotFactory<PK9>
         PokeRoutineType.EncounterGimmighoul => new EncounterBotGimmighoulSV(cfg, Hub),
         PokeRoutineType.EncounterLoyal => new EncounterBotLoyalSV(cfg, Hub),
         PokeRoutineType.EncounterParadox => new EncounterBotParadoxSV(cfg, Hub),
-        PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScanner(cfg, Hub),
+        PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScannerSV(cfg, Hub),
         PokeRoutineType.RemoteControl => new RemoteControlBotSV(cfg),
         PokeRoutineType.Pointer => new PointerBotSV(cfg, Hub),
         PokeRoutineType.PartnerMark => new PartnerMarkBot(cfg, Hub),

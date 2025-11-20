@@ -12,6 +12,12 @@ If this project does not suit your needs, you are welcome to use an alternative.
 
 These routines are new compared to the original SysBot.NET.
 
+#### Legends: Z-A
+
+- Bench Sit
+- Wild Zone Entrance
+- Fossil reviving
+
 #### Scarlet/Violet
 
 - Encounters (Ruinous, Loyal Three, Gimmighoul, and static/new Paradox Pokémon in Area Zero)
@@ -39,6 +45,12 @@ Routines marked with **[Requires fork]** require you to use my fork of [sys-botb
 Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version is [2.438](https://github.com/Eppin/sys-botbase/releases/tag/2.438). Please use the latest available version.
 
 ## Version compatibility
+
+### Legends: Z-A
+
+| Version |                                SysBot Release                                 |
+| :-----: | :---------------------------------------------------------------------------: |
+|  1.0.1  | [xx.xx.xx.xxx](https://github.com/Eppin/Sysbot.NET/releases/tag/xx.xx.xx.xxx) |
 
 ### Scarlet/Violet
 

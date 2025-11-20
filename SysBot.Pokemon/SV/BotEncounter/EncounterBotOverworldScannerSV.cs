@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
-public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
+public class EncounterBotOverworldScannerSV(PokeBotState cfg, PokeTradeHub<PK9> hub) : EncounterBotSV(cfg, hub)
 {
     private bool _saveKeyInitialized;
     private ulong _baseBlockKeyPointer;
@@ -27,31 +27,31 @@ public class EncounterBotOverworldScanner(PokeBotState cfg, PokeTradeHub<PK9> hu
         {
             switch (Settings.Overworld)
             {
-                case EncounterSettingsSV.OverworldMode.Scanner:
+                case EncounterSettingsSV.OverworldModeSV.Scanner:
                     if (await DoOverworldScanning(token).ConfigureAwait(false))
                         return;
 
                     await Task.Delay(1000, token);
                     break;
 
-                case EncounterSettingsSV.OverworldMode.ResearchStation:
+                case EncounterSettingsSV.OverworldModeSV.ResearchStation:
                     if (await DoResearchStation(token).ConfigureAwait(false))
                         return;
                     break;
 
-                case EncounterSettingsSV.OverworldMode.Outbreak:
+                case EncounterSettingsSV.OverworldModeSV.Outbreak:
                     if (await DoMassOutbreakResetting(token).ConfigureAwait(false))
                         return;
                     break;
 
-                case EncounterSettingsSV.OverworldMode.KOCount:
+                case EncounterSettingsSV.OverworldModeSV.KOCount:
                     if (await DoKOCounting(token).ConfigureAwait(false))
                         return;
 
                     await Task.Delay(5000, token);
                     break;
 
-                case EncounterSettingsSV.OverworldMode.Picnic:
+                case EncounterSettingsSV.OverworldModeSV.Picnic:
                     if (await DoPicnicResetting(token).ConfigureAwait(false))
                         return;
                     break;

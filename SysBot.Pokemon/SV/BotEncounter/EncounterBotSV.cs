@@ -1,12 +1,13 @@
 namespace SysBot.Pokemon;
 
-using Base;
-using PKHeX.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Base;
+using PKHeX.Core;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
@@ -98,7 +99,7 @@ public abstract class EncounterBotSV : PokeRoutineExecutor9SV, IEncounterBot
 
         if (!StopConditionSettings.EncounterFound(pk, Hub.Config.StopConditions, UnwantedMarks))
         {
-            if (folder.Equals("egg") && Hub.Config.StopConditions.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly && pk.IsShiny)
+            if (folder.Equals("egg") && Hub.Config.StopConditions.SearchConditions.Any(sc => sc.IsEnabled && pk.IsShiny && sc.ShinyTarget is TargetShinyType.AnyShiny or TargetShinyType.StarOnly or TargetShinyType.SquareOnly))
                 Hub.LogEmbed(pk, false);
 
             return (false, false);
