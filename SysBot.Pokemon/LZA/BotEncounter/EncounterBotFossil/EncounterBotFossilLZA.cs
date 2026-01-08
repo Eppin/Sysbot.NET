@@ -39,8 +39,7 @@ public class EncounterBotFossilLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : En
             {
                 Log("Fossil pieces have been depleted. Resetting the game.");
                 _box = _slot = 0;
-                await CloseGame(Hub.Config, token).ConfigureAwait(false);
-                await StartGame(Hub.Config, token).ConfigureAwait(false);
+                await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             }
 
             await ReviveFossil(token).ConfigureAwait(false);
