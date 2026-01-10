@@ -41,7 +41,7 @@ public class EncounterBotFloetteLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : E
                         return;
                 }
 
-                await Task.Delay(0_500, token);
+                await Task.Delay(0_250, token);
             }
 
             await dialogueCancellationTokenSource.CancelAsync();
@@ -51,11 +51,18 @@ public class EncounterBotFloetteLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : E
 
     private async Task DialogueWalking(CancellationToken dialogueToken, CancellationToken generalToken)
     {
-        while (!dialogueToken.IsCancellationRequested && !generalToken.IsCancellationRequested)
+        try
         {
-            await Click(A, 0_200, dialogueToken).ConfigureAwait(false);
-        }
+            while (!dialogueToken.IsCancellationRequested && !generalToken.IsCancellationRequested)
+            {
+                await Click(A, 0_200, dialogueToken).ConfigureAwait(false);
+            }
 
-        Log("Stopping dialogue...");
+            Log("Stopping dialogue... which is weird!");
+        }
+        catch (TaskCanceledException)
+        {
+            Log("Dialogue is canceled");
+        }
     }
 }
