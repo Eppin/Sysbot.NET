@@ -17,6 +17,7 @@ These routines are new compared to the original SysBot.NET.
 - Bench Sit
 - Wild Zone Entrance
 - Fossil reviving
+- Receiving Floette
 
 #### Scarlet/Violet
 
@@ -50,7 +51,7 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 
 | Version |                                SysBot Release                                 |
 | :-----: | :---------------------------------------------------------------------------: |
-|  1.0.2  | [xx.xx.xx.xxx](https://github.com/Eppin/Sysbot.NET/releases/tag/xx.xx.xx.xxx) |
+|  1.0.2  | [25.11.20.275](https://github.com/Eppin/Sysbot.NET/releases/tag/25.11.20.275) |
 
 ### Scarlet/Violet
 

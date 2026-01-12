@@ -131,6 +131,13 @@ public abstract class PokeRoutineExecutor9LZA(PokeBotState cfg) : PokeRoutineExe
         await DetachController(token).ConfigureAwait(false);
     }
 
+    public async Task ReOpenGame(PokeTradeHubConfig config, CancellationToken token)
+    {
+        Log("Restarting the game!!");
+        await CloseGame(config, token).ConfigureAwait(false);
+        await StartGame(config, token).ConfigureAwait(false);
+    }
+
     public async Task CloseGame(PokeTradeHubConfig config, CancellationToken token)
     {
         var timing = config.Timings;
