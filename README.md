@@ -17,6 +17,7 @@ These routines are new compared to the original SysBot.NET.
 - Bench Sit
 - Wild Zone Entrance
 - Fossil reviving
+- Receiving Floette
 
 #### Scarlet/Violet
 
