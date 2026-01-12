@@ -51,6 +51,7 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 
 | Version |                                SysBot Release                                 |
 | :-----: | :---------------------------------------------------------------------------: |
+|  2.0.0  | [26.01.12.282](https://github.com/Eppin/Sysbot.NET/releases/tag/26.01.12.282) |
 |  1.0.2  | [25.11.20.275](https://github.com/Eppin/Sysbot.NET/releases/tag/25.11.20.275) |
 
 ### Scarlet/Violet
