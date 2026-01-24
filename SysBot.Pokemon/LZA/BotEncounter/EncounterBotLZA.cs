@@ -190,4 +190,18 @@ public abstract class EncounterBotLZA : PokeRoutineExecutor9LZA, IEncounterBot
         // If aborting the sequence, we might have the stick set at some position. Clear it just in case.
         await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false); // reset
     }
+
+    protected async Task EnableAlwaysCatch(CancellationToken token)
+    {
+        Log("Enable 100% catch rate cheat", false);
+        // Source: https://gbatemp.net/threads/pokemon-legends-z-a-cheat-database.675579/
+
+        // Original cheat:
+        /*
+         * [№56. 100% Catch Rate]
+         * 040A0000 00447448 52800028
+         */
+
+        await SwitchConnection.WriteBytesMainAsync(BitConverter.GetBytes(0x52800028), 0x00447448, token);
+    }
 }

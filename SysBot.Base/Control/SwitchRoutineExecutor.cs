@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -31,6 +31,18 @@ public abstract class SwitchRoutineExecutor<T> : RoutineExecutor<T> where T : cl
     {
         await Connection.SendAsync(SwitchCommand.Hold(b, UseCRLF), token).ConfigureAwait(false);
         await Task.Delay(hold, token).ConfigureAwait(false);
+        await Connection.SendAsync(SwitchCommand.Release(b, UseCRLF), token).ConfigureAwait(false);
+        await Task.Delay(delay, token).ConfigureAwait(false);
+    }
+
+    public async Task PressAndHold(SwitchButton b, int delay, CancellationToken token)
+    {
+        await Connection.SendAsync(SwitchCommand.Hold(b, UseCRLF), token).ConfigureAwait(false);
+        await Task.Delay(delay, token).ConfigureAwait(false);
+    }
+
+    public async Task ReleaseHold(SwitchButton b, int delay, CancellationToken token)
+    {
         await Connection.SendAsync(SwitchCommand.Release(b, UseCRLF), token).ConfigureAwait(false);
         await Task.Delay(delay, token).ConfigureAwait(false);
     }
