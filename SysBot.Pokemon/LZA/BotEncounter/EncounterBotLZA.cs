@@ -193,6 +193,9 @@ public abstract class EncounterBotLZA : PokeRoutineExecutor9LZA, IEncounterBot
 
     protected async Task EnableAlwaysCatch(CancellationToken token)
     {
+        if (!Hub.Config.EncounterLZA.EnableCatchCheat)
+            return;
+
         Log("Enable 100% catch rate cheat", false);
         // Source: https://gbatemp.net/threads/pokemon-legends-z-a-cheat-database.675579/
 

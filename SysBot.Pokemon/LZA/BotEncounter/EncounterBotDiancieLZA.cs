@@ -1,10 +1,10 @@
 namespace SysBot.Pokemon;
 
-using PKHeX.Core;
-using SysBot.Base;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Base;
+using PKHeX.Core;
 using static Base.SwitchButton;
 using static Base.SwitchStick;
 
@@ -15,8 +15,11 @@ public class EncounterBotDiancieLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : E
 
     protected override async Task EncounterLoop(SAV9ZA sav, CancellationToken token)
     {
+        const int maxDurationSeconds = 45;
+
         while (!token.IsCancellationRequested)
         {
+            var later = DateTime.Now.AddSeconds(maxDurationSeconds);
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
             Log("Starting Diancie encounter sequence");
@@ -24,23 +27,20 @@ public class EncounterBotDiancieLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : E
             await ResetStick(token).ConfigureAwait(false);
             await RepeatClick(A, 20_000, 100, token).ConfigureAwait(false);
 
-            Log("Catching Diancie");
+            Log($"Catching Diancie, wait till [{later}] before we force a game restart", false);
 
             var result = EncounterResult.Unknown;
-            while (result != EncounterResult.DiancieFound)
+            while (result != EncounterResult.DiancieFound && DateTime.Now <= later)
             {
                 await PressAndHold(ZL, 0_250, token).ConfigureAwait(false);
                 await Click(ZR, 0_100, token).ConfigureAwait(false);
                 await ReleaseHold(ZL, 0_250, token).ConfigureAwait(false);
 
-                for (int slot = 0; slot < 3; slot++)
+                for (var slot = 0; slot < 3; slot++)
                 {
                     result = await LookupSlot(slot, token).ConfigureAwait(false);
 
-                    if (result is EncounterResult.InvalidSpecies or EncounterResult.ResultFound)
-                    {
-                        return; // Exit the encounter loop entirely
-                    }
+                    if (result is EncounterResult.InvalidSpecies or EncounterResult.ResultFound) return; // Exit the encounter loop entirely
 
                     if (result is EncounterResult.DiancieFound)
                     {
@@ -49,6 +49,9 @@ public class EncounterBotDiancieLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : E
                     }
                 }
             }
+
+            if (DateTime.Now >= later)
+                Log("Force restart of the game...");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
             await Task.Delay(10_000, token).ConfigureAwait(false);
