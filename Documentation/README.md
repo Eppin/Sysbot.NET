@@ -25,3 +25,4 @@ Welcome to the Sysbot.NET wiki!
 12. [Wild Zone Entrance](12.-Wild-Zone-Entrance-Legends-Z-A.md)
 13. [Fossil reviving](13.-Fossil-Revive-Legends-Z-A.md)
 14. [Receiving Floette](14.-Receive-Floette-Legends-Z-A.md)
+15. [Catch Diancie](15.-Catch-Diancie-Legends-Z-A.md)
