@@ -18,6 +18,7 @@ These routines are new compared to the original SysBot.NET.
 - Wild Zone Entrance
 - Fossil reviving
 - Receiving Floette
+- Catching Diancie
 
 #### Scarlet/Violet
 
@@ -53,6 +54,7 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 | :-----: | :---------------------------------------------------------------------------: |
 |  2.0.0  | [26.01.12.282](https://github.com/Eppin/Sysbot.NET/releases/tag/26.01.12.282) |
 |  1.0.2  | [25.11.20.275](https://github.com/Eppin/Sysbot.NET/releases/tag/25.11.20.275) |
+|  2.0.1  | [26.02.17.294](https://github.com/Eppin/Sysbot.NET/releases/tag/26.02.17.294) |
 
 ### Scarlet/Violet
 
