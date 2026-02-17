@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 
 namespace SysBot.Pokemon;
@@ -10,10 +10,10 @@ public class FolderSettings : IDumper
     public override string ToString() => "Folder / Dumping Settings";
 
     [Category(FeatureToggle), Description("When enabled, dumps any received PKM files (trade results) to the DumpFolder.")]
-    public bool Dump { get; set; }
+    public bool Dump { get; set; } = false;
 
     [Category(FeatureToggle), Description("When enabled, dumps any raw/encrypted received PKM files (trade results) to the DumpFolder.")]
-    public bool DumpRaw { get; set; }
+    public bool DumpRaw { get; set; } = true;
 
     [Category(FeatureToggle), Description("When enabled with previous option, dumps only any received Shiny PKM files (trade results) to the DumpFolder.")]
     public bool DumpShinyOnly { get; set; }

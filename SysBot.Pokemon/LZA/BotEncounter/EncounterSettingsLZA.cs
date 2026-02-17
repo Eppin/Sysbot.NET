@@ -44,6 +44,9 @@ public class EncounterSettingsLZA : IBotStateSettings, ICountSettings
     [Category(Encounter), Description("When enabled, the bot will only stop when encounter has a Scale of XXXS or XXXL.")]
     public bool MinMaxScaleOnly { get; set; } = false;
 
+    [Category(Encounter), Description("When enabled, the 100% catch cheat will be enabled.")]
+    public bool EnableCatchCheat { get; set; }
+
     [Category(Encounter), Description("When enabled, the screen will be turned off during normal bot loop operation to save power.")]
     public bool ScreenOff { get; set; }
 
