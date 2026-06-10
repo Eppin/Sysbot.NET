@@ -54,7 +54,7 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
                 await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
 
                 // Walk diagonally right, slightly longer to ensure we stay at the Daycare lady.
-                await SetStick(LEFT, 19000, 19000, 0_300, token).ConfigureAwait(false);
+                await SetStick(LEFT, 19000, 19000, 0_500, token).ConfigureAwait(false);
                 await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
             }
             sw.Stop();
