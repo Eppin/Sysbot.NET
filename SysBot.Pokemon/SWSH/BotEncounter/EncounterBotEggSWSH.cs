@@ -62,12 +62,7 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
             if (sw.Elapsed.TotalSeconds >= 10)
             {
                 Log($"Tried {sw.Elapsed}, still no egg.");
-                await Click(B, 500, token).ConfigureAwait(false);
-                
-                // Walk diagonally right, to the Daycare lady.
-                await SetStick(LEFT, 19000, 19000, 4_000, token).ConfigureAwait(false);
-                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
-                
+                await Click(B, 500, token).ConfigureAwait(false);                
                 continue;
             }
 
@@ -86,6 +81,11 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
             if (pk.Species == 0)
             {
                 Log($"No egg found in B{Box + 1}S{Slot + 1}. Ensure that the party is full. Restarting loop.");
+
+                // Walk diagonally right, to the Daycare lady.
+                await SetStick(LEFT, 19000, 19000, 4_000, token).ConfigureAwait(false);
+                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
+                
                 continue;
             }
 
