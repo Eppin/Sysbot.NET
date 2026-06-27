@@ -75,6 +75,9 @@ public enum PokeRoutineType
     /// <summary> Retrieves Diancie until the criteria is satisfied.  </summary>
     EncounterDiancie = 7_006,
 
+    /// <summary> Retrieves Volcanion until the criteria is satisfied.  </summary>
+    EncounterVolcanion = 7_007,
+
     /// <summary> Keeps running circles until all party members have the Partner mark.  </summary>
     PartnerMark = 7_050,
 
