@@ -19,6 +19,11 @@ These routines are new compared to the original SysBot.NET.
 - Fossil reviving
 - Receiving Floette
 - Catching Diancie
+- Catching Volcanion
+- Catching Genesect
+- Receiving Hoopa
+- Receiving Magearna
+- Catching Marshadow
 
 #### Scarlet/Violet
 
