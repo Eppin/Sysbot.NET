@@ -10,48 +10,41 @@ using static Base.SwitchStick;
 
 public class EncounterBotVolcanionLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) : EncounterBotLZA(cfg, hub)
 {
-    private readonly ushort _volcanion = (ushort)Species.Volcanion;
+    private const ushort VolcanionSpecies = (ushort)Species.Volcanion;
+
+    private const int EncounterTimeoutSeconds = 145; // 45 + 100
+    private const int MashDurationMs = 100_000;
+    private const int MashDelayMs = 100;
+    private const int ReopenDelayMs = 10_000;
 
     protected override async Task EncounterLoop(SAV9ZA sav, CancellationToken token)
     {
-        const int maxDurationSeconds = 45 + 100;
-
         while (!token.IsCancellationRequested)
         {
-            var later = DateTime.Now.AddSeconds(maxDurationSeconds);
+            var deadline = DateTime.Now.AddSeconds(EncounterTimeoutSeconds);
+
             await EnableAlwaysCatch(token).ConfigureAwait(false);
 
             Log("Starting Volcanion encounter sequence");
             await SetStick(LEFT, 0, 30_000, 0_500, token).ConfigureAwait(false);
             await ResetStick(token).ConfigureAwait(false);
-            await RepeatClick(A, 100 * 1000, 100, token).ConfigureAwait(false); // 1 minute, 40 seconds
+            await RepeatClick(A, MashDurationMs, MashDelayMs, token).ConfigureAwait(false);
 
-            Log($"Catching Volcanion, wait till [{later}] before we force a game restart", false);
+            Log($"Catching Volcanion, wait till [{deadline}] before we force a game restart", false);
 
-            var result = EncounterResult.Unknown;
-            while (result != EncounterResult.VolcanionFound && DateTime.Now <= later)
-            {
-                await PressAndHold(ZL, 0_250, token).ConfigureAwait(false);
-                await Click(ZR, 0_100, token).ConfigureAwait(false);
-                await ReleaseHold(ZL, 0_250, token).ConfigureAwait(false);
+            await SetStick(LEFT, 0, 30_000, 1_000, token).ConfigureAwait(false);
+            await ResetStick(token).ConfigureAwait(false);
 
-                result = await LookupSlot(token).ConfigureAwait(false);
+            var result = await TryEncounterUntilDeadline(deadline, token).ConfigureAwait(false);
 
-                if (result is EncounterResult.InvalidSpecies or EncounterResult.ResultFound)
-                    return; // Exit the encounter loop entirely
+            if (result is EncounterResult.InvalidSpecies or EncounterResult.ResultFound)
+                return;
 
-                if (result is EncounterResult.VolcanionFound)
-                {
-                    Log("Volcanion found in B1S1, rebooting the game...");
-                    break;
-                }
-            }
-
-            if (DateTime.Now >= later)
+            if (result == EncounterResult.Timeout)
                 Log("Force restart of the game...");
 
             await ReOpenGame(Hub.Config, token).ConfigureAwait(false);
-            await Task.Delay(10_000, token).ConfigureAwait(false);
+            await Task.Delay(ReopenDelayMs, token).ConfigureAwait(false);
         }
     }
 
@@ -61,48 +54,73 @@ public class EncounterBotVolcanionLZA(PokeBotState cfg, PokeTradeHub<PA9> hub) :
         await base.HardStop().ConfigureAwait(false);
     }
 
+    private async Task<EncounterResult> TryEncounterUntilDeadline(DateTime deadline, CancellationToken token)
+    {
+        while (DateTime.Now <= deadline && !token.IsCancellationRequested)
+        {
+            await RunEncounterInput(token).ConfigureAwait(false);
+
+            var result = await LookupSlot(token).ConfigureAwait(false);
+            if (result is EncounterResult.InvalidSpecies or EncounterResult.ResultFound)
+                return result;
+
+            if (result == EncounterResult.VolcanionFound)
+            {
+                Log("Volcanion found in B1S1, rebooting the game...");
+                return result;
+            }
+        }
+
+        return EncounterResult.Timeout;
+    }
+
+    private async Task RunEncounterInput(CancellationToken token)
+    {
+        await PressAndHold(ZL, 0_250, token).ConfigureAwait(false);
+        await Click(ZR, 0_100, token).ConfigureAwait(false);
+        await ReleaseHold(ZL, 0_250, token).ConfigureAwait(false);
+    }
+
     private async Task<EncounterResult> LookupSlot(CancellationToken token)
     {
         var (pa9, raw) = await ReadRawBoxPokemon(0, 0, token).ConfigureAwait(false);
-        if (pa9.Species > 0 && pa9.Species != _volcanion)
+
+        if (pa9.Species > 0 && pa9.Species != VolcanionSpecies)
         {
             Log($"Detected species {(Species)pa9.Species}, which shouldn't be possible. Only 'none' or 'Volcanion' are expected");
             return EncounterResult.InvalidSpecies;
         }
 
-        if (pa9.Species == _volcanion && pa9 is { Valid: true, EncryptionConstant: > 0 })
+        if (pa9.Species == VolcanionSpecies && pa9 is { Valid: true, EncryptionConstant: > 0 })
         {
             var (stop, success) = await HandleEncounter(pa9, token, raw, true).ConfigureAwait(false);
 
             if (success)
-                Log("Your Pokémon has been received and placed in B1S1. Auto-save will do the rest!");
+                Log("Your Pokemon has been received and placed in B1S1. Auto-save will do the rest!");
 
             if (stop)
                 return EncounterResult.ResultFound;
         }
 
-        return pa9.Species == _volcanion
+        return pa9.Species == VolcanionSpecies
             ? EncounterResult.VolcanionFound
             : EncounterResult.NextSlot;
     }
 
-    private async Task RepeatClick(SwitchButton button, int duration, int delay, CancellationToken token)
+    private async Task RepeatClick(SwitchButton button, int durationMs, int delayMs, CancellationToken token)
     {
-        var endTime = DateTime.Now.AddMilliseconds(duration);
+        var endUtc = DateTime.UtcNow.AddMilliseconds(durationMs);
 
-        while (DateTime.Now < endTime)
-        {
-            await Click(button, delay, token).ConfigureAwait(false);
-        }
+        while (DateTime.UtcNow < endUtc && !token.IsCancellationRequested)
+            await Click(button, delayMs, token).ConfigureAwait(false);
     }
 
     private enum EncounterResult
     {
-        Unknown,
-
         InvalidSpecies,
         ResultFound,
         VolcanionFound,
-        NextSlot
+        NextSlot,
+        Timeout
     }
 }

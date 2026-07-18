@@ -5,24 +5,31 @@ using PKHeX.Core;
 
 public sealed class BotFactory9LZA : BotFactory<PA9>
 {
-    public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PA9> hub, PokeBotState cfg) => cfg.NextRoutineType switch
-    {
-        PokeRoutineType.EncounterDiancie => new EncounterBotDiancieLZA(cfg, hub),
-        PokeRoutineType.EncounterFloette => new EncounterBotFloetteLZA(cfg, hub),
-        PokeRoutineType.EncounterVolcanion => new EncounterBotVolcanionLZA(cfg, hub),
-        PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScannerLZA(cfg, hub),
-        PokeRoutineType.FossilBot => new EncounterBotFossilLZA(cfg, hub),
+    public override PokeRoutineExecutorBase CreateBot(PokeTradeHub<PA9> hub, PokeBotState cfg) =>
+        cfg.NextRoutineType switch
+        {
+            PokeRoutineType.EncounterDiancie => new EncounterBotDiancieLZA(cfg, hub),
+            PokeRoutineType.EncounterFloette => new EncounterBotFloetteLZA(cfg, hub),
+            PokeRoutineType.EncounterVolcanion => new EncounterBotVolcanionLZA(cfg, hub),
+            PokeRoutineType.EncounterGenesect => new EncounterBotGenesectLZA(cfg, hub),
+            PokeRoutineType.EncounterHoopa => new EncounterBotHoopaLZA(cfg, hub),
+            PokeRoutineType.EncounterMagearna => new EncounterBotMagearnaLZA(cfg, hub),
+            PokeRoutineType.EncounterOverworld => new EncounterBotOverworldScannerLZA(cfg, hub),
+            PokeRoutineType.FossilBot => new EncounterBotFossilLZA(cfg, hub),
 
-        PokeRoutineType.RemoteControl => new RemoteControlBotLZA(cfg),
+            PokeRoutineType.RemoteControl => new RemoteControlBotLZA(cfg),
 
-        _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
-    };
+            _ => throw new ArgumentException(nameof(cfg.NextRoutineType)),
+        };
 
     public override bool SupportsRoutine(PokeRoutineType type) => type switch
     {
         PokeRoutineType.EncounterDiancie => true,
         PokeRoutineType.EncounterFloette => true,
         PokeRoutineType.EncounterVolcanion => true,
+        PokeRoutineType.EncounterGenesect => true,
+        PokeRoutineType.EncounterHoopa => true,
+        PokeRoutineType.EncounterMagearna => true,
         PokeRoutineType.EncounterOverworld => true,
         PokeRoutineType.FossilBot => true,
 
