@@ -26,3 +26,8 @@ Welcome to the Sysbot.NET wiki!
 13. [Fossil reviving](13.-Fossil-Revive-Legends-Z-A.md)
 14. [Receiving Floette](14.-Receive-Floette-Legends-Z-A.md)
 15. [Catch Diancie](15.-Catch-Diancie-Legends-Z-A.md)
+16. [Catch Volcanion](16.-Catch-Volcanion-Legends-Z-A.md)
+17. [Catch Genesect](17.-Catch-Genesect-Legends-Z-A.md)
+18. [Receive Hoopa](18.-Receive-Hoopa-Legends-Z-A.md)
+19. [Receive Magearna](19.-Receive-Magearna-Legends-Z-A.md)
+20. [Catch Marshadow](20.-Catch-Marshadow-Legends-Z-A.md)
