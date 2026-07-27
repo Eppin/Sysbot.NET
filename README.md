@@ -21,9 +21,9 @@ These routines are new compared to the original SysBot.NET.
 - Catching Diancie
 - Catching Volcanion
 - Catching Genesect
-- Receiving Hoopa
+- Receiving Marshadow
 - Receiving Magearna
-- Catching Marshadow _(might not work, needs more testing)_
+- Catching Hoopa _(might not work, needs more testing)_
 
 #### Scarlet/Violet
 
