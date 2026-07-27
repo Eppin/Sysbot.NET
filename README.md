@@ -23,7 +23,7 @@ These routines are new compared to the original SysBot.NET.
 - Catching Genesect
 - Receiving Hoopa
 - Receiving Magearna
-- Catching Marshadow
+- Catching Marshadow _(might not work, needs more testing)_
 
 #### Scarlet/Violet
 
@@ -57,7 +57,7 @@ Currently, the [latest](https://github.com/Eppin/sys-botbase/releases) version i
 
 | Version |                                SysBot Release                                 |
 | :-----: | :---------------------------------------------------------------------------: |
-|  2.0.2  | [26.03.27.297](https://github.com/Eppin/Sysbot.NET/releases/tag/26.03.27.297) |
+|  2.0.2  | [26.07.27.303](https://github.com/Eppin/Sysbot.NET/releases/tag/26.07.27.303) |
 |  2.0.1  | [26.02.17.294](https://github.com/Eppin/Sysbot.NET/releases/tag/26.02.17.294) |
 |  2.0.0  | [26.01.12.282](https://github.com/Eppin/Sysbot.NET/releases/tag/26.01.12.282) |
 |  1.0.2  | [25.11.20.275](https://github.com/Eppin/Sysbot.NET/releases/tag/25.11.20.275) |
