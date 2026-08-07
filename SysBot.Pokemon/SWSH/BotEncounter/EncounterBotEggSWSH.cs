@@ -51,18 +51,18 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
 
                 // Walk diagonally left.
                 await SetStick(LEFT, -19000, 19000, 0_250, token).ConfigureAwait(false);
-                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
+                await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false); // reset
 
                 // Walk diagonally right, slightly longer to ensure we stay at the Daycare lady.
-                await SetStick(LEFT, 19000, 19000, 0_300, token).ConfigureAwait(false);
-                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
+                await SetStick(LEFT, 19000, 19000, 0_500, token).ConfigureAwait(false);
+                await SetStick(LEFT, 0, 0, 0_500, token).ConfigureAwait(false); // reset
             }
             sw.Stop();
 
             if (sw.Elapsed.TotalSeconds >= 10)
             {
                 Log($"Tried {sw.Elapsed}, still no egg.");
-                await Click(B, 500, token).ConfigureAwait(false);
+                await Click(B, 500, token).ConfigureAwait(false);                
                 continue;
             }
 
@@ -81,6 +81,11 @@ public class EncounterBotEggSWSH : EncounterBotSWSH
             if (pk.Species == 0)
             {
                 Log($"No egg found in B{Box + 1}S{Slot + 1}. Ensure that the party is full. Restarting loop.");
+
+                // Walk diagonally right, to the Daycare lady.
+                await SetStick(LEFT, 19000, 19000, 4_000, token).ConfigureAwait(false);
+                await SetStick(LEFT, 0, 0, 500, token).ConfigureAwait(false); // reset
+                
                 continue;
             }
 
